@@ -11,7 +11,7 @@ import java.util.Enumeration;
  * Created by 田伯光 at 2022/8/21 14:16
  */
 @Slf4j
-public abstract class NetUtils {
+public final class NetUtils {
     /**
      * Pre-loaded local address
      */
@@ -23,6 +23,10 @@ public abstract class NetUtils {
         } catch (SocketException e) {
             throw new RuntimeException("fail to get local ip.");
         }
+    }
+
+    private NetUtils() {
+
     }
 
     /**

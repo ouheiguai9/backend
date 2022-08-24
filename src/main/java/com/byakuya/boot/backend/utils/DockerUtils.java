@@ -7,21 +7,30 @@ import org.springframework.util.StringUtils;
  * Created by 田伯光 at 2022/8/21 14:16
  */
 @Slf4j
-public abstract class DockerUtils {
-    /** Environment param keys */
+public final class DockerUtils {
+    /**
+     * Environment param keys
+     */
     private static final String ENV_KEY_HOST = "JPAAS_HOST";
     private static final String ENV_KEY_PORT = "JPAAS_HTTP_PORT";
     private static final String ENV_KEY_PORT_ORIGINAL = "JPAAS_HOST_PORT_8080";
 
-    /** Docker host & port */
+    /**
+     * Docker host & port
+     */
     private static String DOCKER_HOST = "";
     private static String DOCKER_PORT = "";
-
-    /** Whether is docker */
+    /**
+     * Whether is docker
+     */
     private static boolean IS_DOCKER;
 
     static {
         retrieveFromEnv();
+    }
+
+    private DockerUtils() {
+
     }
 
     /**

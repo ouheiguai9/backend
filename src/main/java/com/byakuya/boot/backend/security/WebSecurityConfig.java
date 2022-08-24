@@ -14,6 +14,8 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 import org.springframework.security.web.util.matcher.AndRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
+import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
+import org.springframework.session.web.http.HttpSessionIdResolver;
 
 /**
  * Created by ganzl on 2020/4/3.
@@ -27,25 +29,22 @@ public class WebSecurityConfig {
         String compositeLoginUrl = "/composite/login";
         MediaTypeRequestMatcher entryPointMatcher = new MediaTypeRequestMatcher(MediaType.APPLICATION_JSON);
         entryPointMatcher.setUseEquals(true);
-        http
-                .authorizeHttpRequests(authorize -> {
-                            try {
-                                authorize
-                                        .antMatchers("/error/**", compositeLoginUrl, ConstantUtils.OPEN_REST_API_PREFIX + "/**").permitAll()
-                                        .anyRequest().authenticated()
-                                        .and()
-                                        .addFilterAfter(requestAuthenticationFilter, LogoutFilter.class)
-                                        .logout().invalidateHttpSession(true)
-                                        .and()
-                                        .exceptionHandling()
-                                        .and()
-                                        .csrf().disable()
-                                        .headers().frameOptions().sameOrigin();
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                );
+        http.authorizeHttpRequests(authorize -> {
+            try {
+                authorize.antMatchers("/error/**", ConstantUtils.REST_API_PREFIX + "/**").permitAll()
+                        .anyRequest().authenticated()
+                        .and()
+                        .addFilterAfter(requestAuthenticationFilter, LogoutFilter.class)
+                        .logout().invalidateHttpSession(true)
+                        .and()
+                        .exceptionHandling()
+                        .and()
+                        .csrf().disable()
+                        .headers().frameOptions().sameOrigin();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
         DefaultSecurityFilterChain defaultSecurityFilterChain = http.build();
         requestAuthenticationFilter.setRequiresAuthenticationRequestMatcher(new AndRequestMatcher(new AntPathRequestMatcher(compositeLoginUrl, HttpMethod.POST.name()), new MediaTypeRequestMatcher(MediaType.APPLICATION_JSON)));
         requestAuthenticationFilter.setSessionAuthenticationStrategy(http.getSharedObject(SessionAuthenticationStrategy.class));
@@ -61,4 +60,9 @@ public class WebSecurityConfig {
 //            return user.isAdmin() || (!resAPI.onlyAdmin() && user.getAuthority().check(resAPI.module(), resAPI.code()));
 //        }).orElse(false)));
 //    }
+
+    @Bean
+    HttpSessionIdResolver headerHttpSessionIdResolver() {
+        return new HeaderHttpSessionIdResolver(ConstantUtils.HEADER_X_AUTH_TOKEN);
+    }
 }

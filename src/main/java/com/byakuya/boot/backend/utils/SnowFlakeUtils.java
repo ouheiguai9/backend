@@ -7,8 +7,7 @@ import java.util.Random;
 /**
  * Created by 田伯光 at 2022/8/21 14:27
  */
-public abstract class SnowFlakeUtils {
-
+public final class SnowFlakeUtils {
     //设置一个时间初始值    2^41 - 1   差不多可以用69年
     private static final long startTime = 1585644268888L;
     //5位的机器id
@@ -25,19 +24,21 @@ public abstract class SnowFlakeUtils {
     private static final long datacenterIdShift = sequenceBits + workerIdBits;
     private static final long timestampLeftShift = sequenceBits + workerIdBits + datacenterIdBits;
     private static final long sequenceMask = ~(-1L << sequenceBits);
-
-
     private final static Generator instance;
 
-    static  {
+    static {
         long datacenterId = autoDatacenterId();
-        instance = new Generator(datacenterId,autoWorkerId(datacenterId),0);
+        instance = new Generator(datacenterId, autoWorkerId(datacenterId), 0);
+    }
+
+    private SnowFlakeUtils() {
+
     }
 
     private static long autoDatacenterId() {
         long id = 0L;
         try {
-            if(DockerUtils.isDocker()) {
+            if (DockerUtils.isDocker()) {
                 id = (DockerUtils.getDockerHost() + DockerUtils.getDockerPort()).hashCode();
             } else {
                 NetworkInterface network = NetworkInterface.getByInetAddress(NetUtils.localAddress);
@@ -46,7 +47,7 @@ public abstract class SnowFlakeUtils {
             }
         } catch (Exception e) {
             id = new Random().nextLong();
-        } finally{
+        } finally {
             id = id % (maxDatacenterId + 1);
         }
         return id;
@@ -91,13 +92,13 @@ public abstract class SnowFlakeUtils {
             // 检查机房id和机器id是否超过31 不能小于0
             if (workerId > maxWorkerId || workerId < 0) {
                 throw new IllegalArgumentException(
-                        String.format("worker Id can't be greater than %d or less than 0",maxWorkerId));
+                        String.format("worker Id can't be greater than %d or less than 0", maxWorkerId));
             }
 
             if (datacenterId > maxDatacenterId || datacenterId < 0) {
 
                 throw new IllegalArgumentException(
-                        String.format("datacenter Id can't be greater than %d or less than 0",maxDatacenterId));
+                        String.format("datacenter Id can't be greater than %d or less than 0", maxDatacenterId));
             }
             this.workerId = workerId;
             this.datacenterId = datacenterId;
@@ -144,6 +145,7 @@ public abstract class SnowFlakeUtils {
 
         /**
          * 当某一毫秒的时间，产生的id数 超过4095，系统会进入等待，直到下一毫秒，系统继续产生ID
+         *
          * @param lastTimestamp 最后时间戳
          * @return 下一毫秒
          */
@@ -156,8 +158,9 @@ public abstract class SnowFlakeUtils {
             }
             return timestamp;
         }
+
         //获取当前时间戳
-        private long timeGen(){
+        private long timeGen() {
             return System.currentTimeMillis();
         }
 

@@ -6,9 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * @author ganzl
- * @createTime 2022/4/14 17:18
- * @description ParameterRepository
+ * Created by 田伯光 at 2022/4/28 17:27
  */
 public interface ParameterRepository extends PagingAndSortingRepository<Parameter, Long> {
     Optional<Parameter> findByGroupKeyAndItemKey(String group, String item);

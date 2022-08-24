@@ -12,7 +12,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class BackendWebMvcConfigurer implements WebMvcConfigurer {
     @Override
     public void configurePathMatch(PathMatchConfigurer configurer) {
-        configurer.addPathPrefix(ConstantUtils.OPEN_REST_API_PREFIX, cls -> cls.isAnnotationPresent(OpenRestAPIController.class))
-                .addPathPrefix(ConstantUtils.REST_API_PREFIX, cls -> cls.isAnnotationPresent(RestAPIController.class));
+        configurer.addPathPrefix(ConstantUtils.REST_API_PREFIX, cls -> cls.isAnnotationPresent(RestAPIController.class));
     }
 }
