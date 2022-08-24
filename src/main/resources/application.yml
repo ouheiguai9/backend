@@ -1,0 +1,49 @@
+server:
+  port: 80
+  servlet:
+    application-display-name: '前后端分离后台模板'
+    session:
+      timeout: 30m
+
+spring:
+  profiles:
+    active: dev
+  session:
+    store-type: jdbc
+    jdbc:
+      initialize-schema: always
+  jackson:
+    time-zone: GMT+8
+    date-format: 'yyyy-MM-dd HH:mm:ss'
+  datasource:
+    url: jdbc:mysql://localhost/backend?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2b8
+    username: backend
+    password: backend
+    #MySQL优化
+    cachePrepStmts: true
+    prepStmtCacheSize: 250
+    prepStmtCacheSqlLimit: 2048
+    useServerPrepStmts: true
+    useLocalSessionState: true
+    rewriteBatchedStatements: true
+    cacheResultSetMetadata: true
+    cacheServerConfiguration: true
+    elideSetAutoCommits: true
+    maintainTimeStats: false
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        model:
+          generator_name_as_sequence_name: false
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true
+logging:
+  config: classpath:logback-spring.xml
+
+
