@@ -7,7 +7,7 @@ server:
 
 spring:
   profiles:
-    active: dev
+    active: pro
   session:
     store-type: jdbc
     jdbc:
