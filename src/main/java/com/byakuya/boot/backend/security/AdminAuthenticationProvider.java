@@ -3,7 +3,7 @@ package com.byakuya.boot.backend.security;
 import com.byakuya.boot.backend.component.account.Account;
 import com.byakuya.boot.backend.component.parameter.ParameterService;
 import com.byakuya.boot.backend.exception.BackendException;
-import com.byakuya.boot.backend.exception.ErrorCode;
+import com.byakuya.boot.backend.exception.ErrorStatus;
 import com.byakuya.boot.backend.utils.ConstantUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
@@ -17,7 +17,7 @@ import org.springframework.util.StringUtils;
 @Component
 public class AdminAuthenticationProvider implements RequestAuthenticationProvider {
 
-    private ParameterService parameterService;
+    private final ParameterService parameterService;
 
     public AdminAuthenticationProvider(ParameterService parameterService) {
         this.parameterService = parameterService;
@@ -29,7 +29,7 @@ public class AdminAuthenticationProvider implements RequestAuthenticationProvide
         if (StringUtils.hasText(randomKey) && randomKey.equals(parameterService.getAdminRandomKey())) {
 
         }
-        throw new BackendException(ErrorCode.AUTHENTICATION_FAIL);
+        throw new BackendException(ErrorStatus.AUTHENTICATION_FAIL);
     }
 
     @Override

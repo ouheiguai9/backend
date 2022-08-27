@@ -29,15 +29,17 @@ public class WebSecurityConfig {
         String compositeLoginUrl = "/composite/login";
         MediaTypeRequestMatcher entryPointMatcher = new MediaTypeRequestMatcher(MediaType.APPLICATION_JSON);
         entryPointMatcher.setUseEquals(true);
+        SecurityErrorHandler securityErrorHandler = new SecurityErrorHandler();
         http.authorizeHttpRequests(authorize -> {
             try {
-                authorize.antMatchers("/error/**", ConstantUtils.REST_API_PREFIX + "/**").permitAll()
+                authorize.antMatchers("/error", ConstantUtils.REST_API_PREFIX + "/**").permitAll()
                         .anyRequest().authenticated()
                         .and()
+                        .anonymous().disable()
                         .logout().invalidateHttpSession(true)
                         .and()
                         .addFilterAfter(requestAuthenticationFilter, LogoutFilter.class)
-                        .exceptionHandling()
+                        .exceptionHandling().authenticationEntryPoint(securityErrorHandler).accessDeniedHandler(securityErrorHandler)
                         .and()
                         .csrf().disable()
                         .headers().frameOptions().sameOrigin();

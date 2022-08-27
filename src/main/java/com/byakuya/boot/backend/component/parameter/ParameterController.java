@@ -2,7 +2,7 @@ package com.byakuya.boot.backend.component.parameter;
 
 import com.byakuya.boot.backend.config.ResAPI;
 import com.byakuya.boot.backend.exception.BackendException;
-import com.byakuya.boot.backend.exception.ErrorCode;
+import com.byakuya.boot.backend.exception.ErrorStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +37,7 @@ public class ParameterController {
     }
 
     private Parameter get(Long id) {
-        return parameterRepository.findById(id).orElseThrow(() -> new BackendException(ErrorCode.DB_RECORD_NOT_FOUND));
+        return parameterRepository.findById(id).orElseThrow(() -> new BackendException(ErrorStatus.DB_RECORD_NOT_FOUND));
     }
 
     @GetMapping
