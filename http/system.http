@@ -1,0 +1,10 @@
+POST http://{{host}}:{{port}}/api/login
+Accept: application/json
+_auth_type_key_: admin
+X-Auth-Token: 1ac4522f-2fff-4b07-b2a6-96205ef36104
+
+
+POST http://{{host}}:{{port}}/api/login
+Accept: application/json
+_auth_type_key_: admin
+X-Auth-Token: 1ac4522f-2fff-4b07-b2a6-96205ef36104

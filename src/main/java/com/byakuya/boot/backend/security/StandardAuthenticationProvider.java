@@ -1,6 +1,5 @@
 package com.byakuya.boot.backend.security;
 
-import com.byakuya.boot.backend.component.account.Account;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
@@ -32,7 +31,7 @@ public class StandardAuthenticationProvider implements RequestAuthenticationProv
 
 
     @Override
-    public Account authenticate(RequestAuthenticationToken token) throws AuthenticationException {
+    public AccountAuthentication authenticate(RequestAuthenticationToken token) throws AuthenticationException {
         return null;
     }
 

@@ -1,6 +1,5 @@
 package com.byakuya.boot.backend.security;
 
-import com.byakuya.boot.backend.component.account.Account;
 import com.byakuya.boot.backend.component.parameter.ParameterService;
 import com.byakuya.boot.backend.exception.ErrorStatus;
 import com.byakuya.boot.backend.utils.ConstantUtils;
@@ -23,10 +22,10 @@ public class AdminAuthenticationProvider implements RequestAuthenticationProvide
     }
 
     @Override
-    public Account authenticate(RequestAuthenticationToken token) throws AuthenticationException {
+    public AccountAuthentication authenticate(RequestAuthenticationToken token) throws AuthenticationException {
         String randomKey = token.getRequest().getHeader(ConstantUtils.HEADER_X_AUTH_TOKEN);
         if (StringUtils.hasText(randomKey) && randomKey.equals(parameterService.getAdminRandomKey())) {
-
+            return AccountAuthentication.admin;
         }
         throw new SecurityAuthenticationException(ErrorStatus.AUTHENTICATION_FAIL);
     }
@@ -35,4 +34,6 @@ public class AdminAuthenticationProvider implements RequestAuthenticationProvide
     public String authKey() {
         return "admin";
     }
+
+
 }

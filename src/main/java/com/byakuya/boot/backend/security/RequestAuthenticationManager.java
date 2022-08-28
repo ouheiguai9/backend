@@ -1,6 +1,6 @@
 package com.byakuya.boot.backend.security;
 
-import com.byakuya.boot.backend.component.account.Account;
+import com.byakuya.boot.backend.component.account.AccountService;
 import com.byakuya.boot.backend.exception.ErrorStatus;
 import com.byakuya.boot.backend.utils.ConstantUtils;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,9 +16,11 @@ import java.util.List;
  */
 @Component
 public class RequestAuthenticationManager implements AuthenticationManager {
+    private final AccountService accountService;
     private final List<RequestAuthenticationProvider> providers;
 
-    public RequestAuthenticationManager(List<RequestAuthenticationProvider> providers) {
+    public RequestAuthenticationManager(AccountService accountService, List<RequestAuthenticationProvider> providers) {
+        this.accountService = accountService;
         this.providers = providers;
     }
 
@@ -30,14 +32,19 @@ public class RequestAuthenticationManager implements AuthenticationManager {
             if (StringUtils.hasText(authKey)) {
                 for (RequestAuthenticationProvider provider : providers) {
                     if (!authKey.equals(provider.authKey())) continue;
-                    Account account = provider.authenticate(token);
-                    if (account == null) continue;
-                    if (account.isLocked()) {
-                        throw new SecurityAuthenticationException(ErrorStatus.AUTHENTICATION_DISABLE);
+                    AccountAuthentication auth = provider.authenticate(token);
+                    if (auth == null) continue;
+                    if (!AccountAuthentication.isAdmin(auth)) {
+                        accountService.query(auth.getAccountId()).ifPresent(account -> {
+                            if (account.isLocked()) {
+                                throw new SecurityAuthenticationException(ErrorStatus.AUTHENTICATION_DISABLE);
+                            }
+                            if (account.getLoginErrorCount() >= 5) {
+                                throw new SecurityAuthenticationException(ErrorStatus.AUTHENTICATION_ERROR_LIMIT);
+                            }
+                        });
                     }
-                    if (account.getLoginErrorCount() >= 5) {
-                        throw new SecurityAuthenticationException(ErrorStatus.AUTHENTICATION_ERROR_LIMIT);
-                    }
+                    return auth;
                 }
             }
         }

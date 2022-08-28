@@ -46,11 +46,12 @@ public class RequestAuthenticationFilter extends AbstractAuthenticationProcessin
 
         @Override
         public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-            response.sendError(HttpStatus.UNAUTHORIZED.value(), exception.getMessage());
+            throw exception;
         }
 
         @Override
         public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+
             response.setStatus(HttpStatus.OK.value());
             response.setCharacterEncoding(StandardCharsets.UTF_8.name());
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
