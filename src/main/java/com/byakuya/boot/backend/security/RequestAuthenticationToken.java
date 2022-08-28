@@ -1,5 +1,6 @@
 package com.byakuya.boot.backend.security;
 
+import com.byakuya.boot.backend.SystemVersion;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.util.Assert;
@@ -8,18 +9,19 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 
 /**
- * Created by ganzl at 2022/4/24 20:49
+ * Created by 田伯光 at 2022/4/24 20:49
  */
 public class RequestAuthenticationToken implements Authentication {
-    public HttpServletRequest getRequest() {
-        return request;
-    }
-
+    private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     private HttpServletRequest request;
 
     public RequestAuthenticationToken(HttpServletRequest request) {
         Assert.notNull(request, "Request is null!");
         this.request = request;
+    }
+
+    public HttpServletRequest getRequest() {
+        return request;
     }
 
     @Override

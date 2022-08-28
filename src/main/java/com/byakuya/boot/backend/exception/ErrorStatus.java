@@ -9,12 +9,14 @@ import org.springframework.lang.Nullable;
 public enum ErrorStatus {
     CODE_UNKNOWN(0, "未知错误"),
     DB_RECORD_NOT_FOUND(20001, "记录不存在"),
+    AUTHENTICATION_ILLEGAL_REQUEST(40000, "非法请求"),
     AUTHENTICATION_FAIL(40100, "认证失败"),
     AUTHENTICATION_NOT_FOUND(40101, "账户不存在"),
     AUTHENTICATION_ERROR_PASS(40102, "密码错误"),
     AUTHENTICATION_DISABLE(40103, "账户被锁定"),
     AUTHENTICATION_ERROR_LIMIT(40104, "错误次数过多"),
     AUTHENTICATION_FORBIDDEN(40300, "禁止访问");
+
     public final int value;
     public final Series series;
     public final String reason;

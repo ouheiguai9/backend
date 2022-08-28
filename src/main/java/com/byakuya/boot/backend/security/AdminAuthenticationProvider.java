@@ -2,7 +2,6 @@ package com.byakuya.boot.backend.security;
 
 import com.byakuya.boot.backend.component.account.Account;
 import com.byakuya.boot.backend.component.parameter.ParameterService;
-import com.byakuya.boot.backend.exception.BackendException;
 import com.byakuya.boot.backend.exception.ErrorStatus;
 import com.byakuya.boot.backend.utils.ConstantUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +28,7 @@ public class AdminAuthenticationProvider implements RequestAuthenticationProvide
         if (StringUtils.hasText(randomKey) && randomKey.equals(parameterService.getAdminRandomKey())) {
 
         }
-        throw new BackendException(ErrorStatus.AUTHENTICATION_FAIL);
+        throw new SecurityAuthenticationException(ErrorStatus.AUTHENTICATION_FAIL);
     }
 
     @Override

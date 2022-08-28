@@ -1,5 +1,6 @@
 package com.byakuya.boot.backend.security;
 
+import com.byakuya.boot.backend.utils.ConstantUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,7 +26,7 @@ import java.util.Map;
 public class RequestAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     public RequestAuthenticationFilter(RequestAuthenticationManager requestAuthenticationManager, ObjectMapper objectMapper) {
-        super("/login", requestAuthenticationManager);
+        super(ConstantUtils.REST_API_PREFIX + "/login", requestAuthenticationManager);
         AuthenticationHandler authenticationHandler = new AuthenticationHandler(objectMapper);
         this.setAuthenticationSuccessHandler(authenticationHandler);
         this.setAuthenticationFailureHandler(authenticationHandler);

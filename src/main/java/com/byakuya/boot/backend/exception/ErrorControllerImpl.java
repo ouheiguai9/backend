@@ -1,5 +1,6 @@
 package com.byakuya.boot.backend.exception;
 
+import com.byakuya.boot.backend.utils.ConstantUtils;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -13,14 +14,14 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Controller
 public class ErrorControllerImpl implements ErrorController {
-    @RequestMapping("/error")
+    @RequestMapping(ConstantUtils.DEFAULT_ERROR_PATH)
     public ResponseEntity<ExceptionResponse> error(HttpServletRequest request) {
         Exception exception = getException(request);
         ErrorStatus errorStatus;
         if (exception instanceof ErrorStatusGetter) {
             errorStatus = ((ErrorStatusGetter) exception).getErrorStatus();
         } else {
-            errorStatus = ErrorStatus.CODE_UNKNOWN;
+            errorStatus = ErrorStatus.AUTHENTICATION_ILLEGAL_REQUEST;
         }
         ExceptionResponse body = ExceptionResponse.build().setErrorStatus(errorStatus).setPath(getPath(request));
         return new ResponseEntity<>(body, errorStatus.getHttpStatus());

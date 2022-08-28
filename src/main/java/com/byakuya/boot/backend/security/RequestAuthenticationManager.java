@@ -1,7 +1,6 @@
 package com.byakuya.boot.backend.security;
 
 import com.byakuya.boot.backend.component.account.Account;
-import com.byakuya.boot.backend.exception.BackendException;
 import com.byakuya.boot.backend.exception.ErrorStatus;
 import com.byakuya.boot.backend.utils.ConstantUtils;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,14 +33,14 @@ public class RequestAuthenticationManager implements AuthenticationManager {
                     Account account = provider.authenticate(token);
                     if (account == null) continue;
                     if (account.isLocked()) {
-                        throw new BackendException(ErrorStatus.AUTHENTICATION_DISABLE);
+                        throw new SecurityAuthenticationException(ErrorStatus.AUTHENTICATION_DISABLE);
                     }
                     if (account.getLoginErrorCount() >= 5) {
-                        throw new BackendException(ErrorStatus.AUTHENTICATION_ERROR_LIMIT);
+                        throw new SecurityAuthenticationException(ErrorStatus.AUTHENTICATION_ERROR_LIMIT);
                     }
                 }
             }
         }
-        throw new BackendException(ErrorStatus.AUTHENTICATION_FAIL);
+        throw new SecurityAuthenticationException(ErrorStatus.AUTHENTICATION_FAIL);
     }
 }
