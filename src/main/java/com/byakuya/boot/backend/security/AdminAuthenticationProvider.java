@@ -25,7 +25,7 @@ public class AdminAuthenticationProvider implements RequestAuthenticationProvide
     public AccountAuthentication authenticate(RequestAuthenticationToken token) throws AuthenticationException {
         String randomKey = token.getRequest().getHeader(ConstantUtils.HEADER_X_AUTH_TOKEN);
         if (StringUtils.hasText(randomKey) && randomKey.equals(parameterService.getAdminRandomKey())) {
-            return AccountAuthentication.admin;
+            return AccountAuthentication.Admin.instance;
         }
         throw new SecurityAuthenticationException(ErrorStatus.AUTHENTICATION_FAIL);
     }

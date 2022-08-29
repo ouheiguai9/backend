@@ -16,7 +16,6 @@ import java.util.Set;
  * Created by 田伯光 at 2022/8/28 11:50
  */
 public class AccountAuthentication implements Authentication {
-    static final Admin admin = new Admin();
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     @Getter
     private final long accountId;
@@ -34,8 +33,8 @@ public class AccountAuthentication implements Authentication {
         this.setDetails(null);
     }
 
-    public static boolean isAdmin(AccountAuthentication authentication) {
-        return authentication == admin;
+    public static boolean isAdmin(Authentication authentication) {
+        return authentication instanceof Admin;
     }
 
     @Override
@@ -98,11 +97,11 @@ public class AccountAuthentication implements Authentication {
         return this;
     }
 
-    static class Admin extends AccountAuthentication {
-
+    static final class Admin extends AccountAuthentication {
+        static final Admin instance = new Admin();
         private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
 
-        Admin() {
+        private Admin() {
             super(Long.MIN_VALUE, "超级管理员");
         }
 

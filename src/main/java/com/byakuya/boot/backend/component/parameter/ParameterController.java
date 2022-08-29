@@ -13,7 +13,8 @@ import javax.validation.constraints.NotBlank;
 /**
  * @author ganzl
  */
-@RestController("parameters")
+@RestController
+@RequestMapping("parameters")
 @Validated
 public class ParameterController {
     private final ParameterRepository parameterRepository;

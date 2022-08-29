@@ -4,6 +4,8 @@ import com.byakuya.boot.backend.exception.BackendException;
 import com.byakuya.boot.backend.exception.ErrorStatus;
 import com.byakuya.boot.backend.exception.ExceptionResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -28,6 +30,12 @@ public class BackendControllerAdvice {
     public ExceptionResponse globalException(Exception e) {
         log.error(ErrorStatus.CODE_UNKNOWN.reason, e);
         return ExceptionResponse.build();
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ExceptionResponse> globalException(HttpServletRequest request, AccessDeniedException e) {
+        ExceptionResponse body = ExceptionResponse.build().setErrorStatus(ErrorStatus.AUTHENTICATION_FORBIDDEN).setPath(request.getRequestURI());
+        return new ResponseEntity<>(body, body.getErrorStatus().getHttpStatus());
     }
 
     @ExceptionHandler(BackendException.class)

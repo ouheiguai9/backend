@@ -1,12 +1,10 @@
 package com.byakuya.boot.backend.component.parameter;
 
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by 田伯光 at 2022/4/28 17:27
@@ -21,9 +19,11 @@ public class ParameterService {
     private static final String SMS_GROUP_KEY = "sms";
     private static final String ADMIN_RANDOM_KEY = "admin-random-key";
     private final ParameterRepository parameterRepository;
+    private final Environment environment;
 
-    public ParameterService(ParameterRepository parameterRepository) {
+    public ParameterService(ParameterRepository parameterRepository, Environment environment) {
         this.parameterRepository = parameterRepository;
+        this.environment = environment;
     }
 
     public String getValue(String group, String item) {
@@ -42,13 +42,16 @@ public class ParameterService {
             tmp.setItemValue(UUID.randomUUID().toString());
             return parameterRepository.save(tmp);
         });
-        LocalDateTime oneDayBefore = LocalDateTime.now().minusDays(1);
-        if (oneDayBefore.isBefore(parameter.getLastModifiedDate().orElse(oneDayBefore))) {
-            return parameter.getItemValue();
-        } else {
-            parameter.setItemValue(UUID.randomUUID().toString());
-            return parameterRepository.save(parameter).getItemValue();
+        if (Arrays.stream(environment.getActiveProfiles()).anyMatch("pro"::equals)) {
+            LocalDateTime oneDayBefore = LocalDateTime.now().minusDays(1);
+            if (oneDayBefore.isBefore(parameter.getLastModifiedDate().orElse(oneDayBefore))) {
+                return parameter.getItemValue();
+            } else {
+                parameter.setItemValue(UUID.randomUUID().toString());
+                return parameterRepository.save(parameter).getItemValue();
+            }
         }
+        return parameter.getItemValue();
     }
 
     public Map<String, String> getSMSMap() {

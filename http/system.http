@@ -3,8 +3,15 @@ Accept: application/json
 _auth_type_key_: admin
 X-Auth-Token: 1ac4522f-2fff-4b07-b2a6-96205ef36104
 
+###
 
-POST http://{{host}}:{{port}}/api/login
+GET http://{{host}}:{{port}}/logout
+X-Auth-Token: caf240d3-0766-4522-89dd-704e428b78d5
+
+###
+
+GET http://{{host}}:{{port}}/parameters
 Accept: application/json
-_auth_type_key_: admin
-X-Auth-Token: 1ac4522f-2fff-4b07-b2a6-96205ef36104
+X-Auth-Token: caf240d3-0766-4522-89dd-704e428b78d5
+
+###
