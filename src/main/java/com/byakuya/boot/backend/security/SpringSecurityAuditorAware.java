@@ -2,7 +2,6 @@ package com.byakuya.boot.backend.security;
 
 import com.byakuya.boot.backend.component.account.Account;
 import org.springframework.data.domain.AuditorAware;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -19,9 +18,8 @@ public class SpringSecurityAuditorAware implements AuditorAware<Account> {
     public Optional<Account> getCurrentAuditor() {
         return Optional.ofNullable(SecurityContextHolder.getContext())
                 .map(SecurityContext::getAuthentication)
-                .filter(Authentication::isAuthenticated)
-                .map(Authentication::getPrincipal)
-                .filter(x -> x instanceof Account)
-                .map(Account.class::cast);
+                .filter(x -> x.isAuthenticated() && x instanceof AccountAuthentication)
+                .map(AccountAuthentication.class::cast)
+                .map(AccountAuthentication::getAccount);
     }
 }

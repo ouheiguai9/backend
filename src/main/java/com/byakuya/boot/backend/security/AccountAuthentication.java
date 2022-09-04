@@ -1,6 +1,8 @@
 package com.byakuya.boot.backend.security;
 
 import com.byakuya.boot.backend.SystemVersion;
+import com.byakuya.boot.backend.component.account.Account;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -51,6 +53,7 @@ public class AccountAuthentication implements Authentication {
         return this;
     }
 
+    @JsonIgnore
     @Override
     public Object getCredentials() {
         return details;
@@ -70,11 +73,13 @@ public class AccountAuthentication implements Authentication {
         return this;
     }
 
+    @JsonIgnore
     @Override
     public Object getPrincipal() {
         return accountId;
     }
 
+    @JsonIgnore
     @Override
     public boolean isAuthenticated() {
         return true;
@@ -97,13 +102,24 @@ public class AccountAuthentication implements Authentication {
         return this;
     }
 
+    @JsonIgnore
+    public Account getAccount() {
+        Account account = new Account();
+        account.setId(accountId);
+        return account;
+    }
+
     static final class Admin extends AccountAuthentication {
         static final Admin instance = new Admin();
         private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
 
         private Admin() {
-            super(Long.MIN_VALUE, "超级管理员");
+            super(0L, "超级管理员");
         }
 
+        @Override
+        public Account getAccount() {
+            return null;
+        }
     }
 }

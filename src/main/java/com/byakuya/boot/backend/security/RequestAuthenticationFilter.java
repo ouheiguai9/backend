@@ -16,8 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by ganzl at 2022/4/24 17:22
@@ -51,15 +49,10 @@ public class RequestAuthenticationFilter extends AbstractAuthenticationProcessin
 
         @Override
         public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-
             response.setStatus(HttpStatus.OK.value());
             response.setCharacterEncoding(StandardCharsets.UTF_8.name());
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            Map<String, Object> data = new HashMap<>();
-//            data.put("userId", ((UserAuthentication) authentication).getUserId());
-//            data.put("name", authentication.getName());
-//            data.put("details", authentication.getDetails());
-            response.getWriter().write(objectMapper.writeValueAsString(data));
+            response.getWriter().write(objectMapper.writeValueAsString(authentication));
         }
     }
 }

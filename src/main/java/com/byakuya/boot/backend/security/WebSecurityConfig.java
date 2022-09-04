@@ -49,9 +49,9 @@ public class WebSecurityConfig {
     Advisor preFilterAuthorizationMethodInterceptor() {
         return new AuthorizationManagerBeforeMethodInterceptor(new AnnotationMatchingPointcut(null, ResAPI.class, true), (supplier, mi) -> new AuthorizationDecision(Optional.of(supplier.get()).map(authentication -> {
             if (AccountAuthentication.isAdmin(authentication)) return true;
-            return false;
-//            ResAPI resAPI = mi.getMethod().getAnnotation(ResAPI.class);
+            ResAPI resAPI = mi.getMethod().getAnnotation(ResAPI.class);
 //            System.out.println(user.getUserId() + ":" + resAPI.desc());
+            return !resAPI.onlyAdmin();
 //            return user.isAdmin() || (!resAPI.onlyAdmin() && user.getAuthority().check(resAPI.module(), resAPI.code()));
         }).orElse(false)));
     }
