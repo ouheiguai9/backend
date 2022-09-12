@@ -1,16 +1,15 @@
 package com.byakuya.boot.backend.component.account;
 
 import com.byakuya.boot.backend.SystemVersion;
+import com.byakuya.boot.backend.component.organization.Organization;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.lang.Nullable;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -21,6 +20,7 @@ import java.time.LocalDateTime;
 @Getter
 @Entity
 @Table(name = "T_SYS_ACCOUNT")
+@Accessors(chain = true)
 public class Account implements Serializable {
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     @Id
@@ -32,5 +32,8 @@ public class Account implements Serializable {
     private int loginErrorCount;
     @Nullable
     private LocalDateTime loginErrorTime;
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company", nullable = false)
+    private Organization company;
+    private boolean admin = false;
 }

@@ -5,6 +5,7 @@ import com.byakuya.boot.backend.component.AbstractAuditableEntity;
 import com.byakuya.boot.backend.component.account.Account;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,6 +22,7 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @Entity
 @Table(name = "T_SYS_PARAMETER", indexes = {@Index(columnList = "groupKey,itemKey")})
+@Accessors(chain = true)
 public class Parameter extends AbstractAuditableEntity<Account> {
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
 

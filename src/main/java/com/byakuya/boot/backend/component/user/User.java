@@ -3,10 +3,10 @@ package com.byakuya.boot.backend.component.user;
 import com.byakuya.boot.backend.SystemVersion;
 import com.byakuya.boot.backend.component.AbstractAuditableEntity;
 import com.byakuya.boot.backend.component.account.Account;
-import com.byakuya.boot.backend.component.organization.Organization;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -18,33 +18,26 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @Entity
-@Table(name = "T_SYS_COMMON_USER")
+@Table(name = "T_SYS_USER")
+@Accessors(chain = true)
 public class User extends AbstractAuditableEntity<Account> {
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
-    @NotBlank
-    @Column(nullable = false)
+    @Column(length = 50)
     private String username;
-    @NotBlank
-    @Column(nullable = false)
+    @Column(length = 128)
     private String password;
     @NotBlank
     @Column(nullable = false)
     private String nickname;
-    @NotBlank
-    @Column(nullable = false)
+    @Column(length = 20)
     private String phone;
-    @NotBlank
-    @Column(nullable = false)
+    @Column(length = 60)
     private String email;
     private String address;
     private String avatar;
     private LocalDateTime beginValidPeriod = LocalDateTime.now();
     private LocalDateTime endValidPeriod;
     private LocalDateTime lastPasswordModifiedDate;
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "system", updatable = false, nullable = false)
-    private Organization system;
     @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account", updatable = false, unique = true, nullable = false)
