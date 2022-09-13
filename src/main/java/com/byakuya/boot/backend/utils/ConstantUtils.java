@@ -7,8 +7,8 @@ package com.byakuya.boot.backend.utils;
 public final class ConstantUtils {
     //认证类型
     public static final String AUTH_TYPE_KEY = "_auth_type_key_";
-    //普通REST请求前缀
-    public static final String REST_API_PREFIX = "/api";
+    //对外REST API请求前缀
+    public static final String OPEN_API_PREFIX = "/api";
     //header中token存放键值
     public static final String HEADER_X_AUTH_TOKEN = "X-Auth-Token";
     //默认

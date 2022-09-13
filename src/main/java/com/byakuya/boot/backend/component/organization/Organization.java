@@ -4,10 +4,10 @@ import com.byakuya.boot.backend.SystemVersion;
 import com.byakuya.boot.backend.component.AbstractAuditableEntity;
 import com.byakuya.boot.backend.component.account.Account;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -25,8 +25,7 @@ public class Organization extends AbstractAuditableEntity<Account> {
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @Nullable
-    @JoinColumn(name = "parent")
+    @JoinColumn(name = "parent", updatable = false)
     private Organization parent;
     @NotBlank
     @Column(nullable = false)
@@ -39,6 +38,7 @@ public class Organization extends AbstractAuditableEntity<Account> {
     private int ordering;
     @Column(length = 1000)
     private String description;
+    @Column(updatable = false)
     private int level;
     @JsonIgnore
     @ManyToMany
@@ -49,4 +49,15 @@ public class Organization extends AbstractAuditableEntity<Account> {
     @JsonIgnore
     @ManyToMany(mappedBy = "ancestors")
     private Set<Organization> descendants;
+
+    @JsonProperty
+    public Organization setParent(Organization parent) {
+        this.parent = parent;
+        return this;
+    }
+
+    @JsonProperty
+    public Long getParentId() {
+        return parent != null ? parent.getId() : null;
+    }
 }

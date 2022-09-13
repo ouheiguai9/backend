@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets;
 public class RequestAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     public RequestAuthenticationFilter(RequestAuthenticationManager requestAuthenticationManager, ObjectMapper objectMapper) {
-        super(ConstantUtils.REST_API_PREFIX + "/login", requestAuthenticationManager);
+        super(ConstantUtils.OPEN_API_PREFIX + "/login", requestAuthenticationManager);
         AuthenticationHandler authenticationHandler = new AuthenticationHandler(objectMapper);
         this.setAuthenticationSuccessHandler(authenticationHandler);
         this.setAuthenticationFailureHandler(authenticationHandler);

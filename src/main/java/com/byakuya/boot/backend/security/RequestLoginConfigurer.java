@@ -32,7 +32,7 @@ public class RequestLoginConfigurer extends AbstractHttpConfigurer<RequestLoginC
             filter.setSessionAuthenticationStrategy(sessionAuthenticationStrategy);
         }
         MediaTypeRequestMatcher media = new MediaTypeRequestMatcher(MediaType.APPLICATION_JSON);
-        AntPathRequestMatcher path = new AntPathRequestMatcher(ConstantUtils.REST_API_PREFIX + loginUrl, HttpMethod.POST.name());
+        AntPathRequestMatcher path = new AntPathRequestMatcher(ConstantUtils.OPEN_API_PREFIX + loginUrl, HttpMethod.POST.name());
         filter.setRequiresAuthenticationRequestMatcher(new AndRequestMatcher(path, media));
         http.addFilterAfter(filter, LogoutFilter.class);
     }

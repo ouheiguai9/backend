@@ -1,39 +1,38 @@
 package com.byakuya.boot.backend.component.parameter;
 
-import com.byakuya.boot.backend.config.ResAPI;
+import com.byakuya.boot.backend.config.ApiMethod;
+import com.byakuya.boot.backend.config.ApiModule;
 import com.byakuya.boot.backend.exception.BackendException;
 import com.byakuya.boot.backend.exception.ErrorStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 
 /**
  * @author ganzl
  */
-@RestController
-@RequestMapping("parameters")
+@ApiModule(path = "parameters", name = "parameter", desc = "系统参数管理")
 @Validated
-public class ParameterController {
+class ParameterController {
     private final ParameterRepository parameterRepository;
 
     public ParameterController(ParameterRepository parameterRepository) {
         this.parameterRepository = parameterRepository;
     }
 
-    @PostMapping
-    @ResAPI(module = "system", code = "create-parameter", desc = "创建系统参数", onlyAdmin = true)
+    @ApiMethod(value = "add", desc = "增加", method = RequestMethod.POST, onlyAdmin = true)
     public ResponseEntity<Parameter> create(@Valid @RequestBody Parameter parameter) {
         return ResponseEntity.ok(parameterRepository.save(parameter));
     }
 
-    @PostMapping(value = "/locked")
-    @ResAPI(module = "system", code = "lock-parameter", desc = "启/禁用系统参数", onlyAdmin = true)
-    public ResponseEntity<Parameter> lock(@NotBlank Long id, boolean locked) {
+    @ApiMethod(value = "status", desc = "禁用/启用", path = "/{id}/{status}", method = RequestMethod.PATCH, onlyAdmin = true)
+    public ResponseEntity<Parameter> lock(@PathVariable Long id, @PathVariable Boolean status) {
         Parameter old = get(id);
-        old.setLocked(locked);
+        old.setLocked(status);
         return ResponseEntity.ok(parameterRepository.save(old));
     }
 
@@ -41,14 +40,12 @@ public class ParameterController {
         return parameterRepository.findById(id).orElseThrow(() -> new BackendException(ErrorStatus.DB_RECORD_NOT_FOUND));
     }
 
-    @GetMapping
-    @ResAPI(module = "system", code = "read-parameter", desc = "查看全部系统参数", onlyAdmin = true)
+    @ApiMethod(value = "read", desc = "查询", method = RequestMethod.GET, onlyAdmin = true)
     public ResponseEntity<Iterable<Parameter>> read() {
         return ResponseEntity.ok(parameterRepository.findAll());
     }
 
-    @PutMapping
-    @ResAPI(module = "system", code = "update-parameter", desc = "修改系统参数", onlyAdmin = true)
+    @ApiMethod(value = "update", desc = "修改", method = RequestMethod.PUT, onlyAdmin = true)
     public ResponseEntity<Parameter> update(@Valid @RequestBody Parameter parameter) {
         Parameter old = get(parameter.getId());
         old.setGroupKey(parameter.getGroupKey());

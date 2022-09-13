@@ -14,10 +14,16 @@ import java.lang.annotation.*;
 @Documented
 @RestController
 @RequestMapping
-public @interface RestAPIController {
+public @interface ApiModule {
     @AliasFor(annotation = RequestMapping.class)
     String[] path() default {};
 
-    @AliasFor(annotation = RestController.class)
-    String value() default "";
+    @AliasFor(annotation = RestController.class, attribute = "value")
+    String beanName() default "";
+
+    String name() default "";
+
+    String desc() default "";
+
+    boolean secure() default true;
 }

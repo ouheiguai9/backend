@@ -1,6 +1,7 @@
 package com.byakuya.boot.backend.security;
 
-import com.byakuya.boot.backend.config.ResAPI;
+import com.byakuya.boot.backend.config.ApiMethod;
+import com.byakuya.boot.backend.config.ApiModule;
 import com.byakuya.boot.backend.utils.ConstantUtils;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.support.annotation.AnnotationMatchingPointcut;
@@ -14,6 +15,7 @@ import org.springframework.security.authorization.method.AuthorizationManagerBef
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
@@ -33,7 +35,7 @@ public class WebSecurityConfig {
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http, RequestLoginConfigurer loginConfigurer) throws Exception {
         SecurityErrorHandler securityErrorHandler = new SecurityErrorHandler();
-        http.authorizeHttpRequests(authorize -> authorize.antMatchers(errorUrl, ConstantUtils.REST_API_PREFIX + "/**").permitAll().anyRequest().authenticated())
+        http.authorizeHttpRequests(authorize -> authorize.antMatchers(errorUrl, ConstantUtils.OPEN_API_PREFIX + "/**").permitAll().anyRequest().authenticated())
                 .apply(loginConfigurer)
                 .and()
                 .exceptionHandling().authenticationEntryPoint(securityErrorHandler).accessDeniedHandler(securityErrorHandler)
@@ -47,13 +49,18 @@ public class WebSecurityConfig {
     @Bean
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     Advisor preFilterAuthorizationMethodInterceptor() {
-        return new AuthorizationManagerBeforeMethodInterceptor(new AnnotationMatchingPointcut(null, ResAPI.class, true), (supplier, mi) -> new AuthorizationDecision(Optional.of(supplier.get()).map(authentication -> {
-            if (AccountAuthentication.isAdmin(authentication)) return true;
-            ResAPI resAPI = mi.getMethod().getAnnotation(ResAPI.class);
+        AnnotationMatchingPointcut pointcut = new AnnotationMatchingPointcut(ApiModule.class, ApiMethod.class);
+        return new AuthorizationManagerBeforeMethodInterceptor(pointcut, (supplier, mi) -> {
+            boolean bl = Optional.of(supplier.get()).filter(Authentication::isAuthenticated).map(authentication -> {
+                if (AccountAuthentication.isAdmin(authentication)) return true;
+                ApiMethod apiMethod = mi.getMethod().getAnnotation(ApiMethod.class);
+                if (apiMethod.onlyAdmin()) return false;
 //            System.out.println(user.getUserId() + ":" + resAPI.desc());
-            return !resAPI.onlyAdmin();
+                return !apiMethod.onlyAdmin();
 //            return user.isAdmin() || (!resAPI.onlyAdmin() && user.getAuthority().check(resAPI.module(), resAPI.code()));
-        }).orElse(false)));
+            }).orElse(false);
+            return new AuthorizationDecision(bl);
+        });
     }
 
     @Bean

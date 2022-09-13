@@ -15,7 +15,8 @@ public enum ErrorStatus {
     AUTHENTICATION_ERROR_PASS(40102, "密码错误"),
     AUTHENTICATION_DISABLE(40103, "账户被锁定"),
     AUTHENTICATION_ERROR_LIMIT(40104, "错误次数过多"),
-    AUTHENTICATION_FORBIDDEN(40300, "禁止访问");
+    AUTHENTICATION_FORBIDDEN(40300, "禁止访问"),
+    INVALID_PARAMETER(41200, "无效参数");
 
     public final int value;
     public final Series series;
@@ -42,7 +43,7 @@ public enum ErrorStatus {
     public enum Series {
         CODE(0, "代码异常"),
         DB(2, "数据库异常"),
-        AUTHENTICATION(4, "认证异常"),
+        AUTHENTICATION(4, "客户端异常"),
         BUSINESS(9, "业务异常");
         public final int value;
         public final String name;
