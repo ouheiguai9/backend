@@ -21,15 +21,18 @@ public class AccountAuthentication implements Authentication {
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     @Getter
     private final long accountId;
+    @Getter
+    private final long companyId;
     private String name;
     private Map<String, Serializable> details;
     private Set<? extends GrantedAuthority> authorities;
 
-    public AccountAuthentication(long accountId, String name) {
+    public AccountAuthentication(long accountId, long companyId, String name) {
         if (!StringUtils.hasText(name)) {
             throw new IllegalArgumentException();
         }
         this.accountId = accountId;
+        this.companyId = companyId;
         this.name = name;
         this.setAuthorities(null);
         this.setDetails(null);
@@ -114,7 +117,7 @@ public class AccountAuthentication implements Authentication {
         private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
 
         private Admin() {
-            super(0L, "超级管理员");
+            super(0L, 0L, "超级管理员");
         }
 
         @Override

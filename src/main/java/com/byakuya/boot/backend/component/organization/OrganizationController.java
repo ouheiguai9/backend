@@ -30,18 +30,23 @@ class OrganizationController {
     @ApiMethod(value = "add", desc = "增加", method = RequestMethod.POST)
     public ResponseEntity<Organization> create(@Valid @RequestBody Organization organization, @AuthenticationPrincipal AccountAuthentication authentication) {
         if (Objects.nonNull(organization.getParentId())) {
-            Organization parent = organizationRepository.findById(organization.getParentId()).orElseThrow(() -> InvalidParameterException.build("上级组织不存在"));
+            Organization parent = organizationRepository.findById(organization.getParentId()).orElseThrow(() -> InvalidParameterException.build("上级机构不存在"));
             organization.setParent(parent);
             organization.setLevel(parent.getLevel() + 1);
             Set<Organization> ancestors = new HashSet<>();
+            boolean canAdd = AccountAuthentication.isAdmin(authentication);
             do {
+                canAdd = canAdd || (Long.valueOf(authentication.getCompanyId()).equals(parent.getId()));
                 ancestors.add(parent);
                 parent = parent.getParent();
             } while (parent != null);
+            if (!canAdd) {
+                throw InvalidParameterException.build("只能新增下级机构");
+            }
             organization.setAncestors(ancestors);
         } else {
             if (AccountAuthentication.isAdmin(authentication)) {
-                throw InvalidParameterException.build("非超级用户不能创建顶层组织");
+                throw InvalidParameterException.build("非超级用户不能创建顶层机构");
             }
             organization.setLevel(1);
         }

@@ -1,17 +1,19 @@
-POST http://{{host}}:{{port}}/api/login
+POST {{baseUrl}}/api/login
 Accept: application/json
 _auth_type_key_: admin
-X-Auth-Token: 1ac4522f-2fff-4b07-b2a6-96205ef36104
+X-Auth-Token: {{randomKey}}
+
+> {% client.global.set("auth_token", response.headers.valueOf("X-Auth-Token")); %}
 
 ###
 
-GET http://{{host}}:{{port}}/logout
-X-Auth-Token: caf240d3-0766-4522-89dd-704e428b78d5
+GET {{baseUrl}}/logout
+X-Auth-Token: {{auth_token}}
 
 ###
 
-GET http://{{host}}:{{port}}/parameters
+GET {{baseUrl}}/parameters
 Accept: application/json
-X-Auth-Token: caf240d3-0766-4522-89dd-704e428b78d5
+X-Auth-Token: {{auth_token}}
 
 ###

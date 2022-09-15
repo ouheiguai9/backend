@@ -39,7 +39,7 @@ public class RequestAuthenticationManager implements AuthenticationManager {
                             if (account.isLocked()) {
                                 throw new SecurityAuthenticationException(ErrorStatus.AUTHENTICATION_DISABLE);
                             }
-                            if (account.getLoginErrorCount() >= 5) {
+                            if (account.getLoginErrorCount() >= ConstantUtils.LOGIN_ERROR_LIMIT_COUNT) {
                                 throw new SecurityAuthenticationException(ErrorStatus.AUTHENTICATION_ERROR_LIMIT);
                             }
                         });

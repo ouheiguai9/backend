@@ -13,6 +13,10 @@ public final class ConstantUtils {
     public static final String HEADER_X_AUTH_TOKEN = "X-Auth-Token";
     //默认
     public static final String DEFAULT_ERROR_PATH = "${server.error.path:${error.path:/error}}";
+    //最大登录错误次数
+    public static final int LOGIN_ERROR_LIMIT_COUNT = 5;
+    //登录错误此时等待分钟数
+    public static final long LOGIN_ERROR_WAIT_MINUTES = 15;
 
     private ConstantUtils() {
 
