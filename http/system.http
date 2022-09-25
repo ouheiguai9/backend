@@ -1,3 +1,4 @@
+### 超级用户登录
 POST {{baseUrl}}/api/login
 Accept: application/json
 _auth_type_key_: admin
@@ -5,13 +6,15 @@ X-Auth-Token: {{randomKey}}
 
 > {% client.global.set("auth_token", response.headers.valueOf("X-Auth-Token")); %}
 
-###
-
+### 退出
 GET {{baseUrl}}/logout
 X-Auth-Token: {{auth_token}}
 
-###
+### 获取当前登录用户
+GET {{baseUrl}}/security/authentication
+X-Auth-Token: {{auth_token}}
 
+### 获取系统参数列表
 GET {{baseUrl}}/parameters
 Accept: application/json
 X-Auth-Token: {{auth_token}}
