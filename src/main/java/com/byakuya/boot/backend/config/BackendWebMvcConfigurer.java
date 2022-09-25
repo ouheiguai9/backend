@@ -2,6 +2,7 @@ package com.byakuya.boot.backend.config;
 
 import com.byakuya.boot.backend.utils.ConstantUtils;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -16,5 +17,10 @@ public class BackendWebMvcConfigurer implements WebMvcConfigurer {
             if (!cls.isAnnotationPresent(ApiModule.class)) return false;
             return !cls.getAnnotation(ApiModule.class).secure();
         });
+    }
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**");
     }
 }
