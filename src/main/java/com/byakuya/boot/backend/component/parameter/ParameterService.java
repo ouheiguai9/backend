@@ -42,7 +42,7 @@ public class ParameterService {
             tmp.setItemValue(UUID.randomUUID().toString());
             return parameterRepository.save(tmp);
         });
-        if (Arrays.stream(environment.getActiveProfiles()).anyMatch("pro"::equals)) {
+        if (Arrays.asList(environment.getActiveProfiles()).contains("pro")) {
             LocalDateTime oneDayBefore = LocalDateTime.now().minusDays(1);
             if (oneDayBefore.isBefore(parameter.getLastModifiedDate().orElse(oneDayBefore))) {
                 return parameter.getItemValue();

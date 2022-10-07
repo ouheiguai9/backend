@@ -16,7 +16,14 @@ public enum ErrorStatus {
     AUTHENTICATION_DISABLE(40103, "账户被锁定"),
     AUTHENTICATION_ERROR_LIMIT(40104, "错误次数过多"),
     AUTHENTICATION_FORBIDDEN(40300, "禁止访问"),
-    INVALID_PARAMETER(41200, "无效参数");
+    AUTHENTICATION_FORBIDDEN_DATA(40301, "禁止访问数据"),
+    INVALID_PARAMETER(41200, "无效参数"),
+    INVALID_PARAMETER_TYPE(41201, "参数类型或格式错误"),
+    INVALID_PARAMETER_FIELD(41202, "属性校验失败"),
+
+    COMPANY_NOT_EXIST(90000, "公司未指定或不存在"),
+    EXIST_SUB_ORG(90005, "存在下级机构");
+
 
     public final int value;
     public final Series series;
@@ -29,7 +36,7 @@ public enum ErrorStatus {
     }
 
     public HttpStatus getHttpStatus() {
-        if (series == Series.AUTHENTICATION) {
+        if (series == Series.CLIENT) {
             try {
                 return HttpStatus.resolve(value / 100);
             } catch (Exception e) {
@@ -43,7 +50,7 @@ public enum ErrorStatus {
     public enum Series {
         CODE(0, "代码异常"),
         DB(2, "数据库异常"),
-        AUTHENTICATION(4, "客户端异常"),
+        CLIENT(4, "客户端异常"),
         BUSINESS(9, "业务异常");
         public final int value;
         public final String name;

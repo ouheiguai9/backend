@@ -2,11 +2,12 @@ package com.byakuya.boot.backend.component.organization;
 
 import com.byakuya.boot.backend.config.ApiMethod;
 import com.byakuya.boot.backend.config.ApiModule;
-import com.byakuya.boot.backend.exception.InvalidParameterException;
+import com.byakuya.boot.backend.exception.BackendException;
+import com.byakuya.boot.backend.exception.ErrorStatus;
 import com.byakuya.boot.backend.security.AccountAuthentication;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -28,9 +29,9 @@ class OrganizationController {
     }
 
     @ApiMethod(value = "add", desc = "增加", method = RequestMethod.POST)
-    public ResponseEntity<Organization> create(@Valid @RequestBody Organization organization, @AuthenticationPrincipal AccountAuthentication authentication) {
+    public ResponseEntity<Organization> create(@Valid @RequestBody Organization organization, AccountAuthentication authentication) {
         if (Objects.nonNull(organization.getParentId())) {
-            Organization parent = organizationRepository.findById(organization.getParentId()).orElseThrow(() -> InvalidParameterException.build("上级机构不存在"));
+            Organization parent = get(organization.getParentId());
             organization.setParent(parent);
             organization.setLevel(parent.getLevel() + 1);
             Set<Organization> ancestors = new HashSet<>();
@@ -41,16 +42,42 @@ class OrganizationController {
                 parent = parent.getParent();
             } while (parent != null);
             if (!canAdd) {
-                throw InvalidParameterException.build("只能新增下级机构");
+                //非超级用户只能增加自己所属机构的下级机构
+                throw new BackendException(ErrorStatus.AUTHENTICATION_FORBIDDEN_DATA);
             }
             organization.setAncestors(ancestors);
         } else {
-            if (AccountAuthentication.isAdmin(authentication)) {
-                throw InvalidParameterException.build("非超级用户不能创建顶层机构");
+            if (!AccountAuthentication.isAdmin(authentication)) {
+                //非超级用户不能创建顶层组织机构
+                throw new BackendException(ErrorStatus.AUTHENTICATION_FORBIDDEN_DATA);
             }
             organization.setLevel(1);
         }
         organization.setId(null);
         return ResponseEntity.ok(organizationRepository.save(organization));
+    }
+
+    @ApiMethod(value = "status", desc = "禁用/启用", path = "/{id}/{status}", method = RequestMethod.PATCH, onlyAdmin = true)
+    public ResponseEntity<Organization> lock(@PathVariable Long id, @PathVariable Boolean status) {
+        Organization old = get(id);
+        if (!status && old.getDescendants().stream().anyMatch(x -> !x.isLocked())) {
+            throw new BackendException(ErrorStatus.EXIST_SUB_ORG);
+        }
+        old.setLocked(status);
+        return ResponseEntity.ok(organizationRepository.save(old));
+    }
+
+    @ApiMethod(value = "read", desc = "查询", path = {"/parent/{id}", "/parent"}, method = RequestMethod.GET, onlyAdmin = true)
+    public ResponseEntity<Iterable<Organization>> readByParent(@PathVariable(required = false) Long id) {
+        return ResponseEntity.ok(organizationRepository.findByParent_id(id));
+    }
+
+    @ApiMethod(value = "read", desc = "查询", path = "/{id}", method = RequestMethod.GET, onlyAdmin = true)
+    public ResponseEntity<Organization> read(@PathVariable Long id) {
+        return ResponseEntity.ok(get(id));
+    }
+
+    private Organization get(Long id) {
+        return organizationRepository.findById(id).orElseThrow(() -> new BackendException(ErrorStatus.DB_RECORD_NOT_FOUND));
     }
 }

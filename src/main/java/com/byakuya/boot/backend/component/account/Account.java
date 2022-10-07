@@ -2,7 +2,9 @@ package com.byakuya.boot.backend.component.account;
 
 import com.byakuya.boot.backend.SystemVersion;
 import com.byakuya.boot.backend.component.organization.Organization;
+import com.byakuya.boot.backend.component.role.Role;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -12,6 +14,7 @@ import org.springframework.lang.Nullable;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 /**
  * Created by 田伯光 at 2022/8/21 9:09
@@ -36,4 +39,10 @@ public class Account implements Serializable {
     @JoinColumn(name = "company", nullable = false)
     private Organization company;
     private boolean admin = false;
+    @JsonIgnore
+    @ManyToMany
+    @JoinTable(name = "T_SYS_USER_ROLE",
+            joinColumns = {@JoinColumn(name = "role")},
+            inverseJoinColumns = {@JoinColumn(name = "user")})
+    private Set<Role> roles;
 }

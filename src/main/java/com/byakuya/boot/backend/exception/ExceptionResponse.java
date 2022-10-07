@@ -22,6 +22,7 @@ public class ExceptionResponse implements Serializable {
     @NonNull
     private ErrorStatus errorStatus = ErrorStatus.CODE_UNKNOWN;
     private String path;
+    private Serializable detail;
 
     public static ExceptionResponse build() {
         return new ExceptionResponse();

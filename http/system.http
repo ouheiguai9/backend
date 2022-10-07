@@ -19,4 +19,31 @@ GET {{baseUrl}}/parameters
 Accept: application/json
 X-Auth-Token: {{auth_token}}
 
-###
+### 增加组织机构
+POST {{baseUrl}}/organizations
+Accept: application/json
+Content-Type: application/json
+X-Auth-Token: {{auth_token}}
+
+{
+  "code": "DongFaBao",
+  "name": "懂法宝科技股份有限公司"
+}
+
+### 查询顶层组织机构
+GET {{baseUrl}}/organizations/parent
+Accept: application/json
+Content-Type: application/json
+X-Auth-Token: {{auth_token}}
+
+### 增加角色
+POST {{baseUrl}}/roles
+Accept: application/json
+Content-Type: application/json
+X-Auth-Token: {{auth_token}}
+
+{
+  "code": "Admin",
+  "name": "系统管理员",
+  "companyId": "332652104065658880"
+}

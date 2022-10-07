@@ -43,7 +43,7 @@ public class WebSecurityConfig {
                 .and()
                 .logout().logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK))
                 .and()
-                .anonymous().disable().cors().disable().csrf().disable().headers().frameOptions().sameOrigin();
+                .cors().and().anonymous().disable().csrf().disable().headers().frameOptions().sameOrigin();
         return http.build();
     }
 

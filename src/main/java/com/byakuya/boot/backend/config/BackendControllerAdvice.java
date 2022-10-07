@@ -5,17 +5,18 @@ import com.byakuya.boot.backend.exception.ErrorStatus;
 import com.byakuya.boot.backend.exception.ExceptionResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Created by ganzl on 2021/2/4.
+ * Created by 田伯光 on 2021/2/4.
  */
 @Slf4j
 @RestControllerAdvice
@@ -25,23 +26,40 @@ public class BackendControllerAdvice {
         // todo
     }
 
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus
-    public ExceptionResponse globalException(Exception e) {
-        log.error(ErrorStatus.CODE_UNKNOWN.reason, e);
-        return ExceptionResponse.build();
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ExceptionResponse> globalException(HttpServletRequest request, HttpMessageNotReadableException e) {
+        log.error(ErrorStatus.INVALID_PARAMETER_TYPE.reason, e);
+        return createResponse(createBody(request, e).setErrorStatus(ErrorStatus.INVALID_PARAMETER_TYPE));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ExceptionResponse> methodArgumentException(HttpServletRequest request, MethodArgumentNotValidException e) {
+        log.error(ErrorStatus.INVALID_PARAMETER_FIELD.reason, e);
+        return createResponse(createBody(request, e).setErrorStatus(ErrorStatus.INVALID_PARAMETER_FIELD));
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ExceptionResponse> globalException(HttpServletRequest request, AccessDeniedException e) {
-        ExceptionResponse body = ExceptionResponse.build().setErrorStatus(ErrorStatus.AUTHENTICATION_FORBIDDEN).setPath(request.getRequestURI());
-        return new ResponseEntity<>(body, body.getErrorStatus().getHttpStatus());
+        return createResponse(createBody(request, e).setErrorStatus(ErrorStatus.AUTHENTICATION_FORBIDDEN));
     }
 
     @ExceptionHandler(BackendException.class)
-    @ResponseStatus
-    public ExceptionResponse globalException(BackendException e) {
+    public ResponseEntity<ExceptionResponse> globalException(HttpServletRequest request, BackendException e) {
+        log.error(e.getErrorStatus().reason, e);
+        return createResponse(createBody(request, e).setErrorStatus(e.getErrorStatus()));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ExceptionResponse> globalException(HttpServletRequest request, Exception e) {
         log.error(ErrorStatus.CODE_UNKNOWN.reason, e);
-        return ExceptionResponse.build().setErrorStatus(e.getErrorStatus());
+        return createResponse(createBody(request, e));
+    }
+
+    private ExceptionResponse createBody(HttpServletRequest request, Throwable e) {
+        return ExceptionResponse.build().setPath(request.getRequestURI()).setDetail(e.getMessage());
+    }
+
+    private ResponseEntity<ExceptionResponse> createResponse(ExceptionResponse body) {
+        return new ResponseEntity<>(body, body.getErrorStatus().getHttpStatus());
     }
 }
