@@ -8,7 +8,10 @@ import org.springframework.lang.Nullable;
  */
 public enum ErrorStatus {
     CODE_UNKNOWN(0, "未知错误"),
-    DB_RECORD_NOT_FOUND(20001, "记录不存在"),
+    DB_CONSTRAINT_VIOLATION(20005, "违反数据库约束"),
+    DB_RECORD_NOT_FOUND(21001, "记录不存在"),
+    DB_RECORD_DUPLICATE(21002, "记录重复"),
+    DB_REL_RECORD_NOT_FOUND(21003, "关联记录不存在"),
     AUTHENTICATION_ILLEGAL_REQUEST(40000, "非法请求"),
     AUTHENTICATION_FAIL(40100, "认证失败"),
     AUTHENTICATION_NOT_FOUND(40101, "账户不存在"),

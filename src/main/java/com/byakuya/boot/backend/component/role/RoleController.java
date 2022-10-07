@@ -37,7 +37,6 @@ class RoleController {
         } else {
             role.setCompanyId(authentication.getCompanyId());
         }
-        role.setCompany(organizationRepository.findById(role.getCompanyId()).orElseThrow(() -> new BackendException(ErrorStatus.COMPANY_NOT_EXIST)));
         return ResponseEntity.ok(roleRepository.save(role));
     }
 
