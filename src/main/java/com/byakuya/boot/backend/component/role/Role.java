@@ -1,11 +1,8 @@
 package com.byakuya.boot.backend.component.role;
 
 import com.byakuya.boot.backend.SystemVersion;
-import com.byakuya.boot.backend.component.AbstractAuditableEntity;
-import com.byakuya.boot.backend.component.account.Account;
-import com.byakuya.boot.backend.component.organization.Organization;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.byakuya.boot.backend.component.AbstractBaseEntity;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -19,34 +16,16 @@ import javax.validation.constraints.NotBlank;
 @Setter
 @Getter
 @Entity
-@Table(name = "T_SYS_ROLE", indexes = {@Index(columnList = "company,code", unique = true)})
+@Table(name = "T_SYS_ROLE", indexes = {@Index(columnList = "tenant,name", unique = true)})
 @Accessors(chain = true)
-public class Role extends AbstractAuditableEntity<Account> {
+public class Role extends AbstractBaseEntity {
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
+    @Id
+    @GeneratedValue(generator = "snowflake_id")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private Long id;
     @NotBlank
-    @Column(length = 50, nullable = false)
-    private String code;
-    @NotBlank
-    @Column(length = 100, nullable = false)
+    @Column(nullable = false)
     private String name;
     private String description;
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company", nullable = false)
-    private Organization company;
-
-    @JsonProperty
-    public Long getCompanyId() {
-        return company != null ? company.getId() : null;
-    }
-
-    @JsonProperty
-    public Role setCompanyId(Long companyId) {
-        if (companyId != null) {
-            Organization company = new Organization();
-            company.setId(companyId);
-            this.company = company;
-        }
-        return this;
-    }
 }

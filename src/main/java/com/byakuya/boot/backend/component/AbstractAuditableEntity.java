@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.domain.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.data.util.ProxyUtils;
@@ -26,7 +25,6 @@ public abstract class AbstractAuditableEntity<U> implements Auditable<U, Long, L
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
 
     @Id
-    @GenericGenerator(name = "snowflake_id", strategy = "com.byakuya.boot.backend.component.SnowIdGenerator")
     @GeneratedValue(generator = "snowflake_id")
     @Getter
     @Setter

@@ -1,6 +1,7 @@
 package com.byakuya.boot.backend.component.authorization;
 
 import com.byakuya.boot.backend.SystemVersion;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -17,7 +18,8 @@ import java.io.Serializable;
 public class Authorization implements Serializable {
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(generator = "table_id")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long id;
     @Column(nullable = false)
     private Long subjectId;

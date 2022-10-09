@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.validation.Valid;
-import java.util.Objects;
 
 /**
  * Created by 田伯光 at 2022/10/6 22:16
@@ -30,13 +29,6 @@ class RoleController {
 
     @ApiMethod(value = "add", desc = "增加", method = RequestMethod.POST)
     public ResponseEntity<Role> create(@Valid @RequestBody Role role, AccountAuthentication authentication) {
-        if (AccountAuthentication.isAdmin(authentication)) {
-            if (Objects.isNull(role.getCompanyId())) {
-                throw new BackendException(ErrorStatus.COMPANY_NOT_EXIST);
-            }
-        } else {
-            role.setCompanyId(authentication.getCompanyId());
-        }
         return ResponseEntity.ok(roleRepository.save(role));
     }
 

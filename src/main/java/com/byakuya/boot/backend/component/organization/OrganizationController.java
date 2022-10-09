@@ -37,7 +37,7 @@ class OrganizationController {
             Set<Organization> ancestors = new HashSet<>();
             boolean canAdd = AccountAuthentication.isAdmin(authentication);
             do {
-                canAdd = canAdd || (Long.valueOf(authentication.getCompanyId()).equals(parent.getId()));
+                canAdd = canAdd || (Long.valueOf(authentication.getTenantId()).equals(parent.getId()));
                 ancestors.add(parent);
                 parent = parent.getParent();
             } while (parent != null);

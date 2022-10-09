@@ -1,44 +1,34 @@
 package com.byakuya.boot.backend.component.account;
 
 import com.byakuya.boot.backend.SystemVersion;
-import com.byakuya.boot.backend.component.organization.Organization;
+import com.byakuya.boot.backend.component.AbstractBaseEntity;
 import com.byakuya.boot.backend.component.role.Role;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import lombok.experimental.Accessors;
-import org.hibernate.annotations.GenericGenerator;
-import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Set;
 
 /**
  * Created by 田伯光 at 2022/8/21 9:09
  */
-@Setter
-@Getter
+@Data
 @Entity
 @Table(name = "T_SYS_ACCOUNT")
 @Accessors(chain = true)
-public class Account implements Serializable {
+public class Account extends AbstractBaseEntity {
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     @Id
-    @GenericGenerator(name = "snowflake_id", strategy = "com.byakuya.boot.backend.component.SnowIdGenerator")
     @GeneratedValue(generator = "snowflake_id")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long id;
-    private boolean locked = false;
     private int loginErrorCount;
-    @Nullable
     private LocalDateTime loginErrorTime;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company", nullable = false)
-    private Organization company;
-    private boolean admin = false;
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createTime = LocalDateTime.now();
     @JsonIgnore
     @ManyToMany
     @JoinTable(name = "T_SYS_USER_ROLE",

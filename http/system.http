@@ -14,6 +14,17 @@ X-Auth-Token: {{auth_token}}
 GET {{baseUrl}}/security/authentication
 X-Auth-Token: {{auth_token}}
 
+### 增加租户
+POST {{baseUrl}}/tenants
+Accept: application/json
+Content-Type: application/json
+X-Auth-Token: {{auth_token}}
+
+{
+  "code": "DongFaBao2",
+  "name": "懂法宝科技股份有限公司"
+}
+
 ### 获取系统参数列表
 GET {{baseUrl}}/parameters
 Accept: application/json
@@ -45,5 +56,5 @@ X-Auth-Token: {{auth_token}}
 {
   "code": "Admin",
   "name": "系统管理员",
-  "companyId": "332652104065658880"
+  "tenantId": "10000"
 }
