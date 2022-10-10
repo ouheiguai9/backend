@@ -2,7 +2,6 @@ package com.byakuya.boot.backend.component.organization;
 
 import com.byakuya.boot.backend.SystemVersion;
 import com.byakuya.boot.backend.component.AbstractAuditableEntity;
-import com.byakuya.boot.backend.component.account.Account;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -19,17 +18,14 @@ import java.util.Set;
 @Setter
 @Getter
 @Entity
-@Table(name = "T_SYS_ORGANIZATION", indexes = {@Index(columnList = "parent,code", unique = true)})
+@Table(name = "T_SYS_ORGANIZATION", indexes = {@Index(columnList = "parent,name", unique = true)})
 @Accessors(chain = true)
-public class Organization extends AbstractAuditableEntity<Account> {
+public class Organization extends AbstractAuditableEntity {
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent", updatable = false)
     private Organization parent;
-    @NotBlank
-    @Column(nullable = false)
-    private String code;
     @NotBlank
     @Column(nullable = false)
     private String name;

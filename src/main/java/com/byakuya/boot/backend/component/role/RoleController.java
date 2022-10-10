@@ -8,6 +8,7 @@ import com.byakuya.boot.backend.exception.ErrorStatus;
 import com.byakuya.boot.backend.security.AccountAuthentication;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -30,6 +31,11 @@ class RoleController {
     @ApiMethod(value = "add", desc = "增加", method = RequestMethod.POST)
     public ResponseEntity<Role> create(@Valid @RequestBody Role role, AccountAuthentication authentication) {
         return ResponseEntity.ok(roleRepository.save(role));
+    }
+
+    @ApiMethod(value = "read", desc = "查询", path = "/{id}", method = RequestMethod.GET)
+    public ResponseEntity<Role> read(@PathVariable Long id) {
+        return ResponseEntity.ok(get(id));
     }
 
     private Role get(Long id) {

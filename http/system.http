@@ -21,7 +21,7 @@ Content-Type: application/json
 X-Auth-Token: {{auth_token}}
 
 {
-  "code": "DongFaBao2",
+  "code": "DongFaBao",
   "name": "懂法宝科技股份有限公司"
 }
 
@@ -58,3 +58,9 @@ X-Auth-Token: {{auth_token}}
   "name": "系统管理员",
   "tenantId": "10000"
 }
+
+### 查询单一角色
+GET {{baseUrl}}/roles/334273880163950592
+Accept: application/json
+Content-Type: application/json
+X-Auth-Token: {{auth_token}}
