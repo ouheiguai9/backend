@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
@@ -13,6 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by 田伯光 at 2022/8/28 11:50
@@ -25,7 +27,8 @@ public class AccountAuthentication implements Authentication {
     private final long tenantId;
     private String name;
     private Map<String, Serializable> details;
-    private Set<? extends GrantedAuthority> authorities;
+    @JsonIgnore
+    private Set<String> apis;
 
     public AccountAuthentication(long tenantId, long accountId, String name) {
         if (!StringUtils.hasText(name)) {
@@ -34,26 +37,31 @@ public class AccountAuthentication implements Authentication {
         this.tenantId = tenantId;
         this.accountId = accountId;
         this.name = name;
-        this.setAuthorities(null);
+        this.setApis(null);
         this.setDetails(null);
+    }
+
+    public AccountAuthentication setApis(Set<String> apis) {
+        if (apis == null || apis.isEmpty()) {
+            this.apis = Collections.emptySet();
+        } else {
+            this.apis = Collections.unmodifiableSet(apis);
+        }
+        return this;
     }
 
     public static boolean isAdmin(Authentication authentication) {
         return authentication instanceof Admin;
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+    public boolean hasApiAuth(String api) {
+        return this.apis.contains(api);
     }
 
-    public AccountAuthentication setAuthorities(Set<? extends GrantedAuthority> authorities) {
-        if (authorities == null || authorities.isEmpty()) {
-            this.authorities = Collections.emptySet();
-        } else {
-            this.authorities = Collections.unmodifiableSet(authorities);
-        }
-        return this;
+    @JsonIgnore
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return apis.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet());
     }
 
     @JsonIgnore

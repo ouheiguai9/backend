@@ -21,7 +21,14 @@ public class ApiResourceVO implements Serializable {
 
     @JsonProperty
     public String getAuthKey() {
-        return moduleCode + ":" + methodCode;
+        return AuthorizationService.createAuthKey(moduleCode, methodCode);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = moduleCode.hashCode();
+        result = 31 * result + methodCode.hashCode();
+        return result;
     }
 
     @Override
@@ -33,12 +40,5 @@ public class ApiResourceVO implements Serializable {
 
         if (!moduleCode.equals(that.moduleCode)) return false;
         return methodCode.equals(that.methodCode);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = moduleCode.hashCode();
-        result = 31 * result + methodCode.hashCode();
-        return result;
     }
 }

@@ -43,6 +43,7 @@ public class RequestAuthenticationManager implements AuthenticationManager {
                                 throw new SecurityAuthenticationException(ErrorStatus.AUTHENTICATION_ERROR_LIMIT);
                             }
                         });
+                        auth.setApis(accountService.getAccountApiAuth(auth.getAccountId()));
                     }
                     return auth;
                 }

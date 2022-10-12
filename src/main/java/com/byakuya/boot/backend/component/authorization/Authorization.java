@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
 /**
@@ -13,7 +14,7 @@ import java.io.Serializable;
  */
 @Data
 @Entity
-@Table(name = "T_SYS_AUTHORIZATION", indexes = {@Index(columnList = "subjectId,subjectType,authType,content", unique = true)})
+@Table(name = "T_SYS_AUTHORIZATION", indexes = {@Index(columnList = "subjectId,authType,content,subjectType", unique = true)})
 @Accessors(chain = true)
 public class Authorization implements Serializable {
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
@@ -21,13 +22,17 @@ public class Authorization implements Serializable {
     @GeneratedValue(generator = "table_id")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long id;
+    @NotBlank
     @Column(nullable = false)
     private Long subjectId;
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private SubjectType subjectType;
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private AuthType authType;
+    @NotBlank
+    @Column(nullable = false)
     private String content;
 
     public enum SubjectType {

@@ -1,6 +1,5 @@
 package com.byakuya.boot.backend.component.role;
 
-import com.byakuya.boot.backend.component.organization.OrganizationRepository;
 import com.byakuya.boot.backend.config.AclApiMethod;
 import com.byakuya.boot.backend.config.AclApiModule;
 import com.byakuya.boot.backend.exception.BackendException;
@@ -21,11 +20,9 @@ import javax.validation.Valid;
 @Validated
 class RoleController {
     private final RoleRepository roleRepository;
-    private final OrganizationRepository organizationRepository;
 
-    RoleController(RoleRepository roleRepository, OrganizationRepository organizationRepository) {
+    RoleController(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
-        this.organizationRepository = organizationRepository;
     }
 
     @AclApiMethod(value = "add", desc = "增加", method = RequestMethod.POST)

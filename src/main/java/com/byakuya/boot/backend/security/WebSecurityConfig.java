@@ -1,7 +1,8 @@
 package com.byakuya.boot.backend.security;
 
+import com.byakuya.boot.backend.component.authorization.AuthorizationService;
 import com.byakuya.boot.backend.config.AclApiMethod;
-import com.byakuya.boot.backend.config.ApiModule;
+import com.byakuya.boot.backend.config.AclApiModule;
 import com.byakuya.boot.backend.utils.ConstantUtils;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.support.annotation.AnnotationMatchingPointcut;
@@ -16,7 +17,6 @@ import org.springframework.security.authorization.method.AuthorizationManagerBef
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -52,15 +52,14 @@ public class WebSecurityConfig {
     @Bean
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     Advisor preFilterAuthorizationMethodInterceptor() {
-        AnnotationMatchingPointcut pointcut = new AnnotationMatchingPointcut(ApiModule.class, AclApiMethod.class);
+        AnnotationMatchingPointcut pointcut = new AnnotationMatchingPointcut(AclApiModule.class, AclApiMethod.class);
         return new AuthorizationManagerBeforeMethodInterceptor(pointcut, (supplier, mi) -> {
-            boolean bl = Optional.of(supplier.get()).filter(Authentication::isAuthenticated).map(authentication -> {
+            boolean bl = Optional.of(supplier.get()).filter(x -> x.isAuthenticated() && x instanceof AccountAuthentication).map(authentication -> {
                 if (AccountAuthentication.isAdmin(authentication)) return true;
                 AclApiMethod apiMethod = mi.getMethod().getAnnotation(AclApiMethod.class);
                 if (apiMethod.onlyAdmin()) return false;
-//            System.out.println(user.getUserId() + ":" + resAPI.desc());
-                return !apiMethod.onlyAdmin();
-//            return user.isAdmin() || (!resAPI.onlyAdmin() && user.getAuthority().check(resAPI.module(), resAPI.code()));
+                AclApiModule apiModule = mi.getMethod().getDeclaringClass().getAnnotation(AclApiModule.class);
+                return ((AccountAuthentication) authentication).hasApiAuth(AuthorizationService.createAuthKey(apiModule.value(), apiMethod.value()));
             }).orElse(false);
             return new AuthorizationDecision(bl);
         });
