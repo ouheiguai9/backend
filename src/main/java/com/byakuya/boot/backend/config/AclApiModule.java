@@ -1,8 +1,6 @@
 package com.byakuya.boot.backend.config;
 
 import org.springframework.core.annotation.AliasFor;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.annotation.*;
 
@@ -12,11 +10,12 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@RestController
-@RequestMapping
-public @interface ApiModule {
-    @AliasFor(annotation = RequestMapping.class)
+@ApiModule
+public @interface AclApiModule {
+    @AliasFor(annotation = ApiModule.class)
     String[] path() default {};
 
-    boolean secure() default true;
+    String value();
+
+    String desc();
 }

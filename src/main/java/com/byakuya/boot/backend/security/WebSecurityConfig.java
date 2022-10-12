@@ -1,6 +1,6 @@
 package com.byakuya.boot.backend.security;
 
-import com.byakuya.boot.backend.config.ApiMethod;
+import com.byakuya.boot.backend.config.AclApiMethod;
 import com.byakuya.boot.backend.config.ApiModule;
 import com.byakuya.boot.backend.utils.ConstantUtils;
 import org.springframework.aop.Advisor;
@@ -17,6 +17,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
@@ -50,11 +52,11 @@ public class WebSecurityConfig {
     @Bean
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     Advisor preFilterAuthorizationMethodInterceptor() {
-        AnnotationMatchingPointcut pointcut = new AnnotationMatchingPointcut(ApiModule.class, ApiMethod.class);
+        AnnotationMatchingPointcut pointcut = new AnnotationMatchingPointcut(ApiModule.class, AclApiMethod.class);
         return new AuthorizationManagerBeforeMethodInterceptor(pointcut, (supplier, mi) -> {
             boolean bl = Optional.of(supplier.get()).filter(Authentication::isAuthenticated).map(authentication -> {
                 if (AccountAuthentication.isAdmin(authentication)) return true;
-                ApiMethod apiMethod = mi.getMethod().getAnnotation(ApiMethod.class);
+                AclApiMethod apiMethod = mi.getMethod().getAnnotation(AclApiMethod.class);
                 if (apiMethod.onlyAdmin()) return false;
 //            System.out.println(user.getUserId() + ":" + resAPI.desc());
                 return !apiMethod.onlyAdmin();
@@ -67,5 +69,10 @@ public class WebSecurityConfig {
     @Bean
     HttpSessionIdResolver headerHttpSessionIdResolver() {
         return new HeaderHttpSessionIdResolver(ConstantUtils.HEADER_X_AUTH_TOKEN);
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();// 使用 BCrypt 加密
     }
 }

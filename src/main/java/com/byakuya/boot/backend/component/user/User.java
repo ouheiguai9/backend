@@ -24,7 +24,7 @@ public class User extends AbstractAuditableEntity {
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     @Column(length = 50)
     private String username;
-    @Column(length = 128)
+    @Column(nullable = false)
     private String password;
     @NotBlank
     @Column(nullable = false)
@@ -39,7 +39,7 @@ public class User extends AbstractAuditableEntity {
     private LocalDateTime endValidPeriod;
     private LocalDateTime lastPasswordModifiedDate;
     @JsonIgnore
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "account", updatable = false, unique = true, nullable = false)
     private Account account;
 }

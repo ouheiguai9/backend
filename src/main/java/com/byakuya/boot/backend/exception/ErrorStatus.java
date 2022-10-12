@@ -24,7 +24,7 @@ public enum ErrorStatus {
     INVALID_PARAMETER_TYPE(41201, "参数类型或格式错误"),
     INVALID_PARAMETER_FIELD(41202, "属性校验失败"),
 
-    COMPANY_NOT_EXIST(90000, "公司未指定或不存在"),
+    TENANT_NOT_EXIST(90000, "租户未指定或不存在"),
     EXIST_SUB_ORG(90005, "存在下级机构");
 
 

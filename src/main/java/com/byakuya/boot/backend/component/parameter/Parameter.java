@@ -35,4 +35,9 @@ public class Parameter extends AbstractAuditableEntity {
 
     private int ordering;
     private String description;
+
+    @Override
+    protected boolean acceptNullTenant() {
+        return false;
+    }
 }

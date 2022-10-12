@@ -6,6 +6,8 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.Optional;
+
 /**
  * Created by 田伯光 at 2022/8/23 20:50
  */
@@ -13,10 +15,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class BackendWebMvcConfigurer implements WebMvcConfigurer {
     @Override
     public void configurePathMatch(PathMatchConfigurer configurer) {
-        configurer.addPathPrefix(ConstantUtils.OPEN_API_PREFIX, cls -> {
-            if (!cls.isAnnotationPresent(ApiModule.class)) return false;
-            return !cls.getAnnotation(ApiModule.class).secure();
-        });
+        configurer.addPathPrefix(ConstantUtils.OPEN_API_PREFIX, cls -> Optional.of(cls).filter(x -> x.isAnnotationPresent(ApiModule.class)).map(x -> x.getAnnotation(ApiModule.class)).map(api -> !api.secure()).orElse(false));
     }
 
     @Override

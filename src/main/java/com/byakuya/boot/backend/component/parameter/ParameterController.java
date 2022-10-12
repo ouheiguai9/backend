@@ -1,7 +1,7 @@
 package com.byakuya.boot.backend.component.parameter;
 
-import com.byakuya.boot.backend.config.ApiMethod;
-import com.byakuya.boot.backend.config.ApiModule;
+import com.byakuya.boot.backend.config.AclApiMethod;
+import com.byakuya.boot.backend.config.AclApiModule;
 import com.byakuya.boot.backend.exception.BackendException;
 import com.byakuya.boot.backend.exception.ErrorStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ import javax.validation.Valid;
 /**
  * @author ganzl
  */
-@ApiModule(path = "parameters", name = "parameter", desc = "系统参数管理")
+@AclApiModule(path = "parameters", value = "parameter", desc = "系统参数管理")
 @Validated
 class ParameterController {
     private final ParameterRepository parameterRepository;
@@ -24,12 +24,12 @@ class ParameterController {
         this.parameterRepository = parameterRepository;
     }
 
-    @ApiMethod(value = "add", desc = "增加", method = RequestMethod.POST, onlyAdmin = true)
+    @AclApiMethod(value = "add", desc = "增加", method = RequestMethod.POST, onlyAdmin = true)
     public ResponseEntity<Parameter> create(@Valid @RequestBody Parameter parameter) {
         return ResponseEntity.ok(parameterRepository.save(parameter));
     }
 
-    @ApiMethod(value = "status", desc = "禁用/启用", path = "/{id}/{status}", method = RequestMethod.PATCH, onlyAdmin = true)
+    @AclApiMethod(value = "status", desc = "禁用/启用", path = "/{id}/{status}", method = RequestMethod.PATCH, onlyAdmin = true)
     public ResponseEntity<Parameter> lock(@PathVariable Long id, @PathVariable Boolean status) {
         Parameter old = get(id);
         old.setLocked(status);
@@ -40,12 +40,12 @@ class ParameterController {
         return parameterRepository.findById(id).orElseThrow(() -> new BackendException(ErrorStatus.DB_RECORD_NOT_FOUND));
     }
 
-    @ApiMethod(value = "read", desc = "查询", method = RequestMethod.GET, onlyAdmin = true)
+    @AclApiMethod(value = "read", desc = "查询", method = RequestMethod.GET, onlyAdmin = true)
     public ResponseEntity<Iterable<Parameter>> read() {
         return ResponseEntity.ok(parameterRepository.findAll());
     }
 
-    @ApiMethod(value = "update", desc = "修改", method = RequestMethod.PUT, onlyAdmin = true)
+    @AclApiMethod(value = "update", desc = "修改", method = RequestMethod.PUT, onlyAdmin = true)
     public ResponseEntity<Parameter> update(@Valid @RequestBody Parameter parameter) {
         Parameter old = get(parameter.getId());
         old.setGroupKey(parameter.getGroupKey());

@@ -54,13 +54,18 @@ Content-Type: application/json
 X-Auth-Token: {{auth_token}}
 
 {
-  "code": "Admin",
   "name": "系统管理员",
   "tenantId": "10000"
 }
 
 ### 查询单一角色
 GET {{baseUrl}}/roles/334273880163950592
+Accept: application/json
+Content-Type: application/json
+X-Auth-Token: {{auth_token}}
+
+### 获取所有的API资源
+GET {{baseUrl}}/authorizations/acl
 Accept: application/json
 Content-Type: application/json
 X-Auth-Token: {{auth_token}}

@@ -2,6 +2,7 @@ package com.byakuya.boot.backend.component.account;
 
 import com.byakuya.boot.backend.SystemVersion;
 import com.byakuya.boot.backend.component.AbstractBaseEntity;
+import com.byakuya.boot.backend.component.organization.Organization;
 import com.byakuya.boot.backend.component.role.Role;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -35,4 +36,8 @@ public class Account extends AbstractBaseEntity {
             joinColumns = {@JoinColumn(name = "role")},
             inverseJoinColumns = {@JoinColumn(name = "user")})
     private Set<Role> roles;
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization")
+    private Organization organization;
 }

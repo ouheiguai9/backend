@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Created by 田伯光 at 2022/9/12 20:54
@@ -27,4 +28,11 @@ class Unique implements Serializable {
     private Type uniqueType;
     private String uniqueValue;
 
+    public Unique setTenantId(Long tenantId) {
+        if (Objects.nonNull(tenantId)) {
+            tenant = new Tenant();
+            tenant.setId(tenantId);
+        }
+        return this;
+    }
 }

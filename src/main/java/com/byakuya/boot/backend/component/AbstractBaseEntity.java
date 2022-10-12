@@ -53,4 +53,8 @@ public abstract class AbstractBaseEntity implements Serializable {
         }
         tenant.setId(tenantId);
     }
+
+    protected boolean acceptNullTenant() {
+        return false;
+    }
 }

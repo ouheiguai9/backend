@@ -29,8 +29,6 @@ public class Organization extends AbstractAuditableEntity {
     @NotBlank
     @Column(nullable = false)
     private String name;
-    private String logo;
-    private String address;
     private int ordering;
     @Column(length = 1000)
     private String description;

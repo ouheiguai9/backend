@@ -6,16 +6,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.lang.annotation.*;
 
+/**
+ * Created by 田伯光 at 2022/5/19 16:30
+ */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @RequestMapping
-public @interface ApiMethod {
+public @interface AclApiMethod {
     String value();
 
-    String desc() default "";
-
-    String module() default "";
+    String desc();
 
     @AliasFor(annotation = RequestMapping.class)
     String[] path() default {};

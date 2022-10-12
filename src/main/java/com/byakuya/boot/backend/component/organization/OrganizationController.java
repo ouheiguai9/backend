@@ -1,7 +1,7 @@
 package com.byakuya.boot.backend.component.organization;
 
-import com.byakuya.boot.backend.config.ApiMethod;
-import com.byakuya.boot.backend.config.ApiModule;
+import com.byakuya.boot.backend.config.AclApiMethod;
+import com.byakuya.boot.backend.config.AclApiModule;
 import com.byakuya.boot.backend.exception.BackendException;
 import com.byakuya.boot.backend.exception.ErrorStatus;
 import com.byakuya.boot.backend.security.AccountAuthentication;
@@ -19,7 +19,7 @@ import java.util.Set;
 /**
  * Created by 田伯光 at 2022/9/12 21:19
  */
-@ApiModule(path = "organizations", name = "organization", desc = "组织机构管理")
+@AclApiModule(path = "organizations", value = "organization", desc = "组织机构管理")
 @Validated
 class OrganizationController {
     private final OrganizationRepository organizationRepository;
@@ -28,7 +28,7 @@ class OrganizationController {
         this.organizationRepository = organizationRepository;
     }
 
-    @ApiMethod(value = "add", desc = "增加", method = RequestMethod.POST)
+    @AclApiMethod(value = "add", desc = "增加", method = RequestMethod.POST)
     public ResponseEntity<Organization> create(@Valid @RequestBody Organization organization, AccountAuthentication authentication) {
         if (Objects.nonNull(organization.getParentId())) {
             Organization parent = get(organization.getParentId());
@@ -57,7 +57,7 @@ class OrganizationController {
         return ResponseEntity.ok(organizationRepository.save(organization));
     }
 
-    @ApiMethod(value = "status", desc = "禁用/启用", path = "/{id}/{status}", method = RequestMethod.PATCH, onlyAdmin = true)
+    @AclApiMethod(value = "status", desc = "禁用/启用", path = "/{id}/{status}", method = RequestMethod.PATCH, onlyAdmin = true)
     public ResponseEntity<Organization> lock(@PathVariable Long id, @PathVariable Boolean status) {
         Organization old = get(id);
         if (!status && old.getDescendants().stream().anyMatch(x -> !x.isLocked())) {
@@ -67,12 +67,12 @@ class OrganizationController {
         return ResponseEntity.ok(organizationRepository.save(old));
     }
 
-    @ApiMethod(value = "read", desc = "查询", path = {"/parent/{id}", "/parent"}, method = RequestMethod.GET, onlyAdmin = true)
+    @AclApiMethod(value = "read", desc = "查询", path = {"/parent/{id}", "/parent"}, method = RequestMethod.GET, onlyAdmin = true)
     public ResponseEntity<Iterable<Organization>> readByParent(@PathVariable(required = false) Long id) {
         return ResponseEntity.ok(organizationRepository.findByParent_id(id));
     }
 
-    @ApiMethod(value = "read", desc = "查询", path = "/{id}", method = RequestMethod.GET, onlyAdmin = true)
+    @AclApiMethod(value = "read", desc = "查询", path = "/{id}", method = RequestMethod.GET, onlyAdmin = true)
     public ResponseEntity<Organization> read(@PathVariable Long id) {
         return ResponseEntity.ok(get(id));
     }
