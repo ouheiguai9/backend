@@ -11,7 +11,7 @@ GET {{baseUrl}}/logout
 X-Auth-Token: {{auth_token}}
 
 ### 获取当前登录用户
-GET {{baseUrl}}/security/authentication
+GET {{baseUrl}}/authorizations/me
 X-Auth-Token: {{auth_token}}
 
 ### 增加租户

@@ -12,7 +12,7 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 
 /**
- * Created by ganzl at 2022/4/28 11:55
+ * Created by 田伯光 at 2022/10/12 23:56
  */
 @Component
 public class RequestAuthenticationManager implements AuthenticationManager {

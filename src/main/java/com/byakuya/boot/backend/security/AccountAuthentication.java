@@ -125,7 +125,7 @@ public class AccountAuthentication implements Authentication {
         private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
 
         private Admin() {
-            super(Long.MIN_VALUE, Long.MIN_VALUE, "超级管理员");
+            super(0L, 0L, "超级管理员");
         }
 
         @Override

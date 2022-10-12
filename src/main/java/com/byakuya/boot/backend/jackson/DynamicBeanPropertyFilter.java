@@ -9,11 +9,13 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import java.util.*;
 
 /**
- * Created by ganzl on 2020/7/17.
+ * Created by 田伯光 at 2022/10/12 23:56
  */
 @JsonFilter(DynamicBeanPropertyFilter.DYNAMIC_FILTER_NAME)
 public class DynamicBeanPropertyFilter extends SimpleBeanPropertyFilter {
     static final String DYNAMIC_FILTER_NAME = "JsonDynamicViewFilter";
+    private Map<Class<?>, Set<String>> excludeMap = new HashMap<>();
+    private Map<Class<?>, Set<String>> includeMap = new HashMap<>();
 
     void addAnnotation(DynamicJsonView annotation) {
         if (annotation.include().length > 0) {
@@ -55,7 +57,4 @@ public class DynamicBeanPropertyFilter extends SimpleBeanPropertyFilter {
         }
         return true;
     }
-
-    private Map<Class<?>, Set<String>> excludeMap = new HashMap<>();
-    private Map<Class<?>, Set<String>> includeMap = new HashMap<>();
 }

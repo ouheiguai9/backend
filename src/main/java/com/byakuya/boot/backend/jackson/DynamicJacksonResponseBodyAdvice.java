@@ -16,10 +16,15 @@ import org.springframework.web.servlet.mvc.method.annotation.AbstractMappingJack
 import java.util.Arrays;
 
 /**
- * Created by ganzl on 2020/7/17.
+ * Created by 田伯光 at 2022/10/12 23:56
  */
 @RestControllerAdvice
 public class DynamicJacksonResponseBodyAdvice extends AbstractMappingJacksonResponseBodyAdvice {
+
+    @Bean
+    public static MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter(ObjectMapper objectMapper) {
+        return new DynamicJackson2HttpMessageConverter(objectMapper);
+    }
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
@@ -43,11 +48,6 @@ public class DynamicJacksonResponseBodyAdvice extends AbstractMappingJacksonResp
             provider.addFilter(DynamicBeanPropertyFilter.DYNAMIC_FILTER_NAME, filter);
             bodyContainer.setFilters(provider);
         }
-    }
-
-    @Bean
-    public static MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter(ObjectMapper objectMapper) {
-        return new DynamicJackson2HttpMessageConverter(objectMapper);
     }
 
 }

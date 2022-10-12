@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 /**
- * Created by ganzl at 2022/4/28 15:34
+ * Created by 田伯光 at 2022/10/12 23:56
  */
 @Component
 public class StandardAuthenticationProvider implements RequestAuthenticationProvider {

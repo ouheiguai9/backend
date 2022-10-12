@@ -1,7 +1,7 @@
 package com.byakuya.boot.backend.utils;
 
 /**
- * Created by ganzl on 2020/4/2.
+ * Created by 田伯光 at 2022/10/12 23:56
  * 常量工具类,用于定义系统使用的所有常量
  */
 public final class ConstantUtils {

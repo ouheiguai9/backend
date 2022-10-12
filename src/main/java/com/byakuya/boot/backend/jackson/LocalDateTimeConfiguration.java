@@ -12,10 +12,13 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * Created by ganzl on 2020/12/12.
+ * Created by 田伯光 at 2022/10/12 23:56
  */
 @Configuration
 public class LocalDateTimeConfiguration {
+    @Value("${spring.jackson.date-format:yyyy-MM-dd HH:mm:ss}")
+    private String pattern;
+
     @Bean
     public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer() {
         return builder -> {
@@ -38,7 +41,4 @@ public class LocalDateTimeConfiguration {
             }
         };
     }
-
-    @Value("${spring.jackson.date-format:yyyy-MM-dd HH:mm:ss}")
-    private String pattern;
 }

@@ -1,7 +1,7 @@
 package com.byakuya.boot.backend;
 
 /**
- * Created by ganzl on 2020/11/18.
+ * Created by 田伯光 at 2022/10/12 23:56
  */
 public class SystemVersion {
     //序列化版本ID

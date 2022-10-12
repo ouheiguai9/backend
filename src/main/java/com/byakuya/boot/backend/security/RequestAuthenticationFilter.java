@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Created by ganzl at 2022/4/24 17:22
+ * Created by 田伯光 at 2022/4/24 17:22
  */
 @Component
 public class RequestAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
