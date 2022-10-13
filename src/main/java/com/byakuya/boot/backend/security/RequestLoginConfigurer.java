@@ -10,13 +10,11 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 import org.springframework.security.web.util.matcher.AndRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 /**
  * Created by 田伯光 at 2022/8/27 17:24
  */
-@Component
 public class RequestLoginConfigurer extends AbstractHttpConfigurer<RequestLoginConfigurer, HttpSecurity> {
     private final RequestAuthenticationFilter filter;
     private String loginUrl = "/login";

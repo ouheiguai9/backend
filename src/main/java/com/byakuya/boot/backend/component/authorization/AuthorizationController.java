@@ -4,6 +4,8 @@ import com.byakuya.boot.backend.config.ApiModule;
 import com.byakuya.boot.backend.security.AccountAuthentication;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.List;
 
@@ -23,7 +25,7 @@ class AuthorizationController {
         return authorizationService.aclAll();
     }
 
-    @GetMapping("me")
+    @RequestMapping(value = "me", method = {RequestMethod.POST, RequestMethod.GET})
     public Authentication me(AccountAuthentication authentication) {
         return authentication;
     }

@@ -34,10 +34,14 @@ import java.util.Optional;
 public class WebSecurityConfig {
     @Value(ConstantUtils.DEFAULT_ERROR_PATH)
     private String errorUrl;
+    @Value("${authentication-url:/authorizations/me}")
+    private String authenticationUrl;
 
     @Bean
-    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http, RequestLoginConfigurer loginConfigurer) throws Exception {
+    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http, RequestAuthenticationManager requestAuthenticationManager) throws Exception {
+        RequestAuthenticationFilter requestAuthenticationFilter = new RequestAuthenticationFilter(authenticationUrl, requestAuthenticationManager);
         SecurityErrorHandler securityErrorHandler = new SecurityErrorHandler();
+        RequestLoginConfigurer loginConfigurer = new RequestLoginConfigurer(requestAuthenticationFilter);
         http.authorizeHttpRequests(authorize -> authorize.antMatchers(errorUrl, ConstantUtils.OPEN_API_PREFIX + "/**").permitAll().antMatchers(HttpMethod.OPTIONS).permitAll().anyRequest().authenticated())
                 .apply(loginConfigurer)
                 .and()
