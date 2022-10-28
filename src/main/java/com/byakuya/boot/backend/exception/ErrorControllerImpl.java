@@ -14,24 +14,19 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Controller
 public class ErrorControllerImpl implements ErrorController {
+    private final ExceptionResponseConverter exceptionResponseConverter;
+
+    public ErrorControllerImpl(ExceptionResponseConverter exceptionResponseConverter) {
+        this.exceptionResponseConverter = exceptionResponseConverter;
+    }
+
     @RequestMapping(ConstantUtils.DEFAULT_ERROR_PATH)
     public ResponseEntity<ExceptionResponse> error(HttpServletRequest request) {
-        Exception exception = getException(request);
-        ErrorStatus errorStatus;
-        if (exception instanceof ErrorStatusGetter) {
-            errorStatus = ((ErrorStatusGetter) exception).getErrorStatus();
-        } else {
-            errorStatus = ErrorStatus.AUTHENTICATION_ILLEGAL_REQUEST;
-        }
-        ExceptionResponse body = ExceptionResponse.build().setErrorStatus(errorStatus).setPath(getPath(request));
-        return new ResponseEntity<>(body, errorStatus.getHttpStatus());
+        ExceptionResponse body = exceptionResponseConverter.toExceptionResponse(getException(request));
+        return new ResponseEntity<>(body, body.errorStatus.httpStatus);
     }
 
     private Exception getException(HttpServletRequest request) {
         return (Exception) request.getAttribute(RequestDispatcher.ERROR_EXCEPTION);
-    }
-
-    private String getPath(HttpServletRequest request) {
-        return (String) request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI);
     }
 }

@@ -1,9 +1,9 @@
 package com.byakuya.boot.backend.component.tenant;
 
 import com.byakuya.boot.backend.SystemVersion;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -17,12 +17,12 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "T_SYS_TENANT")
 @Accessors(chain = true)
-public class Tenant implements Serializable {
+public class Tenant implements Persistable<Long>, Serializable {
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
+    @Transient
+    private boolean isNew = false;
 
     @Id
-    @GeneratedValue(generator = "table_id")
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long id;
     @NotBlank
     @Column(nullable = false, unique = true, length = 64)

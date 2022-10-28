@@ -22,11 +22,12 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 public class User extends AbstractAuditableEntity {
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
+
     @Column(length = 50)
     private String username;
     @Column(nullable = false)
     private String password;
-    @NotBlank
+    @NotBlank(message = "error.validation.user.nickname.required")
     @Column(nullable = false)
     private String nickname;
     @Column(length = 20)
@@ -42,4 +43,14 @@ public class User extends AbstractAuditableEntity {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "account", updatable = false, unique = true, nullable = false)
     private Account account;
+
+    @JsonIgnore
+    public String getPassword() {
+        return password;
+    }
+
+    @JsonIgnore
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }

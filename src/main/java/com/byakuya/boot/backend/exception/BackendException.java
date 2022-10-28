@@ -8,12 +8,11 @@ import java.util.Objects;
 /**
  * Created by 田伯光 at 2022/8/22 23:32
  */
-public class BackendException extends RuntimeException implements ErrorStatusGetter {
+public class BackendException extends RuntimeException {
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
 
     @Getter
     private final ErrorStatus errorStatus;
-
 
     public BackendException(ErrorStatus errorStatus) {
         this(errorStatus, null);
@@ -27,6 +26,6 @@ public class BackendException extends RuntimeException implements ErrorStatusGet
 
     @Override
     public String getMessage() {
-        return super.getMessage();
+        return errorStatus.code;
     }
 }

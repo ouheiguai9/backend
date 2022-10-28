@@ -22,7 +22,7 @@ import javax.validation.constraints.NotBlank;
 @Accessors(chain = true)
 public class Role extends AbstractAuditableEntity {
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
-    @NotBlank
+    @NotBlank(message = "error.validation.role.name.required")
     @Column(nullable = false)
     private String name;
     private String description;

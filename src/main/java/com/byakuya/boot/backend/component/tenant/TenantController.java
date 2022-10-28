@@ -23,6 +23,7 @@ class TenantController {
 
     @AclApiMethod(value = "add", desc = "增加", method = RequestMethod.POST, onlyAdmin = true)
     public ResponseEntity<Tenant> create(@Valid @RequestBody Tenant tenant) {
+        tenant.setNew(true);
         return ResponseEntity.ok(tenantRepository.save(tenant));
     }
 }

@@ -37,7 +37,7 @@ class ParameterController {
     }
 
     private Parameter get(Long id) {
-        return parameterRepository.findById(id).orElseThrow(() -> new BackendException(ErrorStatus.DB_RECORD_NOT_FOUND));
+        return parameterRepository.findById(id).orElseThrow(() -> new BackendException(ErrorStatus.CODE_UNKNOWN));
     }
 
     @AclApiMethod(value = "read", desc = "查询", method = RequestMethod.GET, onlyAdmin = true)

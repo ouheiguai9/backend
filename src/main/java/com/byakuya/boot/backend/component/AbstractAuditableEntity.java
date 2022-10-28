@@ -2,6 +2,7 @@ package com.byakuya.boot.backend.component;
 
 import com.byakuya.boot.backend.SystemVersion;
 import com.byakuya.boot.backend.component.account.Account;
+import com.byakuya.boot.backend.utils.ConstantUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -24,7 +25,7 @@ public abstract class AbstractAuditableEntity extends AbstractBaseEntity impleme
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
 
     @Id
-    @GeneratedValue(generator = "snowflake_id")
+    @GeneratedValue(generator = ConstantUtils.ID_GENERATOR_SNOW_NAME)
     @Getter
     @Setter
     @JsonFormat(shape = JsonFormat.Shape.STRING)

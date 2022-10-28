@@ -1,9 +1,10 @@
 package com.byakuya.boot.backend.security;
 
 import com.byakuya.boot.backend.component.account.AccountService;
-import com.byakuya.boot.backend.exception.ErrorStatus;
 import com.byakuya.boot.backend.utils.ConstantUtils;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
@@ -37,10 +38,10 @@ public class RequestAuthenticationManager implements AuthenticationManager {
                     if (!AccountAuthentication.isAdmin(auth)) {
                         accountService.query(auth.getAccountId()).ifPresent(account -> {
                             if (account.isLocked()) {
-                                throw new SecurityAuthenticationException(ErrorStatus.AUTHENTICATION_DISABLE);
+                                throw new LockedException("Account Locked");
                             }
                             if (account.getLoginErrorCount() >= ConstantUtils.LOGIN_ERROR_LIMIT_COUNT) {
-                                throw new SecurityAuthenticationException(ErrorStatus.AUTHENTICATION_ERROR_LIMIT);
+                                throw new FailLimitException();
                             }
                         });
                         auth.setApis(accountService.getAccountApiAuth(auth.getAccountId()));
@@ -49,6 +50,6 @@ public class RequestAuthenticationManager implements AuthenticationManager {
                 }
             }
         }
-        throw new SecurityAuthenticationException(ErrorStatus.AUTHENTICATION_FAIL);
+        throw new AuthenticationServiceException("Login fail");
     }
 }

@@ -37,7 +37,7 @@ public class Parameter extends AbstractAuditableEntity {
     private String description;
 
     @Override
-    protected boolean acceptNullTenant() {
-        return false;
+    public boolean acceptNullTenant() {
+        return true;
     }
 }

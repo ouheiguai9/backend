@@ -2,9 +2,7 @@ package com.byakuya.boot.backend.component.role;
 
 import com.byakuya.boot.backend.config.AclApiMethod;
 import com.byakuya.boot.backend.config.AclApiModule;
-import com.byakuya.boot.backend.exception.BackendException;
-import com.byakuya.boot.backend.exception.ErrorStatus;
-import com.byakuya.boot.backend.security.AccountAuthentication;
+import com.byakuya.boot.backend.exception.RecordNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,7 +24,7 @@ class RoleController {
     }
 
     @AclApiMethod(value = "add", desc = "增加", method = RequestMethod.POST)
-    public ResponseEntity<Role> create(@Valid @RequestBody Role role, AccountAuthentication authentication) {
+    public ResponseEntity<Role> create(@Valid @RequestBody Role role) {
         return ResponseEntity.ok(roleRepository.save(role));
     }
 
@@ -36,6 +34,6 @@ class RoleController {
     }
 
     private Role get(Long id) {
-        return roleRepository.findById(id).orElseThrow(() -> new BackendException(ErrorStatus.DB_RECORD_NOT_FOUND));
+        return roleRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("error.db.record.not.found.role", id));
     }
 }

@@ -8,14 +8,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
 
 /**
  * Created by 田伯光 at 2022/10/10 1:43
  */
 @MappedSuperclass
-@EntityListeners(TenantEntityListener.class)
+//@EntityListeners(TenantEntityListener.class)
 public abstract class AbstractBaseEntity implements Serializable {
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     @ManyToOne(fetch = FetchType.LAZY)
@@ -54,7 +57,7 @@ public abstract class AbstractBaseEntity implements Serializable {
         tenant.setId(tenantId);
     }
 
-    protected boolean acceptNullTenant() {
+    public boolean acceptNullTenant() {
         return false;
     }
 }

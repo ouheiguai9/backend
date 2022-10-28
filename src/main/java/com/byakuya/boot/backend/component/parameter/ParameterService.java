@@ -1,5 +1,6 @@
 package com.byakuya.boot.backend.component.parameter;
 
+import com.byakuya.boot.backend.utils.ConstantUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
@@ -26,14 +27,6 @@ public class ParameterService {
         this.environment = environment;
     }
 
-    public String getValue(String group, String item) {
-        return parameterRepository.findByGroupKeyAndItemKey(group, item).map(Parameter::getItemValue).orElse("");
-    }
-
-    public List<Parameter> getParameters(String group) {
-        return parameterRepository.findByGroupKeyOrderByOrderingAsc(group);
-    }
-
     public String getAdminRandomKey() {
         Parameter parameter = parameterRepository.findByGroupKeyAndItemKey(ADMIN_RANDOM_KEY, ADMIN_RANDOM_KEY).orElseGet(() -> {
             Parameter tmp = new Parameter();
@@ -42,7 +35,7 @@ public class ParameterService {
             tmp.setItemValue(UUID.randomUUID().toString());
             return parameterRepository.save(tmp);
         });
-        if (Arrays.asList(environment.getActiveProfiles()).contains("pro")) {
+        if (Arrays.asList(environment.getActiveProfiles()).contains(ConstantUtils.ACTIVE_PRO_KEY)) {
             LocalDateTime oneDayBefore = LocalDateTime.now().minusDays(1);
             if (oneDayBefore.isBefore(parameter.getLastModifiedDate().orElse(oneDayBefore))) {
                 return parameter.getItemValue();
@@ -64,6 +57,10 @@ public class ParameterService {
         return rtnVal;
     }
 
+    public List<Parameter> getParameters(String group) {
+        return parameterRepository.findByGroupKeyOrderByOrderingAsc(group);
+    }
+
     public List<Parameter> getTencentCloudCAPI() {
         return getParameters(CAPI_GROUP_KEY);
     }
@@ -74,6 +71,10 @@ public class ParameterService {
 
     public String getTencentCloudSecretId() {
         return getValue(CAPI_GROUP_KEY, "SecretId");
+    }
+
+    public String getValue(String group, String item) {
+        return parameterRepository.findByGroupKeyAndItemKey(group, item).map(Parameter::getItemValue).orElse("");
     }
 
     public String getTencentCloudSecretKey() {
