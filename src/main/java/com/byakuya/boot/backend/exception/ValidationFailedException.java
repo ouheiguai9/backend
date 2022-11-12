@@ -1,6 +1,7 @@
 package com.byakuya.boot.backend.exception;
 
 import com.byakuya.boot.backend.SystemVersion;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 
@@ -19,12 +20,12 @@ public class ValidationFailedException extends BackendException {
     }
 
     public static BackendException buildWithCode(String errorCode) {
-        assert StringUtils.hasText(errorCode);
+        Assert.hasText(errorCode, "");
         return new ValidationFailedException(null, errorCode);
     }
 
     public static BackendException buildWithBindException(BindException bindException) {
-        assert bindException != null;
+        Assert.notNull(bindException, "");
         return new ValidationFailedException(bindException, null);
     }
 

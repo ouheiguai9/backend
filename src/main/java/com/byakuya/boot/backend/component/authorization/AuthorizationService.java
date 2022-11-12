@@ -4,6 +4,7 @@ import com.byakuya.boot.backend.config.AclApiMethod;
 import com.byakuya.boot.backend.config.AclApiModule;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.util.Comparator;
@@ -35,7 +36,7 @@ public class AuthorizationService {
         }).map(item -> {
             AclApiModule module = item.getBeanType().getAnnotation(AclApiModule.class);
             AclApiMethod method = item.getMethodAnnotation(AclApiMethod.class);
-            assert method != null;
+            Assert.notNull(method, "");
             return new ApiResourceVO().setModuleCode(module.value()).setModuleName(module.desc()).setMethodCode(method.value()).setMethodName(method.desc());
         }).distinct().sorted(Comparator.comparing(ApiResourceVO::getAuthKey)).collect(Collectors.toList());
     }

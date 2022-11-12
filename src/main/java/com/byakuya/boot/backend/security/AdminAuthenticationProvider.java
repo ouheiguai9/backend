@@ -5,6 +5,7 @@ import com.byakuya.boot.backend.utils.ConstantUtils;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import java.time.Instant;
@@ -33,7 +34,7 @@ public class AdminAuthenticationProvider implements RequestAuthenticationProvide
         }
         try {
             String randomKey = token.getRequest().getHeader(ConstantUtils.HEADER_X_AUTH_TOKEN);
-            assert (StringUtils.hasText(randomKey) && randomKey.equals(parameterService.getAdminRandomKey()));
+            Assert.isTrue(StringUtils.hasText(randomKey) && randomKey.equals(parameterService.getAdminRandomKey()), "");
             counter.set(0);
             return AccountAuthentication.Admin.instance;
         } catch (Throwable cause) {
