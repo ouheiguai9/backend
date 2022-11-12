@@ -26,6 +26,19 @@ X-Auth-Token: {{auth_token}}
   "name": "懂法宝科技股份有限公司"
 }
 
+### 增加系统参数
+POST {{baseUrl}}/parameters
+Accept: application/json
+Content-Type: application/json
+X-Auth-Token: {{auth_token}}
+
+{
+  "groupKey": "test",
+  "itemKey": "test",
+  "itemValue": "test",
+  "tenantId": null
+}
+
 ### 获取系统参数列表
 GET {{baseUrl}}/parameters
 Accept: application/json

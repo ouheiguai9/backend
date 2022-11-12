@@ -51,6 +51,7 @@ public abstract class AbstractBaseEntity implements Serializable {
     @JsonProperty
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     public void setTenantId(Long tenantId) {
+        if (tenantId == null) return;
         if (tenant == null) {
             tenant = new Tenant();
         }

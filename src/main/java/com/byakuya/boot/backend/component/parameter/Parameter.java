@@ -15,7 +15,7 @@ import javax.validation.constraints.NotBlank;
 @Setter
 @Getter
 @Entity
-@Table(name = "T_SYS_PARAMETER", indexes = {@Index(columnList = "groupKey,itemKey")})
+@Table(name = "T_SYS_PARAMETER", indexes = {@Index(columnList = "tenant,groupKey,itemKey")})
 @Accessors(chain = true)
 @AssociationOverride(name = "tenant", joinColumns = @JoinColumn(name = "tenant", updatable = false))
 public class Parameter extends AbstractAuditableEntity {
