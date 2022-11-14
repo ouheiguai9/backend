@@ -24,12 +24,9 @@ class UserController {
 
     @AclApiMethod(value = "add", desc = "增加", method = RequestMethod.POST)
     public User create(@Valid @RequestBody User user) {
-        if (!StringUtils.hasText(user.getUsername())) {
-            throw ValidationFailedException.buildWithCode("error.validation.user.username.required");
-        }
         if (!StringUtils.hasText(user.getPassword())) {
             throw ValidationFailedException.buildWithCode("error.validation.user.password.required");
         }
-        return userService.save(user);
+        return userService.add(user);
     }
 }

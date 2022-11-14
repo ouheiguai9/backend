@@ -1,5 +1,6 @@
 package com.byakuya.boot.backend.component.unique;
 
+import com.byakuya.boot.backend.exception.ValidationFailedException;
 import org.springframework.stereotype.Service;
 
 /**
@@ -14,14 +15,17 @@ public class UniqueService {
     }
 
     public Unique addUnique(Long tenantId, Type uniqueType, String content) {
+        if (exists(tenantId, uniqueType, content)) {
+            throw ValidationFailedException.buildWithCode(uniqueType.errorCode);
+        }
         return uniqueRepository.save(new Unique().setTenantId(tenantId).setUniqueType(uniqueType).setUniqueValue(content));
     }
 
-    public void removeUnique(Long tenantId, Type uniqueType, String content) {
-        uniqueRepository.deleteByTenant_IdAndUniqueTypeAndUniqueValue(tenantId, uniqueType, content);
+    public boolean exists(Long tenantId, Type uniqueType, String content) {
+        return uniqueRepository.existsById(new UniqueId().setTenantId(tenantId).setUniqueType(uniqueType).setUniqueValue(content));
     }
 
-    public boolean checkUnique(Long tenantId, Type uniqueType, String content) {
-        return !uniqueRepository.findByTenant_IdAndUniqueTypeAndUniqueValue(tenantId, uniqueType, content).isPresent();
+    public void removeUnique(Long tenantId, Type uniqueType, String content) {
+        uniqueRepository.deleteById(new UniqueId().setTenantId(tenantId).setUniqueType(uniqueType).setUniqueValue(content));
     }
 }

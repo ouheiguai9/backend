@@ -3,9 +3,11 @@ package com.byakuya.boot.backend.security;
 import com.byakuya.boot.backend.exception.AuthException;
 import com.byakuya.boot.backend.utils.ConstantUtils;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -44,6 +46,10 @@ public class RequestAuthenticationFilter extends AbstractAuthenticationProcessin
         public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
             if (exception instanceof FailLimitException) {
                 throw AuthException.loginFailLimit();
+            } else if (exception instanceof UsernameNotFoundException) {
+                throw AuthException.loginAccountNotFound(exception);
+            } else if (exception instanceof BadCredentialsException) {
+                throw AuthException.loginInvalidPassword(exception);
             } else if (exception instanceof LockedException) {
                 throw AuthException.loginAccountDisable();
             } else {

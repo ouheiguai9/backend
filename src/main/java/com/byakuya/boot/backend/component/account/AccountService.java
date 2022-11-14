@@ -2,6 +2,7 @@ package com.byakuya.boot.backend.component.account;
 
 import com.byakuya.boot.backend.component.authorization.AuthorizationService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -24,6 +25,7 @@ public class AccountService {
         return accountRepository.findById(id);
     }
 
+    @Transactional(readOnly = true)
     public Set<String> getAccountApiAuth(long id) {
         Set<Long> idSet = new HashSet<>();
         idSet.add(id);

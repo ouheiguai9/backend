@@ -49,7 +49,7 @@ class OrganizationController {
         } else {
             if (!AccountAuthentication.isAdmin(authentication)) {
                 //非超级用户不能创建顶层组织机构
-                throw ValidationFailedException.buildWithCode("error.validation.organization.forbidden");
+                throw ValidationFailedException.buildWithCode("error.validation.organization.root.forbidden");
             }
             organization.setLevel(1);
         }

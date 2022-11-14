@@ -23,7 +23,6 @@ import java.util.Set;
 @Entity
 @Table(name = "T_SYS_ACCOUNT")
 @Accessors(chain = true)
-//@EntityListeners(TenantRootListener.class)
 public class Account extends AbstractBaseEntity {
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     @Id
@@ -34,6 +33,7 @@ public class Account extends AbstractBaseEntity {
     private LocalDateTime loginErrorTime;
     @Column(nullable = false, updatable = false)
     private LocalDateTime createTime = LocalDateTime.now();
+    private boolean admin = false;
     @JsonIgnore
     @ManyToMany
     @JoinTable(name = "T_SYS_USER_ROLE",

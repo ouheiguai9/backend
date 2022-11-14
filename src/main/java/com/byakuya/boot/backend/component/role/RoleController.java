@@ -3,6 +3,7 @@ package com.byakuya.boot.backend.component.role;
 import com.byakuya.boot.backend.config.AclApiMethod;
 import com.byakuya.boot.backend.config.AclApiModule;
 import com.byakuya.boot.backend.exception.RecordNotFoundException;
+import com.byakuya.boot.backend.exception.ValidationFailedException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,7 +26,14 @@ class RoleController {
 
     @AclApiMethod(value = "add", desc = "增加", method = RequestMethod.POST)
     public ResponseEntity<Role> create(@Valid @RequestBody Role role) {
+        checkRoleNameUnique(role);
         return ResponseEntity.ok(roleRepository.save(role));
+    }
+
+    private void checkRoleNameUnique(Role role) throws ValidationFailedException {
+        if (roleRepository.existsByNameAndTenant_id(role.getName(), role.getTenantId())) {
+            throw ValidationFailedException.buildWithCode("error.validation.role.name.exists");
+        }
     }
 
     @AclApiMethod(value = "read", desc = "查询", path = "/{id}", method = RequestMethod.GET)

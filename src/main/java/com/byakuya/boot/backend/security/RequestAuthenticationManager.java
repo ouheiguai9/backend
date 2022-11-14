@@ -1,5 +1,6 @@
 package com.byakuya.boot.backend.security;
 
+import com.byakuya.boot.backend.component.account.Account;
 import com.byakuya.boot.backend.component.account.AccountService;
 import com.byakuya.boot.backend.utils.ConstantUtils;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -7,6 +8,7 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -36,15 +38,18 @@ public class RequestAuthenticationManager implements AuthenticationManager {
                     AccountAuthentication auth = provider.authenticate(token);
                     if (auth == null) continue;
                     if (!AccountAuthentication.isAdmin(auth)) {
-                        accountService.query(auth.getAccountId()).ifPresent(account -> {
-                            if (account.isLocked()) {
-                                throw new LockedException("Account Locked");
-                            }
-                            if (account.getLoginErrorCount() >= ConstantUtils.LOGIN_ERROR_LIMIT_COUNT) {
-                                throw new FailLimitException();
-                            }
-                        });
-                        auth.setApis(accountService.getAccountApiAuth(auth.getAccountId()));
+                        Account account = accountService.query(auth.getAccountId()).orElseThrow(() -> new UsernameNotFoundException(String.valueOf(auth.getAccountId())));
+                        if (account.isLocked()) {
+                            throw new LockedException("Account Locked");
+                        }
+                        if (account.getLoginErrorCount() >= ConstantUtils.LOGIN_ERROR_LIMIT_COUNT) {
+                            throw new FailLimitException();
+                        }
+                        if (account.isAdmin()) {
+                            auth.setTenantAdmin(account.isAdmin());
+                        } else {
+                            auth.setApis(accountService.getAccountApiAuth(auth.getAccountId()));
+                        }
                     }
                     return auth;
                 }

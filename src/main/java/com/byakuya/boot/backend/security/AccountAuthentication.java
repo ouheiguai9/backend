@@ -2,8 +2,10 @@ package com.byakuya.boot.backend.security;
 
 import com.byakuya.boot.backend.SystemVersion;
 import com.byakuya.boot.backend.component.account.Account;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,10 +23,15 @@ import java.util.stream.Collectors;
  */
 public class AccountAuthentication implements Authentication {
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     @Getter
     private final long accountId;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     @Getter
     private final long tenantId;
+    @Getter
+    @Setter
+    private boolean tenantAdmin = false;
     private String name;
     private Map<String, Serializable> details;
     @JsonIgnore
@@ -117,6 +124,7 @@ public class AccountAuthentication implements Authentication {
     public Account getAccount() {
         Account account = new Account();
         account.setId(accountId);
+        account.setTenantId(tenantId);
         return account;
     }
 

@@ -17,4 +17,13 @@ public class UniqueId implements Serializable {
     private Tenant tenant;
     private Type uniqueType;
     private String uniqueValue;
+
+    public UniqueId setTenantId(Long id) {
+        if (id != null) {
+            Tenant tenant = new Tenant();
+            tenant.setId(id);
+            this.tenant = tenant;
+        }
+        return this;
+    }
 }

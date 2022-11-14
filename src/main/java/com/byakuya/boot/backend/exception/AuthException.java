@@ -31,4 +31,12 @@ public final class AuthException extends BackendException {
     public static AuthException loginAccountDisable() {
         return new AuthException(ErrorStatus.AUTH_LOGIN_ACCOUNT_DISABLE, null);
     }
+
+    public static AuthException loginAccountNotFound(Throwable cause) {
+        return new AuthException(ErrorStatus.AUTH_LOGIN_ACCOUNT_NOT_FOUND, cause);
+    }
+
+    public static AuthException loginInvalidPassword(Throwable cause) {
+        return new AuthException(ErrorStatus.AUTH_LOGIN_INVALID_PASSWORD, cause);
+    }
 }

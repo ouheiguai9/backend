@@ -59,11 +59,15 @@ public class WebSecurityConfig {
         AnnotationMatchingPointcut pointcut = new AnnotationMatchingPointcut(AclApiModule.class, AclApiMethod.class);
         return new AuthorizationManagerBeforeMethodInterceptor(pointcut, (supplier, mi) -> {
             boolean bl = Optional.of(supplier.get()).filter(x -> x.isAuthenticated() && x instanceof AccountAuthentication).map(authentication -> {
+                //超级管理员拥有所有操作权限
                 if (AccountAuthentication.isAdmin(authentication)) return true;
                 AclApiMethod apiMethod = mi.getMethod().getAnnotation(AclApiMethod.class);
                 if (apiMethod.onlyAdmin()) return false;
+                //租户管理员拥有所有非超管特定权限
+                AccountAuthentication accountAuthentication = (AccountAuthentication) authentication;
+                if (accountAuthentication.isTenantAdmin()) return true;
                 AclApiModule apiModule = mi.getMethod().getDeclaringClass().getAnnotation(AclApiModule.class);
-                return ((AccountAuthentication) authentication).hasApiAuth(AuthorizationService.createAuthKey(apiModule.value(), apiMethod.value()));
+                return accountAuthentication.hasApiAuth(AuthorizationService.createAuthKey(apiModule.value(), apiMethod.value()));
             }).orElse(false);
             return new AuthorizationDecision(bl);
         });

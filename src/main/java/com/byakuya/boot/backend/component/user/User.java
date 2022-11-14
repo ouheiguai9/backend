@@ -3,7 +3,9 @@ package com.byakuya.boot.backend.component.user;
 import com.byakuya.boot.backend.SystemVersion;
 import com.byakuya.boot.backend.component.AbstractAuditableEntity;
 import com.byakuya.boot.backend.component.account.Account;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -23,6 +25,7 @@ import java.time.LocalDateTime;
 public class User extends AbstractAuditableEntity {
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
 
+    @NotBlank(message = "error.validation.user.username.required")
     @Column(length = 50)
     private String username;
     @Column(nullable = false)
@@ -44,9 +47,20 @@ public class User extends AbstractAuditableEntity {
     @JoinColumn(name = "account", updatable = false, unique = true, nullable = false)
     private Account account;
 
+    @JsonProperty
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    public Long getAccountId() {
+        return account == null ? null : account.getId();
+    }
+
     @JsonIgnore
     public String getPassword() {
         return password;
+    }
+
+    @JsonProperty
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     @JsonIgnore
