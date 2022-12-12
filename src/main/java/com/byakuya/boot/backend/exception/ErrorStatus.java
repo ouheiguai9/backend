@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
  */
 public enum ErrorStatus {
     CODE_UNKNOWN("error.unknown", HttpStatus.INTERNAL_SERVER_ERROR),
+    CODE_SMS("error.sms", HttpStatus.INTERNAL_SERVER_ERROR),
     DB_RECORD_NOT_FOUND("error.db.record.not.found", HttpStatus.INTERNAL_SERVER_ERROR),
     DB_INTEGRITY_VIOLATION("error.db.integrity.violation", HttpStatus.INTERNAL_SERVER_ERROR),
     AUTH_INVALID_TOKEN("error.auth.invalid.token", HttpStatus.UNAUTHORIZED),

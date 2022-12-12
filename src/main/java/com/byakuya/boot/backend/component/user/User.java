@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @Entity
-@Table(name = "T_SYS_USER")
+@Table(name = "T_SYS_USER", indexes = {@Index(columnList = "username"), @Index(columnList = "email"), @Index(columnList = "phone")})
 @Accessors(chain = true)
 public class User extends AbstractAuditableEntity {
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;

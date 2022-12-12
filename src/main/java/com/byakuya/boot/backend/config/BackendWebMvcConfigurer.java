@@ -1,7 +1,10 @@
 package com.byakuya.boot.backend.config;
 
 import com.byakuya.boot.backend.utils.ConstantUtils;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -21,5 +24,11 @@ public class BackendWebMvcConfigurer implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**");
+    }
+
+    @ConditionalOnMissingBean(RestTemplate.class)
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 }
