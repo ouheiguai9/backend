@@ -49,7 +49,7 @@ public class ExceptionResponseConverter implements MessageSourceAware {
         }
         ExceptionResponse rtnVal = new ExceptionResponse(errorStatus, errorMsg);
         if (includeTrace) {
-            rtnVal.setTrace(trace(error));
+            rtnVal.setTrace(trace(error.getCause()));
         }
         return rtnVal;
     }

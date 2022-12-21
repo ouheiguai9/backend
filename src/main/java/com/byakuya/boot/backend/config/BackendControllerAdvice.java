@@ -1,13 +1,12 @@
 package com.byakuya.boot.backend.config;
 
-import com.byakuya.boot.backend.exception.ExceptionResponse;
-import com.byakuya.boot.backend.exception.ExceptionResponseConverter;
-import com.byakuya.boot.backend.exception.IntegrityViolationException;
-import com.byakuya.boot.backend.exception.ValidationFailedException;
+import com.byakuya.boot.backend.exception.*;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -64,7 +63,17 @@ public class BackendControllerAdvice {
     public ResponseEntity<ExceptionResponse> methodArgumentException(BindException e) {
         return createResponse(exceptionResponseConverter.toExceptionResponse(ValidationFailedException.buildWithBindException(e)));
     }
-    
+
+    @ExceptionHandler(ServletRequestBindingException.class)
+    public ResponseEntity<ExceptionResponse> methodArgumentException(ServletRequestBindingException e) {
+        return createResponse(exceptionResponseConverter.toExceptionResponse(new BackendException(ErrorStatus.CODE_ARGUMENT, e)));
+    }
+
+    @ExceptionHandler(TypeMismatchException.class)
+    public ResponseEntity<ExceptionResponse> methodArgumentException(TypeMismatchException e) {
+        return createResponse(exceptionResponseConverter.toExceptionResponse(new BackendException(ErrorStatus.CODE_ARGUMENT, e)));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionResponse> globalException(Exception e) {
         return createResponse(exceptionResponseConverter.toExceptionResponse(e));

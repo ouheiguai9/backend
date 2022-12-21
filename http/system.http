@@ -108,3 +108,9 @@ X-Auth-Token: {{auth_token}}
   "password": "abc!123",
   "tenantId": 10000
 }
+
+### 登录短信验证码
+POST {{baseUrl}}/api/sms/login/captcha
+Content-Type: application/x-www-form-urlencoded
+
+tenantId=10000&to=18888888888&target=C18888888888&addUser=true
