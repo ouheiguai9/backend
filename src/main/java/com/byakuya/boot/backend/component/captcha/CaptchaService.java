@@ -38,6 +38,8 @@ public class CaptchaService {
         Captcha captcha = captchaRepository.findById(new CaptchaId().setTenantId(tenantId).setCaptchaType(captchaType).setTarget(target)).orElse(new Captcha().setValid(false));
         LocalDateTime now = LocalDateTime.now();
         if (captcha.isValid() && captcha.getStart().isBefore(now) && captcha.getEnd().isAfter(now) && ((ignoreCase && captcha.getValue().equalsIgnoreCase(value)) || captcha.getValue().equals(value))) {
+            captcha.setValid(false).setNew(false);
+            captchaRepository.save(captcha);
             return;
         }
         throw ValidationFailedException.buildWithCode("error.captcha");

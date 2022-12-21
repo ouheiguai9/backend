@@ -11,7 +11,8 @@ POST {{baseUrl}}/api/login
 Accept: application/json
 _auth_type_key_: standard
 tenantId: 10000
-user: 18888888888
+userType: phone
+user: M18888888888
 pass: abc!123
 
 > {% client.global.set("auth_token", response.headers.valueOf("X-Auth-Token")); %}
@@ -101,7 +102,8 @@ Content-Type: application/json
 X-Auth-Token: {{auth_token}}
 
 {
-  "username": "18888888888",
+  "username": "M18888888888",
+  "phone": "M18888888888",
   "nickname": "测试账号",
   "password": "abc!123",
   "tenantId": 10000

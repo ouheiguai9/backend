@@ -33,7 +33,7 @@ public class AdminAuthenticationProvider implements RequestAuthenticationProvide
             throw new FailLimitException();
         }
         try {
-            String randomKey = token.getRequest().getHeader(ConstantUtils.HEADER_X_AUTH_TOKEN);
+            String randomKey = getHeaderKey(token.getRequest(), ConstantUtils.HEADER_X_AUTH_TOKEN, "");
             Assert.isTrue(StringUtils.hasText(randomKey) && randomKey.equals(parameterService.getAdminRandomKey()), "");
             counter.set(0);
             return AccountAuthentication.Admin.instance;

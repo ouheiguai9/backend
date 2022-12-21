@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.util.StringUtils;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 /**
  * Created by 田伯光 at 2022/8/28 11:50
  */
-public class AccountAuthentication implements Authentication {
+public class AccountAuthentication implements Authentication, CredentialsContainer {
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     @Getter
@@ -29,6 +30,8 @@ public class AccountAuthentication implements Authentication {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     @Getter
     private final long tenantId;
+    @JsonIgnore
+    private Object credentials;
     @Getter
     @Setter
     private boolean tenantAdmin = false;
@@ -37,13 +40,14 @@ public class AccountAuthentication implements Authentication {
     @JsonIgnore
     private Set<String> apis;
 
-    public AccountAuthentication(long tenantId, long accountId, String name) {
+    public AccountAuthentication(long tenantId, long accountId, String name, Object credentials) {
         if (!StringUtils.hasText(name)) {
             throw new IllegalArgumentException();
         }
         this.tenantId = tenantId;
         this.accountId = accountId;
         this.name = name;
+        this.credentials = credentials;
         this.setApis(null);
         this.setDetails(null);
     }
@@ -71,10 +75,9 @@ public class AccountAuthentication implements Authentication {
         return apis.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet());
     }
 
-    @JsonIgnore
     @Override
     public Object getCredentials() {
-        return details;
+        return this.credentials;
     }
 
     @Override
@@ -128,12 +131,17 @@ public class AccountAuthentication implements Authentication {
         return account;
     }
 
+    @Override
+    public void eraseCredentials() {
+        this.credentials = null;
+    }
+
     static final class Admin extends AccountAuthentication {
         static final Admin instance = new Admin();
         private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
 
         private Admin() {
-            super(0L, 0L, "超级管理员");
+            super(0L, 0L, "超级管理员", null);
         }
 
         @Override

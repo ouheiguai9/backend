@@ -4,6 +4,7 @@ import com.byakuya.boot.backend.component.authorization.AuthorizationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -31,5 +32,19 @@ public class AccountService {
         idSet.add(id);
         accountRepository.findById(id).ifPresent(account -> account.getRoles().forEach(role -> idSet.add(role.getId())));
         return authorizationService.queryApiAuth(idSet);
+    }
+
+    public void loginSuccess(long id) {
+        accountRepository.findById(id).ifPresent(account -> {
+            account.setLoginErrorCount(0);
+            accountRepository.save(account);
+        });
+    }
+
+    public void loginFail(long id) {
+        accountRepository.findById(id).ifPresent(account -> {
+            account.setLoginErrorCount(account.getLoginErrorCount() + 1).setLoginErrorTime(LocalDateTime.now());
+            accountRepository.save(account);
+        });
     }
 }
