@@ -1,4 +1,4 @@
-package com.byakuya.boot.backend.service;
+package com.byakuya.boot.backend.service.sms;
 
 import com.byakuya.boot.backend.component.parameter.ParameterService;
 import com.byakuya.boot.backend.exception.BackendException;
@@ -16,31 +16,20 @@ import java.util.Map;
  * Created by 田伯光 at 2022/11/13 0:55
  */
 @Service
-public class SubMailService {
+class SubMailSmsService implements ISmsService {
 
     private final ParameterService parameterService;
     private final RestTemplate restTemplate;
 
-    public SubMailService(ParameterService parameterService, RestTemplate restTemplate) {
+    public SubMailSmsService(ParameterService parameterService, RestTemplate restTemplate) {
         this.parameterService = parameterService;
         this.restTemplate = restTemplate;
     }
 
-    public void sendMessage(Long tenantId, String projectId, String varJson, String to) {
-        Map<String, Object> params = authParams(tenantId);
-        params.put("to", to);
-        params.put("project", projectId);
-        if (StringUtils.hasText(varJson)) {
-            params.put("vars", varJson);
-        }
-        sendTemplate(params);
-    }
-
     private Map<String, Object> authParams(Long tenantId) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("appid", "88123");
-        params.put("signature", "0c9cd9726a38f26071c4c39a9616d490");
-        return params;
+//        params.put("appid", "88123");
+//        params.put("signature", "0c9cd9726a38f26071c4c39a9616d490");
+        return new HashMap<>(parameterService.getParameterMap(tenantId, SmsSender.SubMail.toString()));
     }
 
     private void sendTemplate(Map<String, Object> params) {
@@ -52,6 +41,15 @@ public class SubMailService {
         } catch (RestClientException e) {
             throw new BackendException(ErrorStatus.CODE_SMS, e);
         }
+    }
+
+    @Override
+    public void sendLoginCaptcha(Long tenantId, String phone, String template, String captcha) throws BackendException {
+        Map<String, Object> params = authParams(tenantId);
+        params.put("to", phone);
+        params.put("project", template);
+        params.put("vars", captcha);
+//        sendTemplate(params);
     }
 
     @Data

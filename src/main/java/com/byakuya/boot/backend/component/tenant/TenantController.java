@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 
 /**
  * Created by 田伯光 at 2022/10/9 21:38
@@ -24,6 +25,7 @@ class TenantController {
     @AclApiMethod(value = "add", desc = "增加", method = RequestMethod.POST, onlyAdmin = true)
     public ResponseEntity<Tenant> create(@Valid @RequestBody Tenant tenant) {
         tenant.setNew(true);
+        tenant.setCreateTime(LocalDateTime.now());
         return ResponseEntity.ok(tenantRepository.save(tenant));
     }
 }

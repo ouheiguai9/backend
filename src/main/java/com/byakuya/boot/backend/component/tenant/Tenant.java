@@ -31,6 +31,6 @@ public class Tenant implements Persistable<Long>, Serializable {
     @Column(nullable = false, length = 128)
     private String name;
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createTime = LocalDateTime.now();
+    private LocalDateTime createTime;
     private String description;
 }

@@ -55,6 +55,7 @@ public class ExceptionResponseConverter implements MessageSourceAware {
     }
 
     private String trace(Throwable error) {
+        if (error == null) return null;
         StringWriter stackTrace = new StringWriter();
         error.printStackTrace(new PrintWriter(stackTrace));
         stackTrace.flush();

@@ -1,9 +1,11 @@
 package com.byakuya.boot.backend.config;
 
 import com.byakuya.boot.backend.exception.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.TransactionException;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestBindingException;
@@ -14,10 +16,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 
 /**
  * Created by 田伯光 on 2021/2/4.
  */
+@Slf4j
 @RestControllerAdvice
 public class BackendControllerAdvice {
 
@@ -42,6 +47,16 @@ public class BackendControllerAdvice {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ExceptionResponse> globalException(DataIntegrityViolationException e) {
         return createResponse(exceptionResponseConverter.toExceptionResponse(new IntegrityViolationException(e)));
+    }
+
+    @ExceptionHandler(TransactionException.class)
+    public ResponseEntity<ExceptionResponse> globalException(TransactionException e) {
+        Throwable root = e.getRootCause();
+        if (root instanceof ConstraintViolationException) {
+            return createResponse(exceptionResponseConverter.toExceptionResponse(ValidationFailedException.buildWithCode(((ConstraintViolationException) root).getConstraintViolations().stream().findFirst().map(ConstraintViolation::getMessage).orElse(root.getMessage()))));
+        }
+        log.error("数据库事务异常", e);
+        return createResponse(exceptionResponseConverter.toExceptionResponse(e));
     }
 
     //    @ExceptionHandler(AccessDeniedException.class)
@@ -76,6 +91,7 @@ public class BackendControllerAdvice {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionResponse> globalException(Exception e) {
+        log.error("未知异常", e);
         return createResponse(exceptionResponseConverter.toExceptionResponse(e));
     }
 }

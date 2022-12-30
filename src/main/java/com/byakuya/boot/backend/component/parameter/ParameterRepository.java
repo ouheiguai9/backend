@@ -9,7 +9,8 @@ import java.util.Optional;
  * Created by 田伯光 at 2022/4/28 17:27
  */
 interface ParameterRepository extends JpaRepository<Parameter, Long> {
-    Optional<Parameter> findByGroupKeyAndItemKey(String group, String item);
 
-    List<Parameter> findByGroupKeyOrderByOrderingAsc(String group);
+    Optional<Parameter> findByTenant_idAndGroupKeyAndItemKey(Long tenantId, String group, String item);
+
+    List<Parameter> findByTenant_idAndGroupKeyOrderByOrderingAsc(Long tenantId, String group);
 }

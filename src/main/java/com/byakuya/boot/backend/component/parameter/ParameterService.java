@@ -28,7 +28,7 @@ public class ParameterService {
     }
 
     public String getAdminRandomKey() {
-        Parameter parameter = parameterRepository.findByGroupKeyAndItemKey(ADMIN_RANDOM_KEY, ADMIN_RANDOM_KEY).orElseGet(() -> {
+        Parameter parameter = parameterRepository.findByTenant_idAndGroupKeyAndItemKey(null, ADMIN_RANDOM_KEY, ADMIN_RANDOM_KEY).orElseGet(() -> {
             Parameter tmp = new Parameter();
             tmp.setGroupKey(ADMIN_RANDOM_KEY);
             tmp.setItemKey(ADMIN_RANDOM_KEY);
@@ -52,13 +52,21 @@ public class ParameterService {
     }
 
     public Map<String, String> getParameterMap(String group) {
+        return getParameterMap(null, group);
+    }
+
+    public Map<String, String> getParameterMap(Long tenantId, String group) {
         HashMap<String, String> rtnVal = new HashMap<>();
-        getParameters(group).forEach(param -> rtnVal.put(param.getItemKey(), param.getItemValue()));
+        getParameters(tenantId, group).forEach(param -> rtnVal.put(param.getItemKey(), param.getItemValue()));
         return rtnVal;
     }
 
     public List<Parameter> getParameters(String group) {
-        return parameterRepository.findByGroupKeyOrderByOrderingAsc(group);
+        return getParameters(null, group);
+    }
+
+    public List<Parameter> getParameters(Long tenantId, String group) {
+        return parameterRepository.findByTenant_idAndGroupKeyOrderByOrderingAsc(tenantId, group);
     }
 
     public List<Parameter> getTencentCloudCAPI() {
@@ -73,8 +81,12 @@ public class ParameterService {
         return getValue(CAPI_GROUP_KEY, "SecretId");
     }
 
+    public String getValue(Long tenantId, String group, String item) {
+        return parameterRepository.findByTenant_idAndGroupKeyAndItemKey(tenantId, group, item).map(Parameter::getItemValue).orElse("");
+    }
+
     public String getValue(String group, String item) {
-        return parameterRepository.findByGroupKeyAndItemKey(group, item).map(Parameter::getItemValue).orElse("");
+        return getValue(null, group, item);
     }
 
     public String getTencentCloudSecretKey() {
