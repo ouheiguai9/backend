@@ -3,6 +3,7 @@ package com.byakuya.boot.backend.component.tenant;
 import com.byakuya.boot.backend.SystemVersion;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
@@ -24,12 +25,13 @@ public class Tenant implements Persistable<Long>, Serializable {
 
     @Id
     private Long id;
-    @NotBlank
+    @NotBlank(message = "error.validation.tenant.code.required")
     @Column(nullable = false, unique = true, length = 64)
     private String code;
-    @NotBlank
+    @NotBlank(message = "error.validation.tenant.name.required")
     @Column(nullable = false, length = 128)
     private String name;
+    @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createTime;
     private String description;

@@ -23,15 +23,16 @@ public class CaptchaService {
     }
 
     public void add(Long tenantId, Type captchaType, String target, String value, LocalDateTime start, LocalDateTime end, boolean force) throws ValidationFailedException {
-        LocalDateTime now = LocalDateTime.now();
         Captcha captcha = new Captcha().setTenantId(tenantId).setCaptchaType(captchaType).setTarget(target).setNew(true);
         captchaRepository.findById(Objects.requireNonNull(captcha.getId())).ifPresent(old -> {
-            if (!force && old.isValid() && old.getEnd().isAfter(now)) {
+            if (!force && old.isValid() && old.getEnd().isAfter(LocalDateTime.now())) {
                 throw ValidationFailedException.buildWithCode("error.captcha.valid");
             }
             captcha.setNew(false);
         });
         captcha.setValue(value).setStart(start).setEnd(end).setValid(true);
+        captcha.getTenant().setCode("AAA");
+        captcha.getTenant().setName("AAA");
         captchaRepository.save(captcha);
     }
 

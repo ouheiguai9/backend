@@ -24,7 +24,7 @@ class Captcha implements Persistable<CaptchaId>, Serializable {
     @Transient
     private boolean isNew;
     @Id
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
     @JoinColumn(name = "tenant", nullable = false)
     private Tenant tenant;
     @Id
