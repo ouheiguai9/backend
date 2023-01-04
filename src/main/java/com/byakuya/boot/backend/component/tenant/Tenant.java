@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.domain.Persistable;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -18,11 +19,11 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "T_SYS_TENANT")
 @Accessors(chain = true)
+@EntityListeners(AuditingEntityListener.class)
 public class Tenant implements Persistable<Long>, Serializable {
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     @Transient
     private boolean isNew = false;
-
     @Id
     private Long id;
     @NotBlank(message = "error.validation.tenant.code.required")
@@ -35,4 +36,10 @@ public class Tenant implements Persistable<Long>, Serializable {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createTime;
     private String description;
+
+    @PrePersist
+    @PostLoad
+    void markNotNew() {
+        this.isNew = false;
+    }
 }
