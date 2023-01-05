@@ -18,13 +18,13 @@ import java.util.Set;
 @Setter
 @Getter
 @Entity
-@Table(name = "T_SYS_ORGANIZATION", indexes = {@Index(columnList = "parent,name", unique = true)})
+@Table(name = "T_SYS_ORGANIZATION", indexes = {@Index(columnList = "parent_id,name", unique = true)})
 @Accessors(chain = true)
 public class Organization extends AbstractAuditableEntity {
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent", updatable = false)
+    @JoinColumn(updatable = false)
     private Organization parent;
     @NotBlank
     @Column(nullable = false)
@@ -37,8 +37,8 @@ public class Organization extends AbstractAuditableEntity {
     @JsonIgnore
     @ManyToMany
     @JoinTable(name = "T_SYS_ORG_PATH",
-            joinColumns = {@JoinColumn(name = "ancestor")},
-            inverseJoinColumns = {@JoinColumn(name = "organization")})
+            joinColumns = {@JoinColumn(name = "ancestor_id")},
+            inverseJoinColumns = {@JoinColumn(name = "organization_id")})
     private Set<Organization> ancestors;
     @JsonIgnore
     @ManyToMany(mappedBy = "ancestors")

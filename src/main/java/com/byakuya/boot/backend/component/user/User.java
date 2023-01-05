@@ -44,7 +44,8 @@ public class User extends AbstractAuditableEntity {
     private LocalDateTime lastPasswordModifiedDate;
     @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "account", updatable = false, unique = true, nullable = false)
+    @JoinColumn(name = "id")
+    @MapsId
     private Account account;
 
     @JsonProperty

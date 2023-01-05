@@ -1,6 +1,7 @@
 package com.byakuya.boot.backend.component.tenant;
 
 import com.byakuya.boot.backend.SystemVersion;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedDate;
@@ -22,8 +23,9 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public class Tenant implements Persistable<Long>, Serializable {
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
+    @JsonIgnore
     @Transient
-    private boolean isNew = false;
+    private boolean isNew;
     @Id
     private Long id;
     @NotBlank(message = "error.validation.tenant.code.required")
@@ -37,9 +39,9 @@ public class Tenant implements Persistable<Long>, Serializable {
     private LocalDateTime createTime;
     private String description;
 
-    @PrePersist
+    @PostPersist
     @PostLoad
     void markNotNew() {
-        this.isNew = false;
+        isNew = false;
     }
 }

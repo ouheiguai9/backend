@@ -15,17 +15,16 @@ public class UniqueService {
     }
 
     public Unique addUnique(Long tenantId, Type uniqueType, String content) {
-        if (exists(tenantId, uniqueType, content)) {
+        Unique unique = new Unique(uniqueType, tenantId, content);
+        //noinspection ConstantConditions
+        if (uniqueRepository.existsById(unique.getId())) {
             throw ValidationFailedException.buildWithCode(uniqueType.errorCode);
         }
-        return uniqueRepository.save(new Unique().setTenantId(tenantId).setUniqueType(uniqueType).setUniqueValue(content));
-    }
-
-    public boolean exists(Long tenantId, Type uniqueType, String content) {
-        return uniqueRepository.existsById(new UniqueId().setTenantId(tenantId).setUniqueType(uniqueType).setUniqueValue(content));
+        unique.setNew(true);
+        return uniqueRepository.save(unique);
     }
 
     public void removeUnique(Long tenantId, Type uniqueType, String content) {
-        uniqueRepository.deleteById(new UniqueId().setTenantId(tenantId).setUniqueType(uniqueType).setUniqueValue(content));
+        uniqueRepository.deleteById(new UniqueId(uniqueType, tenantId, content));
     }
 }

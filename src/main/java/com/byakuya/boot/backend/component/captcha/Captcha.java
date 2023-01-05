@@ -1,7 +1,6 @@
 package com.byakuya.boot.backend.component.captcha;
 
 import com.byakuya.boot.backend.SystemVersion;
-import com.byakuya.boot.backend.component.tenant.Tenant;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.springframework.data.domain.Persistable;
@@ -31,12 +30,7 @@ class Captcha implements Persistable<CaptchaId>, Serializable {
     private LocalDateTime end;
     private boolean valid;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("tenantId")
-    @JoinColumn(insertable = false, updatable = false)
-    private Tenant tenant;
-
-    @PrePersist
+    @PostPersist
     @PostLoad
     void markNotNew() {
         this.isNew = false;

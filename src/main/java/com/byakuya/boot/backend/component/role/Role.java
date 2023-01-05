@@ -18,7 +18,7 @@ import javax.validation.constraints.NotBlank;
 @Setter
 @Getter
 @Entity
-@Table(name = "T_SYS_ROLE", indexes = {@Index(columnList = "tenant,name", unique = true)})
+@Table(name = "T_SYS_ROLE", indexes = {@Index(columnList = "tenant_id,name", unique = true)})
 @Accessors(chain = true)
 public class Role extends AbstractAuditableEntity {
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;

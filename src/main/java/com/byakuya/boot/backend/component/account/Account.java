@@ -2,7 +2,6 @@ package com.byakuya.boot.backend.component.account;
 
 import com.byakuya.boot.backend.SystemVersion;
 import com.byakuya.boot.backend.component.AbstractBaseEntity;
-import com.byakuya.boot.backend.component.organization.Organization;
 import com.byakuya.boot.backend.component.role.Role;
 import com.byakuya.boot.backend.utils.ConstantUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -36,12 +35,8 @@ public class Account extends AbstractBaseEntity {
     private boolean admin = false;
     @JsonIgnore
     @ManyToMany
-    @JoinTable(name = "T_SYS_USER_ROLE",
-            joinColumns = {@JoinColumn(name = "role")},
-            inverseJoinColumns = {@JoinColumn(name = "user")})
+    @JoinTable(name = "T_SYS_ACCOUNT_ROLE",
+            joinColumns = {@JoinColumn(name = "account_id")},
+            inverseJoinColumns = {@JoinColumn(name = "role_id")})
     private Set<Role> roles;
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organization")
-    private Organization organization;
 }

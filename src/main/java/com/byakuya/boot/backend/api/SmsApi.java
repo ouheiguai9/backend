@@ -33,14 +33,14 @@ class SmsApi {
     }
 
     @PostMapping("/login/captcha")
-    public ResponseEntity<Boolean> loginCaptcha(@RequestParam SmsSender sender,
-                                                @RequestParam Long tenantId,
-                                                @RequestParam String to,
-                                                @RequestParam String template,
-                                                @RequestParam(required = false) String target,
-                                                @RequestParam(required = false, defaultValue = "6") Integer length,
-                                                @RequestParam(required = false, defaultValue = "3") Integer minutes,
-                                                @RequestParam(required = false, defaultValue = "false") boolean addUser) {
+    public ResponseEntity<Void> loginCaptcha(@RequestParam SmsSender sender,
+                                             @RequestParam Long tenantId,
+                                             @RequestParam String to,
+                                             @RequestParam String template,
+                                             @RequestParam(required = false) String target,
+                                             @RequestParam(required = false, defaultValue = "6") Integer length,
+                                             @RequestParam(required = false, defaultValue = "3") Integer minutes,
+                                             @RequestParam(required = false, defaultValue = "false") boolean addUser) {
         if (!StringUtils.hasText(target)) {
             target = to;
         }
@@ -57,6 +57,6 @@ class SmsApi {
             userService.add(user);
         }
         captchaService.add(tenantId, Type.LOGIN, target, captcha, LocalDateTime.now().plusMinutes(minutes), true);
-        return ResponseEntity.ok(true);
+        return ResponseEntity.ok().build();
     }
 }

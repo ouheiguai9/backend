@@ -23,7 +23,7 @@ public class CaptchaService {
     }
 
     public void add(Long tenantId, Type captchaType, String target, String value, LocalDateTime start, LocalDateTime end, boolean force) throws ValidationFailedException {
-        Captcha captcha = new Captcha().setId(new CaptchaId().setTenantId(tenantId).setCaptchaType(captchaType).setTarget(target)).setNew(true);
+        Captcha captcha = new Captcha().setId(new CaptchaId(captchaType, tenantId, target)).setNew(true);
         captchaRepository.findById(Objects.requireNonNull(captcha.getId())).ifPresent(old -> {
             if (!force && old.isValid() && old.getEnd().isAfter(LocalDateTime.now())) {
                 throw ValidationFailedException.buildWithCode("error.captcha.valid");
@@ -35,7 +35,7 @@ public class CaptchaService {
     }
 
     public void check(Long tenantId, Type captchaType, String target, String value, boolean ignoreCase) throws ValidationFailedException {
-        Captcha captcha = captchaRepository.findById(new CaptchaId().setTenantId(tenantId).setCaptchaType(captchaType).setTarget(target)).orElse(new Captcha().setValid(false));
+        Captcha captcha = captchaRepository.findById(new CaptchaId(captchaType, tenantId, target)).orElse(new Captcha().setValid(false));
         LocalDateTime now = LocalDateTime.now();
         if (captcha.isValid() && captcha.getStart().isBefore(now) && captcha.getEnd().isAfter(now) && ((ignoreCase && captcha.getValue().equalsIgnoreCase(value)) || captcha.getValue().equals(value))) {
             captcha.setValid(false);
