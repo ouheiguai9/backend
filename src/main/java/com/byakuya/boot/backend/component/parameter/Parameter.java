@@ -15,9 +15,9 @@ import javax.validation.constraints.NotBlank;
 @Setter
 @Getter
 @Entity
-@Table(name = "T_SYS_PARAMETER", indexes = {@Index(columnList = "tenant,groupKey,itemKey")})
+@Table(name = "T_SYS_PARAMETER", indexes = {@Index(columnList = "tenant_id,groupKey,itemKey")})
 @Accessors(chain = true)
-@AssociationOverride(name = "tenant", joinColumns = @JoinColumn(name = "tenant", updatable = false))
+@AssociationOverride(name = "tenant", joinColumns = @JoinColumn(updatable = false))
 public class Parameter extends AbstractAuditableEntity {
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
 
