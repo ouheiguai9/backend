@@ -114,3 +114,10 @@ POST {{baseUrl}}/api/sms/login/captcha
 Content-Type: application/x-www-form-urlencoded
 
 sender=SubMail&tenantId=10000&to=18888888881&template=abc&target=C18888888881&addUser=true
+
+
+### 查询当前用户顾客信息
+GET {{baseUrl}}/dfb/customers
+Accept: application/json
+Content-Type: application/json
+X-Auth-Token: {{auth_token}}

@@ -11,6 +11,10 @@ public class RecordNotFoundException extends BackendException implements Message
     private final String code;
     private final Object[] args;
 
+    public RecordNotFoundException() {
+        this(ErrorStatus.DB_RECORD_NOT_FOUND.code);
+    }
+
     public RecordNotFoundException(String code, Object... args) {
         super(ErrorStatus.DB_RECORD_NOT_FOUND);
         this.code = code;
