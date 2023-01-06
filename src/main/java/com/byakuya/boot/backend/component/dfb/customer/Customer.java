@@ -1,6 +1,6 @@
 package com.byakuya.boot.backend.component.dfb.customer;
 
-import com.byakuya.boot.backend.component.account.Account;
+import com.byakuya.boot.backend.component.user.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
@@ -20,10 +20,10 @@ public class Customer {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long id;
     @JsonIgnore
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "id")
     @MapsId
-    private Account account;
+    private User user;
     @Column(length = 20, nullable = false)
     private String phone;
 }

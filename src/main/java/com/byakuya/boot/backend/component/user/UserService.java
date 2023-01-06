@@ -51,6 +51,10 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public Optional<User> query(Long userId) {
+        return userRepository.findById(userId);
+    }
+
     public Optional<User> loadByUsername(String username, Long tenantId) {
         return userRepository.findByUsernameAndTenant_id(username, tenantId);
     }

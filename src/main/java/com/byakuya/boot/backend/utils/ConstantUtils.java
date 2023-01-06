@@ -25,6 +25,8 @@ public final class ConstantUtils {
     public static final String ID_GENERATOR_SEQUENCE_NAME = "table_id";
     //错误信息编码前缀
     public static final String ERROR_MESSAGE_CODE_PREFIX = "error.";
+    //懂法宝租户ID
+    public static final long TENANT_ID_DFB = 10000L;
 
     private ConstantUtils() {
 

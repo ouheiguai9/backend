@@ -3,7 +3,9 @@ package com.byakuya.boot.backend.security;
 import com.byakuya.boot.backend.component.authorization.AuthorizationService;
 import com.byakuya.boot.backend.config.AclApiMethod;
 import com.byakuya.boot.backend.config.AclApiModule;
+import com.byakuya.boot.backend.config.TenantAuthorize;
 import com.byakuya.boot.backend.utils.ConstantUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.support.annotation.AnnotationMatchingPointcut;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,12 +25,16 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
 import org.springframework.session.web.http.HttpSessionIdResolver;
+import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Optional;
 
 /**
  * Created by 田伯光 at 2022/10/12 23:56
  */
+@Slf4j
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = false)
 public class WebSecurityConfig {
@@ -53,7 +59,7 @@ public class WebSecurityConfig {
 
     @Bean
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-    Advisor preFilterAuthorizationMethodInterceptor() {
+    Advisor aclMethodAuthorize() {
         AnnotationMatchingPointcut pointcut = new AnnotationMatchingPointcut(AclApiModule.class, AclApiMethod.class);
         return new AuthorizationManagerBeforeMethodInterceptor(pointcut, (supplier, mi) -> {
             boolean bl = Optional.of(supplier.get()).filter(x -> x.isAuthenticated() && x instanceof AccountAuthentication).map(authentication -> {
@@ -70,6 +76,28 @@ public class WebSecurityConfig {
             return new AuthorizationDecision(bl);
         });
     }
+
+    @Bean
+    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+    Advisor tenantMethodAuthorize() {
+        AnnotationMatchingPointcut pointcut = new AnnotationMatchingPointcut(TenantAuthorize.class, RequestMapping.class, true);
+        return new AuthorizationManagerBeforeMethodInterceptor(pointcut, (supplier, mi) -> {
+            boolean bl = Optional.of(supplier.get()).filter(x -> x.isAuthenticated() && x instanceof AccountAuthentication).map(authentication -> {
+                Method method = mi.getMethod();
+                TenantAuthorize tenantAuthorize;
+                if (method.isAnnotationPresent(TenantAuthorize.class)) {
+                    tenantAuthorize = method.getAnnotation(TenantAuthorize.class);
+                } else {
+                    tenantAuthorize = method.getDeclaringClass().getAnnotation(TenantAuthorize.class);
+                }
+                long[] tenantIdArr = tenantAuthorize.value();
+                if (tenantIdArr == null || tenantIdArr.length == 0) return true;
+                return Arrays.binarySearch(tenantIdArr, ((AccountAuthentication) authentication).getTenantId()) > -1;
+            }).orElse(false);
+            return new AuthorizationDecision(bl);
+        });
+    }
+
 
     @Bean
     HttpSessionIdResolver headerHttpSessionIdResolver() {
