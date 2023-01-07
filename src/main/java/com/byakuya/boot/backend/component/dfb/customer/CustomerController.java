@@ -3,10 +3,8 @@ package com.byakuya.boot.backend.component.dfb.customer;
 import com.byakuya.boot.backend.component.user.User;
 import com.byakuya.boot.backend.component.user.UserService;
 import com.byakuya.boot.backend.config.ApiModule;
-import com.byakuya.boot.backend.config.TenantAuthorize;
 import com.byakuya.boot.backend.exception.AuthException;
 import com.byakuya.boot.backend.security.AccountAuthentication;
-import com.byakuya.boot.backend.utils.ConstantUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
@@ -19,7 +17,6 @@ import java.util.Optional;
  * Created by 田伯光 at 2023/1/5 22:54
  */
 @ApiModule(path = "dfb/customers")
-@TenantAuthorize(ConstantUtils.TENANT_ID_DFB)
 @Validated
 class CustomerController {
     private final CustomerRepository customerRepository;

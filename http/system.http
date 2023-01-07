@@ -6,7 +6,7 @@ X-Auth-Token: {{randomKey}}
 
 > {% client.global.set("auth_token", response.headers.valueOf("X-Auth-Token")); %}
 
-### 普通用户登录
+### 普通用户登录-standard
 POST {{baseUrl}}/api/login
 Accept: application/json
 _auth_type_key_: standard
@@ -14,6 +14,17 @@ tenantId: 10000
 userType: phone
 user: M18888888888
 pass: abc!123
+
+> {% client.global.set("auth_token", response.headers.valueOf("X-Auth-Token")); %}
+
+### 普通用户登录-captcha
+POST {{baseUrl}}/api/login
+Accept: application/json
+_auth_type_key_: dynamic-captcha
+tenantId: 10000
+targetType: phone
+target: C18888888881
+captcha: 425162
 
 > {% client.global.set("auth_token", response.headers.valueOf("X-Auth-Token")); %}
 
@@ -34,7 +45,8 @@ X-Auth-Token: {{auth_token}}
 {
   "id": 10000,
   "code": "DongFaBao",
-  "name": "懂法宝科技股份有限公司"
+  "name": "懂法宝科技股份有限公司",
+  "prefix": "dfb"
 }
 
 ### 增加系统参数

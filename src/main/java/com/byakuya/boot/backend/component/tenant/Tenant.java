@@ -38,6 +38,7 @@ public class Tenant implements Persistable<Long>, Serializable {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createTime;
     private String description;
+    private String prefix;
 
     @PostPersist
     @PostLoad

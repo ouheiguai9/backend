@@ -3,18 +3,19 @@ package com.byakuya.boot.backend.security;
 import com.byakuya.boot.backend.component.authorization.AuthorizationService;
 import com.byakuya.boot.backend.config.AclApiMethod;
 import com.byakuya.boot.backend.config.AclApiModule;
-import com.byakuya.boot.backend.config.TenantAuthorize;
+import com.byakuya.boot.backend.exception.AuthException;
 import com.byakuya.boot.backend.utils.ConstantUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.support.annotation.AnnotationMatchingPointcut;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Role;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authorization.AuthorizationDecision;
+import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.authorization.method.AuthorizationManagerBeforeMethodInterceptor;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,13 +23,15 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
+import org.springframework.security.web.util.matcher.AndRequestMatcher;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
 import org.springframework.session.web.http.HttpSessionIdResolver;
-import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 /**
@@ -42,11 +45,11 @@ public class WebSecurityConfig {
     private String errorUrl;
 
     @Bean
-    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http, RequestAuthenticationManager requestAuthenticationManager) throws Exception {
+    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http, RequestAuthenticationManager requestAuthenticationManager, AuthorizationManager<RequestAuthorizationContext> access) throws Exception {
         RequestAuthenticationFilter requestAuthenticationFilter = new RequestAuthenticationFilter(requestAuthenticationManager);
         RequestLoginConfigurer requestLoginConfigurer = new RequestLoginConfigurer(requestAuthenticationFilter);
         SecurityErrorHandler securityErrorHandler = new SecurityErrorHandler();
-        http.authorizeHttpRequests(authorize -> authorize.antMatchers(errorUrl, ConstantUtils.OPEN_API_PREFIX + "/**").permitAll().antMatchers(HttpMethod.OPTIONS).permitAll().anyRequest().authenticated())
+        http.authorizeHttpRequests(authorize -> authorize.anyRequest().access(access))
                 .apply(requestLoginConfigurer)
                 .and()
                 .exceptionHandling().authenticationEntryPoint(securityErrorHandler).accessDeniedHandler(securityErrorHandler)
@@ -58,11 +61,30 @@ public class WebSecurityConfig {
     }
 
     @Bean
+    AuthorizationManager<RequestAuthorizationContext> requestMatcherAuthorizationManager(@Autowired(required = false) TenantPrefixMatcher tenantPrefixMatcher) {
+        RequestMatcher permitAll = new AndRequestMatcher(new AntPathRequestMatcher(errorUrl), new AntPathRequestMatcher(ConstantUtils.OPEN_API_PREFIX + "/**"));
+        return (supplier, context) -> {
+            HttpServletRequest request = context.getRequest();
+            boolean access = permitAll.matches(request) || Optional.ofNullable(supplier.get()).filter(x -> x.isAuthenticated() && x instanceof AccountAuthentication).map(authentication -> {
+                AccountAuthentication accountAuthentication = (AccountAuthentication) authentication;
+                if (tenantPrefixMatcher != null) {
+                    Long tenantId = tenantPrefixMatcher.matches(request);
+                    if (tenantId != null) {
+                        return tenantId == accountAuthentication.getTenantId();
+                    }
+                }
+                return true;
+            }).orElse(false);
+            return new AuthorizationDecision(access);
+        };
+    }
+
+    @Bean
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     Advisor aclMethodAuthorize() {
         AnnotationMatchingPointcut pointcut = new AnnotationMatchingPointcut(AclApiModule.class, AclApiMethod.class);
         return new AuthorizationManagerBeforeMethodInterceptor(pointcut, (supplier, mi) -> {
-            boolean bl = Optional.of(supplier.get()).filter(x -> x.isAuthenticated() && x instanceof AccountAuthentication).map(authentication -> {
+            boolean access = Optional.of(supplier.get()).filter(x -> x.isAuthenticated() && x instanceof AccountAuthentication).map(authentication -> {
                 //超级管理员拥有所有操作权限
                 if (AccountAuthentication.isAdmin(authentication)) return true;
                 AclApiMethod apiMethod = mi.getMethod().getAnnotation(AclApiMethod.class);
@@ -73,31 +95,12 @@ public class WebSecurityConfig {
                 AclApiModule apiModule = mi.getMethod().getDeclaringClass().getAnnotation(AclApiModule.class);
                 return accountAuthentication.hasApiAuth(AuthorizationService.createAuthKey(apiModule.value(), apiMethod.value()));
             }).orElse(false);
-            return new AuthorizationDecision(bl);
+            if (!access) {
+                throw AuthException.forbidden(null);
+            }
+            return new AuthorizationDecision(true);
         });
     }
-
-    @Bean
-    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-    Advisor tenantMethodAuthorize() {
-        AnnotationMatchingPointcut pointcut = new AnnotationMatchingPointcut(TenantAuthorize.class, RequestMapping.class, true);
-        return new AuthorizationManagerBeforeMethodInterceptor(pointcut, (supplier, mi) -> {
-            boolean bl = Optional.of(supplier.get()).filter(x -> x.isAuthenticated() && x instanceof AccountAuthentication).map(authentication -> {
-                Method method = mi.getMethod();
-                TenantAuthorize tenantAuthorize;
-                if (method.isAnnotationPresent(TenantAuthorize.class)) {
-                    tenantAuthorize = method.getAnnotation(TenantAuthorize.class);
-                } else {
-                    tenantAuthorize = method.getDeclaringClass().getAnnotation(TenantAuthorize.class);
-                }
-                long[] tenantIdArr = tenantAuthorize.value();
-                if (tenantIdArr == null || tenantIdArr.length == 0) return true;
-                return Arrays.binarySearch(tenantIdArr, ((AccountAuthentication) authentication).getTenantId()) > -1;
-            }).orElse(false);
-            return new AuthorizationDecision(bl);
-        });
-    }
-
 
     @Bean
     HttpSessionIdResolver headerHttpSessionIdResolver() {

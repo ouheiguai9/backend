@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.TransactionException;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindException;
@@ -50,6 +49,10 @@ public class BackendControllerAdvice {
         return createResponse(exceptionResponseConverter.toExceptionResponse(new IntegrityViolationException(e)));
     }
 
+    private ResponseEntity<ExceptionResponse> createResponse(ExceptionResponse body) {
+        return new ResponseEntity<>(body, body.errorStatus.httpStatus);
+    }
+
     @ExceptionHandler(TransactionException.class)
     public ResponseEntity<ExceptionResponse> transactionException(TransactionException e) {
         Throwable root = e.getRootCause();
@@ -58,10 +61,6 @@ public class BackendControllerAdvice {
         }
         log.error("数据库事务异常", e);
         return createResponse(exceptionResponseConverter.toExceptionResponse(e));
-    }
-
-    private ResponseEntity<ExceptionResponse> createResponse(ExceptionResponse body) {
-        return new ResponseEntity<>(body, body.errorStatus.httpStatus);
     }
 
     //
@@ -85,10 +84,10 @@ public class BackendControllerAdvice {
         return createResponse(exceptionResponseConverter.toExceptionResponse(new BackendException(ErrorStatus.CODE_ARGUMENT, e)));
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ExceptionResponse> accessDeniedException(AccessDeniedException e) {
-        return createResponse(exceptionResponseConverter.toExceptionResponse(AuthException.forbidden(e)));
-    }
+//    @ExceptionHandler(AccessDeniedException.class)
+//    public ResponseEntity<ExceptionResponse> accessDeniedException(AccessDeniedException e) {
+//        return createResponse(exceptionResponseConverter.toExceptionResponse(AuthException.forbidden(e)));
+//    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionResponse> globalException(Exception e) {

@@ -29,8 +29,7 @@ public class DynamicCaptchaAuthenticationProvider extends AbstractAccountAuthent
     }
 
     @Override
-    public AccountAuthentication authenticate(RequestAuthenticationToken token) throws AuthenticationException {
-        HttpServletRequest request = token.getRequest();
+    protected AccountAuthentication retrieveAuthentication(HttpServletRequest request) throws AuthenticationException {
         String targetType = getHeaderKey(request, "targetType", "phone");
         Long tenantId = Long.valueOf(getHeaderKey(request, "tenantId", "0"));
         String target = getTarget(request);
@@ -49,11 +48,6 @@ public class DynamicCaptchaAuthenticationProvider extends AbstractAccountAuthent
         }
         User user = opt.orElseThrow(() -> new UsernameNotFoundException(target));
         return new AccountAuthentication(user.getTenantId(), user.getAccountId(), user.getNickname(), null);
-    }
-
-    @Override
-    protected AccountAuthentication retrieveAuthentication(HttpServletRequest request) throws AuthenticationException {
-        return null;
     }
 
     @Override
