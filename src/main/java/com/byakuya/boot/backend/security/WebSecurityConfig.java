@@ -30,9 +30,16 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
 import org.springframework.session.web.http.HttpSessionIdResolver;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.Duration;
+import java.util.Collections;
 import java.util.Optional;
+
+import static com.byakuya.boot.backend.utils.ConstantUtils.HEADER_X_AUTH_TOKEN;
 
 /**
  * Created by 田伯光 at 2022/10/12 23:56
@@ -103,8 +110,21 @@ public class WebSecurityConfig {
     }
 
     @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Collections.singletonList(CorsConfiguration.ALL));
+        configuration.setAllowedMethods(Collections.singletonList(CorsConfiguration.ALL));
+        configuration.setAllowedHeaders(Collections.singletonList(CorsConfiguration.ALL));
+        configuration.setExposedHeaders(Collections.singletonList(HEADER_X_AUTH_TOKEN));
+        configuration.setMaxAge(Duration.ofHours(1));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+    @Bean
     HttpSessionIdResolver headerHttpSessionIdResolver() {
-        return new HeaderHttpSessionIdResolver(ConstantUtils.HEADER_X_AUTH_TOKEN);
+        return new HeaderHttpSessionIdResolver(HEADER_X_AUTH_TOKEN);
     }
 
     @Bean
