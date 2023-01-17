@@ -2,7 +2,6 @@ package com.byakuya.boot.backend.security;
 
 import com.byakuya.boot.backend.component.account.Account;
 import com.byakuya.boot.backend.component.account.AccountService;
-import com.byakuya.boot.backend.utils.ConstantUtils;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.AuthenticationException;
@@ -29,7 +28,7 @@ public abstract class AbstractAccountAuthenticationProvider implements RequestAu
         if (account.isLocked()) {
             throw new LockedException("Account Locked");
         }
-        if (account.getLoginErrorCount() >= ConstantUtils.LOGIN_ERROR_LIMIT_COUNT) {
+        if (accountService.isErrorLimitAccount(account)) {
             throw new FailLimitException();
         }
         try {

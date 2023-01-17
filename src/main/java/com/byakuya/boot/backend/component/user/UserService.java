@@ -1,8 +1,11 @@
 package com.byakuya.boot.backend.component.user;
 
 import com.byakuya.boot.backend.component.account.Account;
+import com.byakuya.boot.backend.component.account.AccountService;
 import com.byakuya.boot.backend.component.unique.Type;
 import com.byakuya.boot.backend.component.unique.UniqueService;
+import com.byakuya.boot.backend.exception.AuthException;
+import com.byakuya.boot.backend.exception.RecordNotFoundException;
 import com.byakuya.boot.backend.security.AccountAuthentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -10,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 /**
@@ -17,11 +21,13 @@ import java.util.Optional;
  */
 @Service
 public class UserService {
+    private final AccountService accountService;
     private final UserRepository userRepository;
     private final UniqueService uniqueService;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, UniqueService uniqueService, PasswordEncoder passwordEncoder) {
+    public UserService(AccountService accountService, UserRepository userRepository, UniqueService uniqueService, PasswordEncoder passwordEncoder) {
+        this.accountService = accountService;
         this.userRepository = userRepository;
         this.uniqueService = uniqueService;
         this.passwordEncoder = passwordEncoder;
@@ -53,6 +59,21 @@ public class UserService {
 
     public Optional<User> query(Long userId) {
         return userRepository.findById(userId);
+    }
+
+    public void changePassword(Long userId, String oPass, String nPass) {
+        User user = userRepository.findById(userId).orElseThrow(RecordNotFoundException::new);
+        if (accountService.isErrorLimitAccount(accountService.query(userId).orElseThrow(RecordNotFoundException::new))) {
+            throw AuthException.loginFailLimit();
+        }
+        if (passwordEncoder.matches(oPass, user.getPassword())) {
+            user.setPassword(passwordEncoder.encode(nPass));
+            user.setLastPasswordModifiedDate(LocalDateTime.now());
+            userRepository.save(user);
+        } else {
+            accountService.loginFail(userId);
+            throw AuthException.invalidToken(null);
+        }
     }
 
     public Optional<User> loadByUsername(String username, Long tenantId) {

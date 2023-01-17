@@ -1,6 +1,7 @@
 package com.byakuya.boot.backend.component.account;
 
 import com.byakuya.boot.backend.component.authorization.AuthorizationService;
+import com.byakuya.boot.backend.utils.ConstantUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,5 +47,9 @@ public class AccountService {
             account.setLoginErrorCount(account.getLoginErrorCount() + 1).setLoginErrorTime(LocalDateTime.now());
             accountRepository.save(account);
         });
+    }
+
+    public boolean isErrorLimitAccount(Account account) {
+        return account.getLoginErrorCount() > ConstantUtils.LOGIN_ERROR_LIMIT_COUNT && LocalDateTime.now().isBefore(account.getLoginErrorTime().plusMinutes(ConstantUtils.LOGIN_ERROR_WAIT_MINUTES));
     }
 }

@@ -121,6 +121,19 @@ X-Auth-Token: {{auth_token}}
   "tenantId": 10000
 }
 
+### 查询当前用户或者指定用户
+GET {{baseUrl}}/users/me
+Accept: application/json
+Content-Type: application/json
+X-Auth-Token: {{auth_token}}
+
+### 修改当前用户密码
+POST {{baseUrl}}/users/change/password
+Content-Type: application/x-www-form-urlencoded
+X-Auth-Token: {{auth_token}}
+
+oPass=abc!123&nPass=abc!123
+
 ### 登录短信验证码
 POST {{baseUrl}}/api/sms/login/captcha
 Content-Type: application/x-www-form-urlencoded

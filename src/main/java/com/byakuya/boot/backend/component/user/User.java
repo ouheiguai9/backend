@@ -3,7 +3,6 @@ package com.byakuya.boot.backend.component.user;
 import com.byakuya.boot.backend.SystemVersion;
 import com.byakuya.boot.backend.component.AbstractAuditableEntity;
 import com.byakuya.boot.backend.component.account.Account;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -48,10 +47,9 @@ public class User extends AbstractAuditableEntity {
     @MapsId
     private Account account;
 
-    @JsonProperty
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    @JsonIgnore
     public Long getAccountId() {
-        return account == null ? null : account.getId();
+        return getId();
     }
 
     @JsonIgnore
