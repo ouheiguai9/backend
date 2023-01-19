@@ -52,6 +52,10 @@ public class AccountAuthentication implements Authentication, CredentialsContain
         this.setDetails(null);
     }
 
+    public static boolean isAdmin(Authentication authentication) {
+        return authentication instanceof Admin;
+    }
+
     public AccountAuthentication setApis(Set<String> apis) {
         if (apis == null || apis.isEmpty()) {
             this.apis = Collections.emptySet();
@@ -61,8 +65,10 @@ public class AccountAuthentication implements Authentication, CredentialsContain
         return this;
     }
 
-    public static boolean isAdmin(Authentication authentication) {
-        return authentication instanceof Admin;
+    public AccountAuthentication copyAndModifyName(String name) {
+        AccountAuthentication copy = new AccountAuthentication(this.tenantId, this.accountId, name, this.credentials);
+        copy.apis = this.apis;
+        return copy;
     }
 
     public boolean hasApiAuth(String api) {
@@ -142,6 +148,11 @@ public class AccountAuthentication implements Authentication, CredentialsContain
 
         private Admin() {
             super(0L, 0L, "超级管理员", null);
+        }
+
+        @Override
+        public AccountAuthentication copyAndModifyName(String name) {
+            return this;
         }
 
         @Override

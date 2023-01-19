@@ -5,6 +5,7 @@ import com.byakuya.boot.backend.config.AclApiModule;
 import com.byakuya.boot.backend.exception.RecordNotFoundException;
 import com.byakuya.boot.backend.exception.ValidationFailedException;
 import com.byakuya.boot.backend.security.AccountAuthentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -42,5 +43,15 @@ class UserController {
     @PostMapping(path = "/change/password")
     public void changePassword(@RequestParam String oPass, @RequestParam String nPass, AccountAuthentication authentication) {
         userService.changePassword(authentication.getAccountId(), oPass, nPass);
+    }
+
+    @PatchMapping(path = "/me")
+    public User update(@RequestBody User user, AccountAuthentication authentication) {
+        user.setId(authentication.getAccountId());
+        user = userService.updateUser(user);
+        if (!user.getNickname().equals(authentication.getName())) {
+            SecurityContextHolder.getContext().setAuthentication(authentication.copyAndModifyName(user.getNickname()));
+        }
+        return user;
     }
 }
