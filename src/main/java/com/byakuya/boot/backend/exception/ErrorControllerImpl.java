@@ -2,6 +2,7 @@ package com.byakuya.boot.backend.exception;
 
 import com.byakuya.boot.backend.utils.ConstantUtils;
 import org.springframework.boot.web.servlet.error.ErrorController;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +23,11 @@ public class ErrorControllerImpl implements ErrorController {
 
     @RequestMapping(ConstantUtils.DEFAULT_ERROR_PATH)
     public ResponseEntity<ExceptionResponse> error(HttpServletRequest request) {
-        ExceptionResponse body = exceptionResponseConverter.toExceptionResponse(getException(request));
+        Exception exception = getException(request);
+        if (exception == null && (int) (request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE)) == HttpStatus.NOT_FOUND.value()) {
+            exception = new BackendException(ErrorStatus.CODE_NOT_FOUND);
+        }
+        ExceptionResponse body = exceptionResponseConverter.toExceptionResponse(exception);
         return new ResponseEntity<>(body, body.errorStatus.httpStatus);
     }
 

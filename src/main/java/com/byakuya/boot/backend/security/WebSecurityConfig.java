@@ -25,8 +25,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
-import org.springframework.security.web.util.matcher.AndRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
 import org.springframework.session.web.http.HttpSessionIdResolver;
@@ -69,7 +69,7 @@ public class WebSecurityConfig {
 
     @Bean
     AuthorizationManager<RequestAuthorizationContext> requestMatcherAuthorizationManager(@Autowired(required = false) TenantPrefixMatcher tenantPrefixMatcher) {
-        RequestMatcher permitAll = new AndRequestMatcher(new AntPathRequestMatcher(errorUrl), new AntPathRequestMatcher(ConstantUtils.OPEN_API_PREFIX + "/**"));
+        RequestMatcher permitAll = new OrRequestMatcher(new AntPathRequestMatcher(errorUrl), new AntPathRequestMatcher(ConstantUtils.OPEN_API_PREFIX + "/**"));
         return (supplier, context) -> {
             HttpServletRequest request = context.getRequest();
             boolean access = permitAll.matches(request) || Optional.ofNullable(supplier.get()).filter(x -> x.isAuthenticated() && x instanceof AccountAuthentication).map(authentication -> {

@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
  */
 public enum ErrorStatus {
     CODE_UNKNOWN("error.unknown", HttpStatus.INTERNAL_SERVER_ERROR),
+    CODE_NOT_FOUND("error.not.found", HttpStatus.NOT_FOUND),
     CODE_ARGUMENT("error.argument", HttpStatus.PRECONDITION_FAILED),
     CODE_SMS("error.sms", HttpStatus.INTERNAL_SERVER_ERROR),
     DB_RECORD_NOT_FOUND("error.db.record.not.found", HttpStatus.INTERNAL_SERVER_ERROR),
