@@ -26,6 +26,15 @@ class SubMailSmsService implements ISmsService {
         this.restTemplate = restTemplate;
     }
 
+    @Override
+    public void sendLoginCaptcha(Long tenantId, String phone, String template, String captcha) throws BackendException {
+        Map<String, Object> params = authParams(tenantId);
+        params.put("to", phone);
+        params.put("project", template);
+        params.put("vars", "{\"code\":\"" + captcha + "\"}");
+        sendTemplate(params);
+    }
+
     private Map<String, Object> authParams(Long tenantId) {
 //        params.put("appid", "88123");
 //        params.put("signature", "0c9cd9726a38f26071c4c39a9616d490");
@@ -41,15 +50,6 @@ class SubMailSmsService implements ISmsService {
         } catch (RestClientException e) {
             throw new BackendException(ErrorStatus.CODE_SMS, e);
         }
-    }
-
-    @Override
-    public void sendLoginCaptcha(Long tenantId, String phone, String template, String captcha) throws BackendException {
-        Map<String, Object> params = authParams(tenantId);
-        params.put("to", phone);
-        params.put("project", template);
-        params.put("vars", captcha);
-//        sendTemplate(params);
     }
 
     @Data
