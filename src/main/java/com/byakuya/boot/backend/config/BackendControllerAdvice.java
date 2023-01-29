@@ -84,6 +84,11 @@ public class BackendControllerAdvice {
         return createResponse(exceptionResponseConverter.toExceptionResponse(new BackendException(ErrorStatus.CODE_ARGUMENT, e)));
     }
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ExceptionResponse> methodArgumentException(ConstraintViolationException e) {
+        return createResponse(exceptionResponseConverter.toExceptionResponse(new BackendException(ErrorStatus.CODE_ARGUMENT, e)));
+    }
+
 //    @ExceptionHandler(AccessDeniedException.class)
 //    public ResponseEntity<ExceptionResponse> accessDeniedException(AccessDeniedException e) {
 //        return createResponse(exceptionResponseConverter.toExceptionResponse(AuthException.forbidden(e)));

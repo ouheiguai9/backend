@@ -14,6 +14,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 /**
@@ -33,14 +35,14 @@ class SmsApi {
     }
 
     @PostMapping("/login/captcha")
-    public ResponseEntity<Void> loginCaptcha(@RequestParam SmsSender sender,
-                                             @RequestParam Long tenantId,
-                                             @RequestParam String to,
-                                             @RequestParam String template,
-                                             @RequestParam(required = false) String target,
-                                             @RequestParam(required = false, defaultValue = "6") Integer length,
-                                             @RequestParam(required = false, defaultValue = "3") Integer minutes,
-                                             @RequestParam(required = false, defaultValue = "false") boolean addUser) {
+    public ResponseEntity<Void> loginCaptcha(@NotNull SmsSender sender,
+                                             @NotNull Long tenantId,
+                                             @NotBlank String to,
+                                             @NotBlank String template,
+                                             @RequestParam(defaultValue = "") String target,
+                                             @RequestParam(defaultValue = "6") Integer length,
+                                             @RequestParam(defaultValue = "3") Integer minutes,
+                                             @RequestParam(defaultValue = "false") boolean addUser) {
         if (!StringUtils.hasText(target)) {
             target = to;
         }
