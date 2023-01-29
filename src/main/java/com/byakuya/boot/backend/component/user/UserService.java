@@ -76,6 +76,15 @@ public class UserService {
         }
     }
 
+    @Transactional
+    public User updateUser(User patch) {
+        User old = userRepository.findById(patch.getAccountId()).orElseThrow(RecordNotFoundException::new);
+        old.setNickname(patch.getNickname());
+        old.setAddress(patch.getAddress());
+        old.setAvatar(patch.getAvatar());
+        return userRepository.save(old);
+    }
+
     public Optional<User> loadByUsername(String username, Long tenantId) {
         return userRepository.findByUsernameAndTenant_id(username, tenantId);
     }
