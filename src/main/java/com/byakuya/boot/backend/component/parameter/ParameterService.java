@@ -12,12 +12,6 @@ import java.util.*;
  */
 @Service
 public class ParameterService {
-
-    private static final String CAPI_GROUP_KEY = "capi";
-
-    private static final String COS_GROUP_KEY = "cos";
-
-    private static final String SMS_GROUP_KEY = "sms";
     private static final String ADMIN_RANDOM_KEY = "admin-random-key";
     private final ParameterRepository parameterRepository;
     private final Environment environment;
@@ -47,13 +41,6 @@ public class ParameterService {
         return parameter.getItemValue();
     }
 
-    public Map<String, String> getSMSMap() {
-        return getParameterMap(SMS_GROUP_KEY);
-    }
-
-    public Map<String, String> getParameterMap(String group) {
-        return getParameterMap(null, group);
-    }
 
     public Map<String, String> getParameterMap(Long tenantId, String group) {
         HashMap<String, String> rtnVal = new HashMap<>();
@@ -67,29 +54,5 @@ public class ParameterService {
 
     public List<Parameter> getParameters(Long tenantId, String group) {
         return parameterRepository.findByTenant_idAndGroupKeyOrderByOrderingAsc(tenantId, group);
-    }
-
-    public List<Parameter> getTencentCloudCAPI() {
-        return getParameters(CAPI_GROUP_KEY);
-    }
-
-    public List<Parameter> getTencentCloudCOS() {
-        return getParameters(COS_GROUP_KEY);
-    }
-
-    public String getTencentCloudSecretId() {
-        return getValue(CAPI_GROUP_KEY, "SecretId");
-    }
-
-    public String getValue(Long tenantId, String group, String item) {
-        return parameterRepository.findByTenant_idAndGroupKeyAndItemKey(tenantId, group, item).map(Parameter::getItemValue).orElse("");
-    }
-
-    public String getValue(String group, String item) {
-        return getValue(null, group, item);
-    }
-
-    public String getTencentCloudSecretKey() {
-        return getValue(CAPI_GROUP_KEY, "SecretKey");
     }
 }
