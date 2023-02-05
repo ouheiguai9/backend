@@ -2,15 +2,17 @@ package com.byakuya.boot.backend.component.parameter;
 
 import com.byakuya.boot.backend.config.AclApiMethod;
 import com.byakuya.boot.backend.config.AclApiModule;
-import com.byakuya.boot.backend.exception.BackendException;
-import com.byakuya.boot.backend.exception.ErrorStatus;
-import org.springframework.http.ResponseEntity;
+import com.byakuya.boot.backend.event.ParameterRefreshEvent;
+import org.springframework.context.ApplicationContext;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import java.util.Map;
 
 /**
  * @author ganzl
@@ -18,41 +20,33 @@ import javax.validation.Valid;
 @AclApiModule(path = "parameters", value = "parameter", desc = "系统参数管理")
 @Validated
 class ParameterController {
-    private final ParameterRepository parameterRepository;
+    private final ParameterService parameterService;
+    private final ApplicationContext applicationContext;
 
-    public ParameterController(ParameterRepository parameterRepository) {
-        this.parameterRepository = parameterRepository;
+    public ParameterController(ParameterService parameterService, ApplicationContext applicationContext) {
+        this.parameterService = parameterService;
+        this.applicationContext = applicationContext;
     }
 
     @AclApiMethod(value = "add", desc = "增加", method = RequestMethod.POST, onlyAdmin = true)
-    public ResponseEntity<Parameter> create(@Valid @RequestBody Parameter parameter) {
-        return ResponseEntity.ok(parameterRepository.save(parameter));
+    public Parameter create(@Valid @RequestBody Parameter parameter) {
+        return parameterService.add(parameter);
+    }
+
+    @AclApiMethod(value = "refresh", desc = "刷新", path = "/refresh", method = RequestMethod.POST, onlyAdmin = true)
+    public void refresh(@RequestParam(required = false) Long tenantId, @NotBlank String groupKey) {
+        Map<String, String> valueMap = parameterService.getParameterMap(tenantId, groupKey);
+        if (valueMap.isEmpty()) return;
+        applicationContext.publishEvent(new ParameterRefreshEvent(tenantId, groupKey, valueMap));
     }
 
     @AclApiMethod(value = "status", desc = "禁用/启用", path = "/{id}/{status}", method = RequestMethod.PATCH, onlyAdmin = true)
-    public ResponseEntity<Parameter> lock(@PathVariable Long id, @PathVariable Boolean status) {
-        Parameter old = get(id);
-        old.setLocked(status);
-        return ResponseEntity.ok(parameterRepository.save(old));
-    }
-
-    private Parameter get(Long id) {
-        return parameterRepository.findById(id).orElseThrow(() -> new BackendException(ErrorStatus.CODE_UNKNOWN));
-    }
-
-    @AclApiMethod(value = "read", desc = "查询", method = RequestMethod.GET, onlyAdmin = true)
-    public ResponseEntity<Iterable<Parameter>> read() {
-        return ResponseEntity.ok(parameterRepository.findAll());
+    public Parameter lock(@PathVariable Long id, @PathVariable Boolean status) {
+        return parameterService.modifyStatus(id, status);
     }
 
     @AclApiMethod(value = "update", desc = "修改", method = RequestMethod.PUT, onlyAdmin = true)
-    public ResponseEntity<Parameter> update(@Valid @RequestBody Parameter parameter) {
-        Parameter old = get(parameter.getId());
-        old.setGroupKey(parameter.getGroupKey());
-        old.setItemKey(parameter.getItemKey());
-        old.setItemValue(parameter.getItemValue());
-        old.setOrdering(parameter.getOrdering());
-        old.setDescription(parameter.getDescription());
-        return ResponseEntity.ok(parameterRepository.save(old));
+    public Parameter update(@Valid @RequestBody Parameter parameter) {
+        return parameterService.modify(parameter);
     }
 }

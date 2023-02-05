@@ -62,6 +62,13 @@ X-Auth-Token: {{auth_token}}
   "tenantId": null
 }
 
+### 刷新系统参数
+POST {{baseUrl}}/parameters/refresh
+Content-Type: application/x-www-form-urlencoded
+X-Auth-Token: {{auth_token}}
+
+tenantId=10000&groupKey=SubMail
+
 ### 获取系统参数列表
 GET {{baseUrl}}/parameters
 Accept: application/json
