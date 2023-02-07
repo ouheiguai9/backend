@@ -9,9 +9,7 @@ spring:
   profiles:
     active: pro
   session:
-    store-type: jdbc
-    jdbc:
-      initialize-schema: always
+    store-type: redis
   jackson:
     time-zone: GMT+8
     date-format: 'yyyy-MM-dd HH:mm:ss'
@@ -44,6 +42,9 @@ spring:
     web:
       pageable:
         one-indexed-parameters: true
+    redis:
+      repositories:
+        enabled: false
 logging:
   config: classpath:logback-spring.xml
 

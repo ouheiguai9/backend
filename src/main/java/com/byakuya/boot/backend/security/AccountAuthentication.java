@@ -37,7 +37,7 @@ public class AccountAuthentication implements Authentication, CredentialsContain
     private boolean tenantAdmin = false;
     private String name;
     private Map<String, Serializable> details;
-    @JsonIgnore
+    @Getter
     private Set<String> apis;
 
     public AccountAuthentication(long tenantId, long accountId, String name, Object credentials) {
@@ -52,10 +52,6 @@ public class AccountAuthentication implements Authentication, CredentialsContain
         this.setDetails(null);
     }
 
-    public static boolean isAdmin(Authentication authentication) {
-        return authentication instanceof Admin;
-    }
-
     public AccountAuthentication setApis(Set<String> apis) {
         if (apis == null || apis.isEmpty()) {
             this.apis = Collections.emptySet();
@@ -63,6 +59,10 @@ public class AccountAuthentication implements Authentication, CredentialsContain
             this.apis = Collections.unmodifiableSet(apis);
         }
         return this;
+    }
+
+    public static boolean isAdmin(Authentication authentication) {
+        return authentication instanceof Admin;
     }
 
     public AccountAuthentication copyAndModifyName(String name) {
@@ -150,9 +150,21 @@ public class AccountAuthentication implements Authentication, CredentialsContain
             super(0L, 0L, "超级管理员", null);
         }
 
+        @JsonIgnore
+        @Override
+        public Set<String> getApis() {
+            return super.getApis();
+        }
+
         @Override
         public AccountAuthentication copyAndModifyName(String name) {
             return this;
+        }
+
+        @JsonIgnore
+        @Override
+        public Object getDetails() {
+            return super.getDetails();
         }
 
         @Override

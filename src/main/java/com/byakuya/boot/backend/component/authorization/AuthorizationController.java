@@ -1,6 +1,7 @@
 package com.byakuya.boot.backend.component.authorization;
 
 import com.byakuya.boot.backend.config.ApiModule;
+import com.byakuya.boot.backend.jackson.DynamicJsonView;
 import com.byakuya.boot.backend.security.AccountAuthentication;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +25,8 @@ class AuthorizationController {
     public List<ApiResourceVO> acl() {
         return authorizationService.aclAll();
     }
-
+    
+    @DynamicJsonView(type = AccountAuthentication.class, exclude = "apis")
     @RequestMapping(value = "me", method = {RequestMethod.POST, RequestMethod.GET})
     public Authentication me(AccountAuthentication authentication) {
         return authentication;
