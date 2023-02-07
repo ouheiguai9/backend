@@ -1,0 +1,11 @@
+@startuml
+'https://plantuml.com/state-diagram
+hide empty description
+[*] --> 未审核: 注册
+未审核 -right-> 下班: 审核通过
+下班 -down-> 上班: 开始接单
+上班 -left-> 正在接单: 接单
+正在接单 -right-> 上班: 通话结束
+上班 -up-> 下班: 停止接单
+
+@enduml
