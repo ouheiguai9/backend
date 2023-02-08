@@ -40,6 +40,14 @@ public class AccountAuthentication implements Authentication, CredentialsContain
     @Getter
     private Set<String> apis;
 
+    /**
+     * 用于Json反序列化
+     */
+    private AccountAuthentication() {
+        this.tenantId = 0;
+        this.accountId = 0;
+    }
+
     public AccountAuthentication(long tenantId, long accountId, String name, Object credentials) {
         if (!StringUtils.hasText(name)) {
             throw new IllegalArgumentException();
@@ -52,6 +60,10 @@ public class AccountAuthentication implements Authentication, CredentialsContain
         this.setDetails(null);
     }
 
+    public static boolean isAdmin(Authentication authentication) {
+        return authentication instanceof Admin;
+    }
+
     public AccountAuthentication setApis(Set<String> apis) {
         if (apis == null || apis.isEmpty()) {
             this.apis = Collections.emptySet();
@@ -59,10 +71,6 @@ public class AccountAuthentication implements Authentication, CredentialsContain
             this.apis = Collections.unmodifiableSet(apis);
         }
         return this;
-    }
-
-    public static boolean isAdmin(Authentication authentication) {
-        return authentication instanceof Admin;
     }
 
     public AccountAuthentication copyAndModifyName(String name) {

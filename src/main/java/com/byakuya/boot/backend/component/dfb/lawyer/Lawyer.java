@@ -26,4 +26,23 @@ public class Lawyer {
     private User user;
     @Column(length = 20, nullable = false)
     private String phone;
+    private String name;
+    private String certificate;
+    private String lawId;
+    private String lawFirm;
+    private boolean key1;
+    private boolean key2;
+    private boolean key3;
+    private boolean key4;
+    private boolean key5;
+    private boolean key6;
+    private boolean key7;
+    private boolean key8;
+    private boolean key9;
+    @Enumerated(EnumType.STRING)
+    private LawyerState state;
+
+    public String getStateText() {
+        return state == null ? null : state.text;
+    }
 }
