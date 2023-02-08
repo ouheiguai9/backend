@@ -159,3 +159,15 @@ GET {{baseUrl}}/dfb/lawyers
 Accept: application/json
 Content-Type: application/json
 X-Auth-Token: {{auth_token}}
+
+### 审核律师信息
+POST {{baseUrl}}/dfb/lawyers/approve/378416746235203584
+X-Auth-Token: {{auth_token}}
+
+### 律师上班
+POST {{baseUrl}}/dfb/lawyers/duty/on
+X-Auth-Token: {{auth_token}}
+
+### 律师下班
+POST {{baseUrl}}/dfb/lawyers/duty/off
+X-Auth-Token: {{auth_token}}

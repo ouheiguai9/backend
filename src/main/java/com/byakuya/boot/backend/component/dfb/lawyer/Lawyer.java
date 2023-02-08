@@ -39,6 +39,7 @@ public class Lawyer {
     private boolean key7;
     private boolean key8;
     private boolean key9;
+    private boolean backup;
     @Enumerated(EnumType.STRING)
     private LawyerState state;
 
