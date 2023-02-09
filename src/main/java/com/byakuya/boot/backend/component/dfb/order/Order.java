@@ -1,6 +1,7 @@
 package com.byakuya.boot.backend.component.dfb.order;
 
 import com.byakuya.boot.backend.SystemVersion;
+import com.byakuya.boot.backend.component.account.Account;
 import com.byakuya.boot.backend.component.dfb.customer.Customer;
 import com.byakuya.boot.backend.component.dfb.lawyer.Lawyer;
 import com.byakuya.boot.backend.utils.ConstantUtils;
@@ -36,15 +37,19 @@ public class Order implements Serializable {
     @ManyToOne
     @JoinColumn(nullable = false, updatable = false)
     private Lawyer lawyer;
-
-    @Column(nullable = false, updatable = false)
+    @JoinColumn(nullable = false, updatable = false)
+    private LocalDateTime createTime;
     private LocalDateTime start;
-    @Column(nullable = false, updatable = false)
     private LocalDateTime end;
     private Long minutes;
     private BigDecimal fee;
     private String callRecord;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private Account updater;
+    private LocalDateTime updateTime;
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private OrderState state;
 
     public String getStateText() {

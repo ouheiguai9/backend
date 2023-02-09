@@ -41,6 +41,7 @@ public class Lawyer {
     private boolean key9;
     private boolean backup;
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private LawyerState state;
 
     public String getStateText() {

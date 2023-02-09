@@ -12,7 +12,7 @@ Accept: application/json
 _auth_type_key_: standard
 tenantId: 10000
 userType: phone
-user: L18888888881
+user: C18888888881
 pass: abc!123
 
 > {% client.global.set("auth_token", response.headers.valueOf("X-Auth-Token")); %}
@@ -147,11 +147,15 @@ Content-Type: application/x-www-form-urlencoded
 
 sender=SubMail&tenantId=10000&to=18888888881&template=abc&target=C18888888881&addUser=true
 
-
 ### 查询当前用户顾客信息
 GET {{baseUrl}}/dfb/customers
 Accept: application/json
 Content-Type: application/json
+X-Auth-Token: {{auth_token}}
+
+### 咨询律师
+POST {{baseUrl}}/dfb/customers/call
+Content-Type: application/x-www-form-urlencoded
 X-Auth-Token: {{auth_token}}
 
 ### 查询当前用户律师信息

@@ -22,7 +22,7 @@ public class CustomerService {
     }
 
     @Transactional
-    public Optional<Customer> query(long accountId, boolean createIfNotExist) {
+    public Optional<Customer> query(Long accountId, boolean createIfNotExist) {
         Optional<Customer> rtnVal = customerRepository.findById(accountId);
         if (rtnVal.isPresent() || !createIfNotExist) return rtnVal;
         Optional<User> opt = userService.query(accountId);
