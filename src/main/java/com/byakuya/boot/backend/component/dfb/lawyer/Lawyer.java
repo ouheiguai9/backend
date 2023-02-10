@@ -1,5 +1,6 @@
 package com.byakuya.boot.backend.component.dfb.lawyer;
 
+import com.byakuya.boot.backend.SystemVersion;
 import com.byakuya.boot.backend.component.user.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -7,6 +8,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Created by 田伯光 at 2023/1/5 22:13
@@ -15,7 +17,8 @@ import javax.persistence.*;
 @Entity
 @Table(name = "T_DFB_LAWYER")
 @Accessors(chain = true)
-public class Lawyer {
+public class Lawyer implements Serializable {
+    private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     @Id
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long id;
