@@ -23,7 +23,7 @@ public class Lawyer implements Serializable {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long id;
     @JsonIgnore
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id")
     @MapsId
     private User user;

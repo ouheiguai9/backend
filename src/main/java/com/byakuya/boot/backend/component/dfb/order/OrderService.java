@@ -15,6 +15,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Created by 田伯光 at 2023/2/9 15:29
@@ -66,5 +67,9 @@ public class OrderService {
         evaluation.setCreateTime(LocalDateTime.now());
         evaluation.setVisible(true);
         return evaluationRepository.save(evaluation);
+    }
+
+    public Optional<Order> queryCustomerLastOrder(Long customerId) {
+        return orderRepository.findFirstByCustomer_idOrderByCreateTimeDesc(customerId);
     }
 }

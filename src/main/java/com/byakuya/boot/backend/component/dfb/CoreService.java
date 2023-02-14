@@ -1,10 +1,12 @@
 package com.byakuya.boot.backend.component.dfb;
 
+import com.byakuya.boot.backend.component.dfb.customer.CustomerService;
 import com.byakuya.boot.backend.component.dfb.lawyer.Lawyer;
 import com.byakuya.boot.backend.component.dfb.lawyer.LawyerService;
 import com.byakuya.boot.backend.component.dfb.lawyer.LawyerState;
 import com.byakuya.boot.backend.component.dfb.order.Order;
 import com.byakuya.boot.backend.component.dfb.order.OrderService;
+import com.byakuya.boot.backend.exception.AuthException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
@@ -32,11 +34,13 @@ public class CoreService implements InitializingBean {
     private static final String ORDER_PREFIX = REDIS_PREFIX + "order:";
 
     private final OrderService orderService;
+    private final CustomerService customerService;
     private final LawyerService lawyerService;
     private final StringRedisTemplate stringRedisTemplate;
 
-    public CoreService(OrderService orderService, LawyerService lawyerService, StringRedisTemplate stringRedisTemplate) {
+    public CoreService(OrderService orderService, CustomerService customerService, LawyerService lawyerService, StringRedisTemplate stringRedisTemplate) {
         this.orderService = orderService;
+        this.customerService = customerService;
         this.lawyerService = lawyerService;
         this.stringRedisTemplate = stringRedisTemplate;
     }
@@ -45,20 +49,33 @@ public class CoreService implements InitializingBean {
         return orderService;
     }
 
-    public LawyerService getLawyerService() {
-        return lawyerService;
-    }
-
     public String call(long customerId, String exclude) {
         String orderKey = ORDER_PREFIX + customerId;
-        if (Boolean.FALSE.equals(stringRedisTemplate.opsForValue().setIfAbsent(orderKey, "", 1, TimeUnit.MINUTES))) {
+        if (!Boolean.TRUE.equals(stringRedisTemplate.opsForValue().setIfAbsent(orderKey, "", 1, TimeUnit.MINUTES))) {
             return stringRedisTemplate.opsForValue().get(orderKey) + ':' + exclude;
         }
-        Optional<String> opt = Optional.ofNullable(stringRedisTemplate.opsForZSet().popMin(CANDIDATES_KEY)).map(ZSetOperations.TypedTuple::getValue).filter(x -> !exclude.contains(x));
-        if (!opt.isPresent()) {
-            opt = Optional.ofNullable(stringRedisTemplate.opsForZSet().popMin(BACKUP_KEY)).map(ZSetOperations.TypedTuple::getValue);
-        }
         try {
+            if (!customerService.query(customerId, false).isPresent()) {
+                //非法用户发起咨询
+                throw AuthException.forbidden(null);
+            }
+            if (orderService.queryCustomerLastOrder(customerId).map(order -> {
+                switch (order.getState()) {
+                    case CREATED:
+                    case LAWYER_RESPONSE:
+                    case CALLING:
+                    case UN_PAY:
+                        return true;
+                }
+                return false;
+            }).orElse(false)) {
+                //存在进行中或未支付订单
+                throw AuthException.forbidden(null);
+            }
+            Optional<String> opt = Optional.ofNullable(stringRedisTemplate.opsForZSet().popMin(CANDIDATES_KEY)).map(ZSetOperations.TypedTuple::getValue).filter(x -> !exclude.contains(x));
+            if (!opt.isPresent()) {
+                opt = Optional.ofNullable(stringRedisTemplate.opsForZSet().popMin(BACKUP_KEY)).map(ZSetOperations.TypedTuple::getValue);
+            }
             return opt.map(lawyerId -> {
                 Order order = orderService.create(customerId, Long.valueOf(lawyerId));
                 stringRedisTemplate.opsForValue().set(orderKey, String.valueOf(order.getSerial()), 95, TimeUnit.MINUTES);

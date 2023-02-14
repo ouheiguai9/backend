@@ -82,7 +82,7 @@ public class LawyerService {
     public void beginWorking(Lawyer lawyer) {
         LawyerState next = lawyer.getState().transition(LawyerAction.START);
         if (next == lawyer.getState()) throw new RuntimeException("Lawyer state is error");
-        lawyerRepository.save(lawyer);
+        lawyerRepository.save(lawyer.setState(next));
     }
 
 }
