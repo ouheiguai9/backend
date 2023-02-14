@@ -41,6 +41,14 @@ public class CoreService implements InitializingBean {
         this.stringRedisTemplate = stringRedisTemplate;
     }
 
+    public OrderService getOrderService() {
+        return orderService;
+    }
+
+    public LawyerService getLawyerService() {
+        return lawyerService;
+    }
+
     public String call(long customerId, String exclude) {
         String orderKey = ORDER_PREFIX + customerId;
         if (Boolean.FALSE.equals(stringRedisTemplate.opsForValue().setIfAbsent(orderKey, "", 1, TimeUnit.MINUTES))) {
@@ -64,12 +72,12 @@ public class CoreService implements InitializingBean {
 
     public void addCandidateLawyer(Lawyer lawyer) {
         if (lawyer == null) return;
-        stringRedisTemplate.opsForZSet().addIfAbsent(lawyer.isBackup() ? BACKUP_KEY : CANDIDATES_KEY, String.valueOf(lawyer.getId()), System.currentTimeMillis());
+        stringRedisTemplate.opsForZSet().addIfAbsent(Boolean.TRUE.equals(lawyer.getBackup()) ? BACKUP_KEY : CANDIDATES_KEY, String.valueOf(lawyer.getId()), System.currentTimeMillis());
     }
 
     public void removeCandidateLawyer(Lawyer lawyer) {
         if (lawyer == null) return;
-        stringRedisTemplate.opsForZSet().remove(lawyer.isBackup() ? BACKUP_KEY : CANDIDATES_KEY, String.valueOf(lawyer.getId()));
+        stringRedisTemplate.opsForZSet().remove(Boolean.TRUE.equals(lawyer.getBackup()) ? BACKUP_KEY : CANDIDATES_KEY, String.valueOf(lawyer.getId()));
     }
 
     @Override
@@ -87,7 +95,7 @@ public class CoreService implements InitializingBean {
                         AtomicLong min = new AtomicLong(System.currentTimeMillis());
                         lawyerList.forEach(lawyer -> {
                             if (lawyer.getState() == LawyerState.ON_DUTY) {
-                                operations.opsForZSet().addIfAbsent((K) (lawyer.isBackup() ? BACKUP_KEY : CANDIDATES_KEY), (V) String.valueOf(lawyer.getId()), min.getAndIncrement());
+                                operations.opsForZSet().addIfAbsent((K) (Boolean.TRUE.equals(lawyer.getBackup()) ? BACKUP_KEY : CANDIDATES_KEY), (V) String.valueOf(lawyer.getId()), min.getAndIncrement());
                             }
                         });
                     }

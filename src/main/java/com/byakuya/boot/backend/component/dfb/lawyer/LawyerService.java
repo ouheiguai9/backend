@@ -68,7 +68,7 @@ public class LawyerService {
 
     @Transactional
     public Lawyer dutyOff(Long accountId) {
-        return lawyerRepository.findById(accountId).filter(lawyer -> !lawyer.isBackup()).map(lawyer -> {
+        return lawyerRepository.findById(accountId).filter(lawyer -> !Boolean.TRUE.equals(lawyer.getBackup())).map(lawyer -> {
             LawyerState src = lawyer.getState();
             LawyerState target = src.transition(LawyerAction.OFF);
             if (target != src && target == LawyerState.OFF_DUTY) {

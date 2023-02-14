@@ -6,6 +6,7 @@ import com.byakuya.boot.backend.component.dfb.customer.Customer;
 import com.byakuya.boot.backend.component.dfb.lawyer.Lawyer;
 import com.byakuya.boot.backend.utils.ConstantUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -51,6 +52,14 @@ public class Order implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OrderState state;
+    @JsonIgnore
+    @OneToOne(mappedBy = "order")
+    private Evaluation evaluation;
+
+    public Long getEvaluationId() {
+        if (evaluation == null || evaluation.getId() == null) return null;
+        return evaluation.getId();
+    }
 
     public String getStateText() {
         return state == null ? null : state.text;

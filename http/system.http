@@ -12,7 +12,7 @@ Accept: application/json
 _auth_type_key_: standard
 tenantId: 10000
 userType: phone
-user: C18888888881
+user: M18888888888
 pass: abc!123
 
 > {% client.global.set("auth_token", response.headers.valueOf("X-Auth-Token")); %}
@@ -152,6 +152,19 @@ GET {{baseUrl}}/dfb/customers
 Accept: application/json
 Content-Type: application/json
 X-Auth-Token: {{auth_token}}
+
+### 增加订单评价
+POST {{baseUrl}}/dfb/customers/evaluation
+Accept: application/json
+Content-Type: application/json
+X-Auth-Token: {{auth_token}}
+
+{
+  "customer": "18888888888",
+  "lawyer": "张长弓",
+  "content": "虚拟评价",
+  "value": 4
+}
 
 ### 咨询律师
 POST {{baseUrl}}/dfb/customers/call

@@ -33,16 +33,16 @@ public class Lawyer implements Serializable {
     private String certificate;
     private String lawId;
     private String lawFirm;
-    private boolean key1;
-    private boolean key2;
-    private boolean key3;
-    private boolean key4;
-    private boolean key5;
-    private boolean key6;
-    private boolean key7;
-    private boolean key8;
-    private boolean key9;
-    private boolean backup;
+    private Boolean key1;
+    private Boolean key2;
+    private Boolean key3;
+    private Boolean key4;
+    private Boolean key5;
+    private Boolean key6;
+    private Boolean key7;
+    private Boolean key8;
+    private Boolean key9;
+    private Boolean backup;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private LawyerState state;
