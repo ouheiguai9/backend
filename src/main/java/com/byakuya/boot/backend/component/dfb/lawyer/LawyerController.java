@@ -33,12 +33,18 @@ class LawyerController {
 
     @PostMapping("/duty/on")
     public void dutyOn(AccountAuthentication authentication) {
-        coreService.addCandidateLawyer(lawyerService.dutyOn(authentication.getAccountId()));
+        Lawyer lawyer = lawyerService.dutyOn(authentication.getAccountId());
+        if (lawyer != null) {
+            coreService.addCandidateLawyer(lawyer.getId(), Boolean.TRUE.equals(lawyer.getBackup()));
+        }
     }
 
     @PostMapping("/duty/off")
     public void dutyOff(AccountAuthentication authentication) {
-        coreService.removeCandidateLawyer(lawyerService.dutyOff(authentication.getAccountId()));
+        Lawyer lawyer = lawyerService.dutyOff(authentication.getAccountId());
+        if (lawyer != null) {
+            coreService.removeCandidateLawyer(lawyer.getId(), Boolean.TRUE.equals(lawyer.getBackup()));
+        }
     }
 
     @AclApiMethod(value = "approve", desc = "审核", path = "/approve/{id}", method = RequestMethod.POST)

@@ -54,6 +54,8 @@ public class CoreService implements InitializingBean {
         if (!Boolean.TRUE.equals(stringRedisTemplate.opsForValue().setIfAbsent(orderKey, "", 1, TimeUnit.MINUTES))) {
             return stringRedisTemplate.opsForValue().get(orderKey) + ':' + exclude;
         }
+        Optional<String> lawyerOpt = Optional.empty();
+        String candidateKey = CANDIDATES_KEY;
         try {
             if (!customerService.query(customerId, false).isPresent()) {
                 //非法用户发起咨询
@@ -72,33 +74,40 @@ public class CoreService implements InitializingBean {
                 //存在进行中或未支付订单
                 throw AuthException.forbidden(null);
             }
-            Optional<String> opt = Optional.ofNullable(stringRedisTemplate.opsForZSet().popMin(CANDIDATES_KEY)).map(ZSetOperations.TypedTuple::getValue).filter(x -> !exclude.contains(x));
-            if (!opt.isPresent()) {
-                opt = Optional.ofNullable(stringRedisTemplate.opsForZSet().popMin(BACKUP_KEY)).map(ZSetOperations.TypedTuple::getValue);
+            lawyerOpt = Optional.ofNullable(stringRedisTemplate.opsForZSet().popMin(candidateKey)).map(ZSetOperations.TypedTuple::getValue).filter(x -> !exclude.contains(x));
+            if (!lawyerOpt.isPresent()) {
+                candidateKey = BACKUP_KEY;
+                lawyerOpt = Optional.ofNullable(stringRedisTemplate.opsForZSet().popMin(candidateKey)).map(ZSetOperations.TypedTuple::getValue);
             }
-            return opt.map(lawyerId -> {
+            return lawyerOpt.map(lawyerId -> {
                 Order order = orderService.create(customerId, Long.valueOf(lawyerId));
                 stringRedisTemplate.opsForValue().set(orderKey, String.valueOf(order.getSerial()), 95, TimeUnit.MINUTES);
                 return order.getSerial() + ":" + (StringUtils.hasText(exclude) ? (lawyerId + "," + exclude) : lawyerId);
-            }).orElse("");
+            }).orElseGet(() -> {
+                loadCandidateLawyer();
+                return "";
+            });
         } catch (Exception e) {
+            if (lawyerOpt.isPresent()) {
+                //如果派单失败将选中的律师从新放回候选列表
+                stringRedisTemplate.opsForZSet().addIfAbsent(candidateKey, lawyerOpt.get(), System.currentTimeMillis());
+            }
             stringRedisTemplate.delete(orderKey);
             throw e;
         }
     }
 
-    public void addCandidateLawyer(Lawyer lawyer) {
-        if (lawyer == null) return;
-        stringRedisTemplate.opsForZSet().addIfAbsent(Boolean.TRUE.equals(lawyer.getBackup()) ? BACKUP_KEY : CANDIDATES_KEY, String.valueOf(lawyer.getId()), System.currentTimeMillis());
+    public void addCandidateLawyer(Long lawyerId, boolean backup) {
+        if (lawyerId == null) return;
+        stringRedisTemplate.opsForZSet().addIfAbsent(backup ? BACKUP_KEY : CANDIDATES_KEY, String.valueOf(lawyerId), System.currentTimeMillis());
     }
 
-    public void removeCandidateLawyer(Lawyer lawyer) {
-        if (lawyer == null) return;
-        stringRedisTemplate.opsForZSet().remove(Boolean.TRUE.equals(lawyer.getBackup()) ? BACKUP_KEY : CANDIDATES_KEY, String.valueOf(lawyer.getId()));
+    public void removeCandidateLawyer(Long lawyerId, boolean backup) {
+        if (lawyerId == null) return;
+        stringRedisTemplate.opsForZSet().remove(backup ? BACKUP_KEY : CANDIDATES_KEY, String.valueOf(lawyerId));
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    private void loadCandidateLawyer() {
         String initLockKey = REDIS_PREFIX + "init:lock";
         boolean initLock = Boolean.TRUE.equals(stringRedisTemplate.opsForValue().setIfAbsent(initLockKey, "lock", 3, TimeUnit.MINUTES));
         if (!initLock) return;
@@ -122,5 +131,10 @@ public class CoreService implements InitializingBean {
                 }
             }
         });
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        loadCandidateLawyer();
     }
 }

@@ -45,6 +45,7 @@ public class OrderService {
         order.setCreateTime(LocalDateTime.now());
         order.setSerial(SnowFlakeUtils.newId());
         order.setState(OrderState.CREATED);
+        order.setUpdateTime(order.getCreateTime());
         return orderRepository.save(order);
     }
 
@@ -52,7 +53,8 @@ public class OrderService {
     public Evaluation addEvaluation(Evaluation evaluation, Long customerId) {
         if (evaluation.getOrderId() != null) {
             Order order = orderRepository.findById(evaluation.getOrderId()).orElseThrow(RecordNotFoundException::new);
-            if (!Objects.equals(order.getCustomer().getId(), customerId)) {
+            // 只能评价已支付的订单并且只能订单的顾客本人评价
+            if (order.getState() != OrderState.PAID || !Objects.equals(order.getCustomer().getId(), customerId)) {
                 throw AuthException.forbidden(null);
             }
             evaluation.setOrder(order);
