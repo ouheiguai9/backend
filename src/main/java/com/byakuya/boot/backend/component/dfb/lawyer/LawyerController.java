@@ -1,6 +1,5 @@
 package com.byakuya.boot.backend.component.dfb.lawyer;
 
-import com.byakuya.boot.backend.component.dfb.CoreService;
 import com.byakuya.boot.backend.config.AclApiMethod;
 import com.byakuya.boot.backend.config.AclApiModule;
 import com.byakuya.boot.backend.exception.AuthException;
@@ -19,11 +18,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 class LawyerController {
 
     private final LawyerService lawyerService;
-    private final CoreService coreService;
 
-    LawyerController(LawyerService lawyerService, CoreService coreService) {
+    LawyerController(LawyerService lawyerService) {
         this.lawyerService = lawyerService;
-        this.coreService = coreService;
     }
 
     @GetMapping(path = {"", "/{id}"})
@@ -33,18 +30,12 @@ class LawyerController {
 
     @PostMapping("/duty/on")
     public void dutyOn(AccountAuthentication authentication) {
-        Lawyer lawyer = lawyerService.dutyOn(authentication.getAccountId());
-        if (lawyer != null) {
-            coreService.addCandidateLawyer(lawyer.getId(), Boolean.TRUE.equals(lawyer.getBackup()));
-        }
+        lawyerService.dutyOn(authentication.getAccountId());
     }
 
     @PostMapping("/duty/off")
     public void dutyOff(AccountAuthentication authentication) {
-        Lawyer lawyer = lawyerService.dutyOff(authentication.getAccountId());
-        if (lawyer != null) {
-            coreService.removeCandidateLawyer(lawyer.getId(), Boolean.TRUE.equals(lawyer.getBackup()));
-        }
+        lawyerService.dutyOff(authentication.getAccountId());
     }
 
     @AclApiMethod(value = "approve", desc = "审核", path = "/approve/{id}", method = RequestMethod.POST)

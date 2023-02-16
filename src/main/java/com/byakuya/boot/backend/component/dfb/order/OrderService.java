@@ -2,7 +2,6 @@ package com.byakuya.boot.backend.component.dfb.order;
 
 import com.byakuya.boot.backend.component.dfb.customer.Customer;
 import com.byakuya.boot.backend.component.dfb.customer.CustomerService;
-import com.byakuya.boot.backend.component.dfb.lawyer.Lawyer;
 import com.byakuya.boot.backend.component.dfb.lawyer.LawyerService;
 import com.byakuya.boot.backend.exception.AuthException;
 import com.byakuya.boot.backend.exception.BackendException;
@@ -35,18 +34,35 @@ public class OrderService {
     }
 
     @Transactional
-    public Order create(Long customerId, Long lawyerId) {
-        Customer customer = customerService.query(customerId, false).orElseThrow(RecordNotFoundException::new);
-        Lawyer lawyer = lawyerService.query(lawyerId, false).orElseThrow(RecordNotFoundException::new);
-        lawyerService.beginWorking(lawyer);
-        Order order = new Order();
-        order.setCustomer(customer);
-        order.setLawyer(lawyer);
-        order.setCreateTime(LocalDateTime.now());
-        order.setSerial(SnowFlakeUtils.newId());
-        order.setState(OrderState.CREATED);
-        order.setUpdateTime(order.getCreateTime());
-        return orderRepository.save(order);
+    public Optional<Order> create(Long customerId, String excludeLawyer) {
+        Customer customer = customerService.query(customerId, false).orElse(null);
+        if (customer == null) {
+            return Optional.empty();
+        }
+        Order old = orderRepository.findFirstByCustomer_idOrderByCreateTimeDesc(customerId).orElse(null);
+        if (old != null) {
+            switch (old.getState()) {
+                case CREATED:
+                case LAWYER_RESPONSE:
+                case CALLING:
+                    //存在进行中的订单
+                    return Optional.of(old);
+                case UN_PAY:
+                    //存在进行中或未支付订单
+                    throw AuthException.forbidden(null);
+            }
+        }
+        return lawyerService.election(excludeLawyer).map(lawyer -> {
+            lawyerService.beginWorking(lawyer);
+            Order order = new Order();
+            order.setCustomer(customer);
+            order.setLawyer(lawyer);
+            order.setCreateTime(LocalDateTime.now());
+            order.setSerial(SnowFlakeUtils.newId());
+            order.setState(OrderState.CREATED);
+            order.setUpdateTime(order.getCreateTime());
+            return orderRepository.save(order);
+        });
     }
 
     @Transactional
@@ -69,9 +85,5 @@ public class OrderService {
         evaluation.setCreateTime(LocalDateTime.now());
         evaluation.setVisible(true);
         return evaluationRepository.save(evaluation);
-    }
-
-    public Optional<Order> queryCustomerLastOrder(Long customerId) {
-        return orderRepository.findFirstByCustomer_idOrderByCreateTimeDesc(customerId);
     }
 }
