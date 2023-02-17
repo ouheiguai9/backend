@@ -5,6 +5,8 @@ import com.byakuya.boot.backend.config.AclApiMethod;
 import com.byakuya.boot.backend.config.AclApiModule;
 import com.byakuya.boot.backend.exception.AuthException;
 import com.byakuya.boot.backend.utils.ConstantUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.support.annotation.AnnotationMatchingPointcut;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Role;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authorization.AuthorizationDecision;
@@ -36,6 +39,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Field;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Optional;
@@ -135,6 +139,16 @@ public class WebSecurityConfig {
 
     @Bean
     public RedisSerializer<Object> springSessionDefaultRedisSerializer() {
-        return RedisSerializer.json();
+        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer();
+        try {
+            Field field = serializer.getClass().getDeclaredField("mapper");
+            field.setAccessible(true);
+            ObjectMapper mapper = (ObjectMapper) field.get(serializer);
+            mapper.registerModule(new JavaTimeModule());
+            field.setAccessible(false);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return serializer;
     }
 }

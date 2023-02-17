@@ -4,6 +4,7 @@ import com.byakuya.boot.backend.SystemVersion;
 import com.byakuya.boot.backend.component.account.Account;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.Authentication;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 /**
  * Created by 田伯光 at 2022/8/28 11:50
  */
+@JsonDeserialize()
 public class AccountAuthentication implements Authentication, CredentialsContainer {
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     @JsonFormat(shape = JsonFormat.Shape.STRING)
@@ -157,6 +159,7 @@ public class AccountAuthentication implements Authentication, CredentialsContain
         private Admin() {
             super(0L, 0L, "超级管理员", null);
         }
+
 
         @JsonIgnore
         @Override
