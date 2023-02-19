@@ -5,10 +5,7 @@ import com.byakuya.boot.backend.config.AclApiModule;
 import com.byakuya.boot.backend.exception.AuthException;
 import com.byakuya.boot.backend.security.AccountAuthentication;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Created by 田伯光 at 2023/2/8 22:54
@@ -29,8 +26,8 @@ class LawyerController {
     }
 
     @PostMapping("/submit")
-    public Lawyer submit(Lawyer lawyer, AccountAuthentication authentication) {
-        if (authentication.getAccountId() != lawyer.getId()) {
+    public Lawyer submit(@RequestBody Lawyer lawyer, AccountAuthentication authentication) {
+        if (!Long.valueOf(authentication.getAccountId()).equals(lawyer.getId())) {
             throw AuthException.forbidden(null);
         }
         return lawyerService.submitInfo(lawyer);

@@ -58,23 +58,23 @@ public class LawyerService implements InitializingBean {
     @Transactional
     public Lawyer submitInfo(Lawyer lawyer) {
         Lawyer old = lawyerRepository.findById(lawyer.getId()).orElseThrow(RecordNotFoundException::new);
-        LawyerState state = lawyer.getState();
+        LawyerState state = old.getState();
         if (state != LawyerState.CREATED) return old;
-        lawyer.setName(lawyer.getName());
-        lawyer.setCertificate(lawyer.getCertificate());
-        lawyer.setLawId(lawyer.getLawId());
-        lawyer.setLawFirm(lawyer.getLawFirm());
-        lawyer.setKey1(lawyer.getKey1());
-        lawyer.setKey1(lawyer.getKey2());
-        lawyer.setKey1(lawyer.getKey3());
-        lawyer.setKey1(lawyer.getKey4());
-        lawyer.setKey1(lawyer.getKey5());
-        lawyer.setKey1(lawyer.getKey6());
-        lawyer.setKey1(lawyer.getKey7());
-        lawyer.setKey1(lawyer.getKey8());
-        lawyer.setKey1(lawyer.getKey9());
-        lawyer.setBackup(Boolean.FALSE);
-        lawyer.setState(state.transition(LawyerAction.SUBMIT));
+        old.setName(lawyer.getName());
+        old.setCertificate(lawyer.getCertificate());
+        old.setLawId(lawyer.getLawId());
+        old.setLawFirm(lawyer.getLawFirm());
+        old.setKey1(lawyer.getKey1());
+        old.setKey1(lawyer.getKey2());
+        old.setKey1(lawyer.getKey3());
+        old.setKey1(lawyer.getKey4());
+        old.setKey1(lawyer.getKey5());
+        old.setKey1(lawyer.getKey6());
+        old.setKey1(lawyer.getKey7());
+        old.setKey1(lawyer.getKey8());
+        old.setKey1(lawyer.getKey9());
+        old.setBackup(Boolean.FALSE);
+        old.setState(state.transition(LawyerAction.SUBMIT));
         return lawyerRepository.save(old);
     }
 
