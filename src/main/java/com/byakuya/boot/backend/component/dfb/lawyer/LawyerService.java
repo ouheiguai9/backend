@@ -2,6 +2,7 @@ package com.byakuya.boot.backend.component.dfb.lawyer;
 
 import com.byakuya.boot.backend.component.user.User;
 import com.byakuya.boot.backend.component.user.UserService;
+import com.byakuya.boot.backend.exception.RecordNotFoundException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
@@ -47,11 +48,34 @@ public class LawyerService implements InitializingBean {
             if (StringUtils.hasText(phone) && user.getPhone().charAt(0) == 'L') {
                 Lawyer lawyer = new Lawyer().setUser(user);
                 lawyer.setPhone(phone.substring(1));
-                lawyer.setState(LawyerState.NOT_APPROVED);
+                lawyer.setState(LawyerState.CREATED);
                 return Optional.of(lawyerRepository.save(lawyer));
             }
         }
         return Optional.empty();
+    }
+
+    @Transactional
+    public Lawyer submitInfo(Lawyer lawyer) {
+        Lawyer old = lawyerRepository.findById(lawyer.getId()).orElseThrow(RecordNotFoundException::new);
+        LawyerState state = lawyer.getState();
+        if (state != LawyerState.CREATED) return old;
+        lawyer.setName(lawyer.getName());
+        lawyer.setCertificate(lawyer.getCertificate());
+        lawyer.setLawId(lawyer.getLawId());
+        lawyer.setLawFirm(lawyer.getLawFirm());
+        lawyer.setKey1(lawyer.getKey1());
+        lawyer.setKey1(lawyer.getKey2());
+        lawyer.setKey1(lawyer.getKey3());
+        lawyer.setKey1(lawyer.getKey4());
+        lawyer.setKey1(lawyer.getKey5());
+        lawyer.setKey1(lawyer.getKey6());
+        lawyer.setKey1(lawyer.getKey7());
+        lawyer.setKey1(lawyer.getKey8());
+        lawyer.setKey1(lawyer.getKey9());
+        lawyer.setBackup(Boolean.FALSE);
+        lawyer.setState(state.transition(LawyerAction.SUBMIT));
+        return lawyerRepository.save(old);
     }
 
     @Transactional
@@ -60,14 +84,6 @@ public class LawyerService implements InitializingBean {
             lawyer.setState(lawyer.getState().transition(LawyerAction.APPROVED));
             lawyerRepository.save(lawyer);
         });
-    }
-
-    private String candidateKey(Lawyer lawyer) {
-        return isBackup(lawyer) ? BACKUP_KEY : CANDIDATES_KEY;
-    }
-
-    private boolean isBackup(Lawyer lawyer) {
-        return Boolean.TRUE.equals(lawyer.getBackup());
     }
 
     @Transactional
@@ -80,6 +96,14 @@ public class LawyerService implements InitializingBean {
                 stringRedisTemplate.opsForZSet().addIfAbsent(candidateKey(lawyerRepository.save(lawyer)), String.valueOf(lawyerId), System.currentTimeMillis());
             }
         });
+    }
+
+    private String candidateKey(Lawyer lawyer) {
+        return isBackup(lawyer) ? BACKUP_KEY : CANDIDATES_KEY;
+    }
+
+    private boolean isBackup(Lawyer lawyer) {
+        return Boolean.TRUE.equals(lawyer.getBackup());
     }
 
     @Transactional

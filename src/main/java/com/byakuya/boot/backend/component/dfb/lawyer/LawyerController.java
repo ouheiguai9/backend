@@ -28,6 +28,14 @@ class LawyerController {
         return lawyerService.query(id != null ? id : authentication.getAccountId(), true).orElseThrow(() -> AuthException.forbidden(null));
     }
 
+    @PostMapping("/submit")
+    public Lawyer submit(Lawyer lawyer, AccountAuthentication authentication) {
+        if (authentication.getAccountId() != lawyer.getId()) {
+            throw AuthException.forbidden(null);
+        }
+        return lawyerService.submitInfo(lawyer);
+    }
+
     @PostMapping("/duty/on")
     public void dutyOn(AccountAuthentication authentication) {
         lawyerService.dutyOn(authentication.getAccountId());

@@ -4,6 +4,12 @@ package com.byakuya.boot.backend.component.dfb.lawyer;
  * Created by 田伯光 at 2023/2/8 11:13
  */
 public enum LawyerState {
+    CREATED("已注册") {
+        @Override
+        public LawyerState transition(LawyerAction action) {
+            return action == LawyerAction.SUBMIT ? NOT_APPROVED : this;
+        }
+    },
     NOT_APPROVED("未审核") {
         @Override
         public LawyerState transition(LawyerAction action) {
