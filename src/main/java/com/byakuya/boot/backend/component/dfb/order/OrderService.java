@@ -8,6 +8,8 @@ import com.byakuya.boot.backend.exception.BackendException;
 import com.byakuya.boot.backend.exception.ErrorStatus;
 import com.byakuya.boot.backend.exception.RecordNotFoundException;
 import com.byakuya.boot.backend.utils.SnowFlakeUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -24,13 +26,17 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final CustomerService customerService;
     private final LawyerService lawyerService;
-    private final EvaluationRepository evaluationRepository;
+    private final CommentRepository commentRepository;
 
-    public OrderService(OrderRepository orderRepository, CustomerService customerService, LawyerService lawyerService, EvaluationRepository evaluationRepository) {
+    public OrderService(OrderRepository orderRepository, CustomerService customerService, LawyerService lawyerService, CommentRepository commentRepository) {
         this.orderRepository = orderRepository;
         this.customerService = customerService;
         this.lawyerService = lawyerService;
-        this.evaluationRepository = evaluationRepository;
+        this.commentRepository = commentRepository;
+    }
+
+    public Page<Comment> getCommentList(Pageable pageable) {
+        return commentRepository.findAllByVisibleIsTrue(pageable);
     }
 
     @Transactional
@@ -66,24 +72,24 @@ public class OrderService {
     }
 
     @Transactional
-    public Evaluation addEvaluation(Evaluation evaluation, Long customerId) {
-        if (evaluation.getOrderId() != null) {
-            Order order = orderRepository.findById(evaluation.getOrderId()).orElseThrow(RecordNotFoundException::new);
+    public Comment addComment(Comment comment, Long customerId) {
+        if (comment.getOrderId() != null) {
+            Order order = orderRepository.findById(comment.getOrderId()).orElseThrow(RecordNotFoundException::new);
             // 只能评价已支付的订单并且只能订单的顾客本人评价
             if (order.getState() != OrderState.PAID || !Objects.equals(order.getCustomer().getId(), customerId)) {
                 throw AuthException.forbidden(null);
             }
-            evaluation.setOrder(order);
-            evaluation.setCustomer(order.getCustomer().getPhone());
-            evaluation.setLawyer(order.getLawyer().getName());
+            comment.setOrder(order);
+            comment.setCustomer(order.getCustomer().getPhone());
+            comment.setLawyer(order.getLawyer().getName());
         } else {
-            evaluation.setOrder(null);
+            comment.setOrder(null);
         }
-        if (!StringUtils.hasText(evaluation.getCustomer()) || !StringUtils.hasText(evaluation.getLawyer())) {
+        if (!StringUtils.hasText(comment.getCustomer()) || !StringUtils.hasText(comment.getLawyer())) {
             throw new BackendException(ErrorStatus.CODE_ARGUMENT);
         }
-        evaluation.setCreateTime(LocalDateTime.now());
-        evaluation.setVisible(true);
-        return evaluationRepository.save(evaluation);
+        comment.setCreateTime(LocalDateTime.now());
+        comment.setVisible(true);
+        return commentRepository.save(comment);
     }
 }

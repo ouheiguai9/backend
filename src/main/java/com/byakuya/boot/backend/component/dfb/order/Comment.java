@@ -18,9 +18,9 @@ import java.time.LocalDateTime;
  */
 @Data
 @Entity
-@Table(name = "T_DFB_EVALUATION")
+@Table(name = "T_DFB_COMMENT")
 @Accessors(chain = true)
-public class Evaluation implements Serializable {
+public class Comment implements Serializable {
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     @Id
     @GeneratedValue(generator = ConstantUtils.ID_GENERATOR_SNOW_NAME)

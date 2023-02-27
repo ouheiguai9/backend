@@ -153,8 +153,8 @@ Accept: application/json
 Content-Type: application/json
 X-Auth-Token: {{auth_token}}
 
-### 增加订单评价
-POST {{baseUrl}}/dfb/customers/evaluation
+### 增加虚拟评价
+POST {{baseUrl}}/dfb/orders/comments
 Accept: application/json
 Content-Type: application/json
 X-Auth-Token: {{auth_token}}

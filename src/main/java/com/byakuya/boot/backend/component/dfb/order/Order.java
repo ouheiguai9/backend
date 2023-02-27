@@ -54,11 +54,11 @@ public class Order implements Serializable {
     private OrderState state;
     @JsonIgnore
     @OneToOne(mappedBy = "order")
-    private Evaluation evaluation;
+    private Comment comment;
 
-    public Long getEvaluationId() {
-        if (evaluation == null || evaluation.getId() == null) return null;
-        return evaluation.getId();
+    public Long getCommentId() {
+        if (comment == null || comment.getId() == null) return null;
+        return comment.getId();
     }
 
     public String getStateText() {
