@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,9 +29,14 @@ public class OrderController {
     }
 
     @AclApiMethod(value = "comment_fake", desc = "虚拟评价", path = "/comments", method = RequestMethod.POST)
-    public Comment fakeComment(@RequestBody Comment comment, AccountAuthentication authentication) {
+    public Comment fakeComment(@RequestBody Comment comment) {
         comment.setOrder(null);//虚拟评价不存在订单
-        return orderService.addComment(comment, authentication.getAccountId());
+        return orderService.addComment(comment, null);
+    }
+
+    @AclApiMethod(value = "comment_visible", desc = "评价显隐", path = "/comments/visible/{id}/{visible}", method = RequestMethod.POST)
+    public Comment commentVisible(@PathVariable Long id, @PathVariable Boolean visible) {
+        return orderService.commentVisible(id, visible);
     }
 
     @PostMapping("/comment")

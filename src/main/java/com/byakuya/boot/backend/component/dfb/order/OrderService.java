@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -36,7 +37,11 @@ public class OrderService {
     }
 
     public Page<Comment> getCommentList(Pageable pageable) {
-        return commentRepository.findAllByVisibleIsTrue(pageable);
+        return commentRepository.findAll(pageable);
+    }
+
+    public List<Comment> getLastCommentList(int lastN) {
+        return commentRepository.findAllByVisibleIsTrue(Pageable.ofSize(lastN).first()).getContent();
     }
 
     @Transactional
@@ -75,15 +80,17 @@ public class OrderService {
     public Comment addComment(Comment comment, Long customerId) {
         if (comment.getOrderId() != null) {
             Order order = orderRepository.findById(comment.getOrderId()).orElseThrow(RecordNotFoundException::new);
-            // 只能评价已支付的订单并且只能订单的顾客本人评价
-            if (order.getState() != OrderState.PAID || !Objects.equals(order.getCustomer().getId(), customerId)) {
+            // 只能评价已支付未评价的订单并且只能订单的顾客本人评价
+            if (order.getState() != OrderState.PAID || order.getCommentId() != null || !Objects.equals(order.getCustomer().getId(), customerId)) {
                 throw AuthException.forbidden(null);
             }
             comment.setOrder(order);
             comment.setCustomer(order.getCustomer().getPhone());
             comment.setLawyer(order.getLawyer().getName());
+            comment.setVisible(false);//真实评价默认不可见
         } else {
             comment.setOrder(null);
+            comment.setVisible(true);//虚拟评价默认可见
         }
         if (!StringUtils.hasText(comment.getCustomer()) || !StringUtils.hasText(comment.getLawyer())) {
             throw new BackendException(ErrorStatus.CODE_ARGUMENT);
@@ -91,5 +98,10 @@ public class OrderService {
         comment.setCreateTime(LocalDateTime.now());
         comment.setVisible(true);
         return commentRepository.save(comment);
+    }
+
+    @Transactional
+    public Comment commentVisible(long commentId, boolean visible) {
+        return commentRepository.save(commentRepository.findById(commentId).orElseThrow(RecordNotFoundException::new).setVisible(visible));
     }
 }

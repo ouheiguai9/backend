@@ -26,7 +26,7 @@ public class Comment implements Serializable {
     @GeneratedValue(generator = ConstantUtils.ID_GENERATOR_SNOW_NAME)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long id;
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(updatable = false)
     private Order order;
     @Desensitize(strategy = Desensitize.DesensitizeStrategy.PHONE)
