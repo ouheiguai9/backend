@@ -166,6 +166,18 @@ X-Auth-Token: {{auth_token}}
   "value": 4
 }
 
+### 查询评价列表
+GET {{baseUrl}}/dfb/orders/comments?page=0&size=20
+X-Auth-Token: {{auth_token}}
+
+### 查询公开评价列表
+GET {{baseUrl}}/api/dfb/comment/list?page=0&size=5
+X-Auth-Token: {{auth_token}}
+
+### 查询评价标签统计
+GET {{baseUrl}}/api/dfb/comment/count/label
+X-Auth-Token: {{auth_token}}
+
 ### 咨询律师
 POST {{baseUrl}}/dfb/customers/call
 Content-Type: application/x-www-form-urlencoded

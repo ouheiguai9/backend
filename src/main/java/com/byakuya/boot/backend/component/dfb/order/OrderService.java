@@ -40,8 +40,12 @@ public class OrderService {
         return commentRepository.findAll(pageable);
     }
 
-    public List<Comment> getLastCommentList(int lastN) {
-        return commentRepository.findAllByVisibleIsTrue(Pageable.ofSize(lastN).first()).getContent();
+    public List<Comment> getVisibleComment(Pageable pageable) {
+        return commentRepository.findAllByVisibleIsTrue(pageable).getContent();
+    }
+
+    public Object countVisibleLabel() {
+        return commentRepository.countLabel();
     }
 
     @Transactional
