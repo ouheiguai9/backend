@@ -25,7 +25,7 @@ public class OrderController {
 
     @AclApiMethod(value = "comment_list", desc = "评价列表", path = "/comments", method = RequestMethod.GET)
     public Page<Comment> getCommentList(@PageableDefault(sort = {"createTime"}, direction = Sort.Direction.DESC) Pageable pageable) {
-        return orderService.getCommentList(pageable);
+        return orderService.getCommentList(pageable, null, null, null, null, null);
     }
 
     @AclApiMethod(value = "comment_fake", desc = "虚拟评价", path = "/comments", method = RequestMethod.POST)

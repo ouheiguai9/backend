@@ -10,11 +10,14 @@ import com.byakuya.boot.backend.exception.RecordNotFoundException;
 import com.byakuya.boot.backend.utils.SnowFlakeUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.criteria.Predicate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -36,12 +39,36 @@ public class OrderService {
         this.commentRepository = commentRepository;
     }
 
-    public Page<Comment> getCommentList(Pageable pageable) {
-        return commentRepository.findAll(pageable);
+    public Page<Comment> getCommentList(Pageable pageable, Boolean visible, String customerLike, String lawyerLike, Integer[] valueIn, String[] labelIn) {
+        if (visible != null || StringUtils.hasText(customerLike) || StringUtils.hasText(lawyerLike) || (valueIn != null && valueIn.length > 0) || (labelIn != null && labelIn.length > 0)) {
+            return commentRepository.findAll((Specification<Comment>) (root, query, builder) -> {
+                List<Predicate> conditions = new ArrayList<>();
+                if (visible != null) {
+                    conditions.add(builder.equal(root.get("visible"), visible));
+                }
+                if (StringUtils.hasText(customerLike)) {
+                    conditions.add(builder.like(root.get("customer"), "%" + customerLike + "%"));
+                }
+                if (StringUtils.hasText(lawyerLike)) {
+                    conditions.add(builder.like(root.get("lawyer"), "%" + lawyerLike + "%"));
+                }
+                if (valueIn != null && valueIn.length > 0) {
+                    conditions.add(root.get("value").in(valueIn));
+                }
+                if (labelIn != null && labelIn.length > 0) {
+                    for (String label : labelIn) {
+                        conditions.add(builder.equal(root.get(label), true));
+                    }
+                }
+                return query.where(conditions.toArray(conditions.toArray(new Predicate[0]))).getRestriction();
+            }, pageable);
+        } else {
+            return commentRepository.findAll(pageable);
+        }
     }
 
     public List<Comment> getVisibleComment(Pageable pageable) {
-        return commentRepository.findAllByVisibleIsTrue(pageable).getContent();
+        return getCommentList(pageable, true, null, null, null, null).getContent();
     }
 
     public Object countVisibleLabel() {
