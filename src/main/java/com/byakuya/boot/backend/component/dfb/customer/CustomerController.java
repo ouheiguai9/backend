@@ -9,6 +9,7 @@ import com.byakuya.boot.backend.jackson.DynamicJsonView;
 import com.byakuya.boot.backend.security.AccountAuthentication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.util.StringUtils;
@@ -16,10 +17,13 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.byakuya.boot.backend.component.dfb.ConstantUtils.CUSTOMER_PREFIX;
 
@@ -40,9 +44,16 @@ class CustomerController {
     }
 
 
-    @GetMapping(path = {"", "/{id}"})
+    @GetMapping(path = {"/me", "/{id}"})
     public Customer read(@PathVariable(required = false) Long id, AccountAuthentication authentication) {
         return customerService.query(id != null ? id : authentication.getAccountId(), true).orElseThrow(() -> AuthException.forbidden(null));
+    }
+
+    @GetMapping
+    public Page<CustomerWithOrderVO> read(@PageableDefault(sort = {"user.account.createTime"}, direction = Sort.Direction.DESC) Pageable pageable, @RequestParam(value = "phone", required = false) String phoneLike) {
+        Page<Customer> customers = customerService.query(pageable, phoneLike);
+        Map<Long, Order> lastOrderMap = orderService.getCustomerLastOrder(customers.stream().map(Customer::getId).collect(Collectors.toList()));
+        return customers.map(customer -> new CustomerWithOrderVO(customer, lastOrderMap.get(customer.getId())));
     }
 
     @PostMapping("/call")
@@ -78,10 +89,5 @@ class CustomerController {
             redisTemplate.delete(customerKey);
             throw e;
         }
-    }
-
-    @GetMapping("/orders")
-    public Page<Order> read(@PageableDefault Pageable pageable, String search) {
-        return null;
     }
 }

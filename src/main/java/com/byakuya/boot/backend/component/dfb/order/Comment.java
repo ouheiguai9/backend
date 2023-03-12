@@ -29,10 +29,8 @@ public class Comment implements Serializable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(updatable = false)
     private Order order;
-    @Desensitize(strategy = Desensitize.DesensitizeStrategy.PHONE)
     @Column(length = 20, nullable = false)
     private String customer;
-    @Desensitize(strategy = Desensitize.DesensitizeStrategy.LAWYER)
     @Column(length = 20, nullable = false)
     private String lawyer;
     private LocalDateTime createTime;
@@ -61,5 +59,29 @@ public class Comment implements Serializable {
     public Long getOrderId() {
         if (order == null || order.getId() == null) return null;
         return order.getId();
+    }
+
+    @Desensitize(strategy = Desensitize.DesensitizeStrategy.LAWYER)
+    public String getSecureLawyer() {
+        return this.lawyer;
+    }
+
+    @Desensitize(strategy = Desensitize.DesensitizeStrategy.PHONE)
+    public String getSecureCustomer() {
+        return this.customer;
+    }
+
+    public interface LabelStat {
+        long getCount1();
+
+        long getCount2();
+
+        long getCount3();
+
+        long getCount4();
+
+        long getCount5();
+
+        long getCount6();
     }
 }

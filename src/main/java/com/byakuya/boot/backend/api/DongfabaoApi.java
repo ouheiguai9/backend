@@ -25,13 +25,13 @@ class DongfabaoApi {
     }
 
     @GetMapping("/comment/list")
-    @DynamicJsonView(type = Comment.class, include = {"customer", "lawyer", "createTime", "content", "value"})
+    @DynamicJsonView(type = Comment.class, include = {"secureCustomer", "secureLawyer", "createTime", "content", "value"})
     public List<Comment> getVisibleComment(@PageableDefault(sort = {"createTime"}, direction = Sort.Direction.DESC) Pageable pageable) {
         return orderService.getVisibleComment(pageable);
     }
 
-    @GetMapping("/comment/count/label")
-    public Object getLabelCount() {
-        return orderService.countVisibleLabel();
+    @GetMapping("/comment/label/stat")
+    public Comment.LabelStat getLabelStat() {
+        return orderService.visibleLabelStat();
     }
 }

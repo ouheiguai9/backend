@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 import java.util.function.Function;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)  // 针对成员属性进行脱敏
+@Target({ElementType.FIELD, ElementType.METHOD})  // 针对成员属性进行脱敏
 @JacksonAnnotationsInside  // 表示和其他Jackson注解联合使用，如果缺少则无法执行数据脱敏流程
 @JsonSerialize(using = DesensitizeJsonSerializer.class)  // 表明使用的序列化的类，定义在后面
 public @interface Desensitize {

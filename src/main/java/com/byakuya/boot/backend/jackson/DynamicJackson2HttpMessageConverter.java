@@ -2,6 +2,7 @@ package com.byakuya.boot.backend.jackson;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.PropertyFilter;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -19,7 +20,7 @@ public class DynamicJackson2HttpMessageConverter extends MappingJackson2HttpMess
     }
 
     @Override
-    protected void writeInternal(Object object, Type type, HttpOutputMessage outputMessage)
+    protected void writeInternal(@NotNull Object object, Type type, @NotNull HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
         if (object instanceof MappingJacksonValue) {
             PropertyFilter filter =

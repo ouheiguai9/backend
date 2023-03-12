@@ -2,6 +2,7 @@ package com.byakuya.boot.backend.jackson;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
@@ -27,14 +28,14 @@ public class DynamicJacksonResponseBodyAdvice extends AbstractMappingJacksonResp
     }
 
     @Override
-    public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
+    public boolean supports(@NotNull MethodParameter returnType, @NotNull Class<? extends HttpMessageConverter<?>> converterType) {
         return super.supports(returnType, converterType)
                 && (returnType.hasMethodAnnotation(DynamicJsonView.class)
                 || returnType.hasMethodAnnotation(DynamicJsonViews.class));
     }
 
     @Override
-    protected void beforeBodyWriteInternal(MappingJacksonValue bodyContainer, MediaType contentType, MethodParameter returnType, ServerHttpRequest request, ServerHttpResponse response) {
+    protected void beforeBodyWriteInternal(@NotNull MappingJacksonValue bodyContainer, @NotNull MediaType contentType, MethodParameter returnType, @NotNull ServerHttpRequest request, @NotNull ServerHttpResponse response) {
         final DynamicBeanPropertyFilter filter = new DynamicBeanPropertyFilter();
         Arrays.asList(returnType.getMethodAnnotations()).forEach(annotation -> {
             if (annotation instanceof DynamicJsonView) {

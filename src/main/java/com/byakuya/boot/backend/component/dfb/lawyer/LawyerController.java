@@ -20,7 +20,7 @@ class LawyerController {
         this.lawyerService = lawyerService;
     }
 
-    @GetMapping(path = {"", "/{id}"})
+    @GetMapping(path = {"/me", "/{id}"})
     public Lawyer read(@PathVariable(required = false) Long id, AccountAuthentication authentication) {
         return lawyerService.query(id != null ? id : authentication.getAccountId(), true).orElseThrow(() -> AuthException.forbidden(null));
     }

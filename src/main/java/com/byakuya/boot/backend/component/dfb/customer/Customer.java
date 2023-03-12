@@ -17,6 +17,9 @@ import java.io.Serializable;
 @Entity
 @Table(name = "T_DFB_CUSTOMER")
 @Accessors(chain = true)
+@NamedEntityGraph(name = "Customer.User",
+        attributeNodes = @NamedAttributeNode(value = "user", subgraph = "account"),
+        subgraphs = @NamedSubgraph(name = "account", attributeNodes = @NamedAttributeNode("account")))
 public class Customer implements Serializable {
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     @Id

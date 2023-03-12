@@ -12,6 +12,6 @@ import org.springframework.data.jpa.repository.Query;
 interface CommentRepository extends JpaRepository<Comment, Long>, JpaSpecificationExecutor<Comment> {
     Page<Comment> findAllByVisibleIsTrue(Pageable pageable);
 
-    @Query("select count(c.label1),count(c.label2),count(c.label3),count(c.label4),count(c.label5),count(c.label6) from Comment c where c.visible=true")
-    Object countLabel();
+    @Query("select count(c.label1) as count1, count(c.label2) as count2, count(c.label3) as count3, count(c.label4) as count4, count(c.label5) as count5, count(c.label6) as count6 from Comment c where c.visible=true")
+    Comment.LabelStat labelStat();
 }

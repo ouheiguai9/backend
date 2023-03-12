@@ -2,6 +2,8 @@ package com.byakuya.boot.backend.component.dfb.customer;
 
 import com.byakuya.boot.backend.component.user.User;
 import com.byakuya.boot.backend.component.user.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,14 @@ public class CustomerService {
         this.customerRepository = customerRepository;
         this.userService = userService;
         this.stringRedisTemplate = stringRedisTemplate;
+    }
+
+    public Page<Customer> query(Pageable pageable, String phoneLike) {
+        if (StringUtils.hasText(phoneLike)) {
+            return customerRepository.findAllByPhoneContains(pageable, phoneLike);
+        } else {
+            return customerRepository.findAll(pageable);
+        }
     }
 
     @Transactional

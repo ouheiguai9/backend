@@ -17,10 +17,8 @@ import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.Predicate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by 田伯光 at 2023/2/9 15:29
@@ -37,6 +35,10 @@ public class OrderService {
         this.customerService = customerService;
         this.lawyerService = lawyerService;
         this.commentRepository = commentRepository;
+    }
+
+    public List<Comment> getVisibleComment(Pageable pageable) {
+        return getCommentList(pageable, true, null, null, null, null, null).getContent();
     }
 
     public Page<Comment> getCommentList(Pageable pageable, Boolean visible, String customerLike, String lawyerLike, Integer[] valueIn, String[] labelIn, LocalDateTime[] createTimeIn) {
@@ -66,12 +68,12 @@ public class OrderService {
         }, pageable);
     }
 
-    public List<Comment> getVisibleComment(Pageable pageable) {
-        return getCommentList(pageable, true, null, null, null, null, null).getContent();
+    public Comment.LabelStat visibleLabelStat() {
+        return commentRepository.labelStat();
     }
 
-    public Object countVisibleLabel() {
-        return commentRepository.countLabel();
+    public Map<Long, Order> getCustomerLastOrder(Iterable<Long> customerIds) {
+        return orderRepository.queryCustomerLastOrder(customerIds).stream().collect(Collectors.toMap(order -> order.getCustomer().getId(), order -> order));
     }
 
     @Transactional

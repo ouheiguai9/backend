@@ -148,7 +148,7 @@ Content-Type: application/x-www-form-urlencoded
 sender=SubMail&tenantId=10000&to=18888888881&template=abc&target=C18888888881&addUser=true
 
 ### 查询当前用户顾客信息
-GET {{baseUrl}}/dfb/customers
+GET {{baseUrl}}/dfb/customers/me
 Accept: application/json
 Content-Type: application/json
 X-Auth-Token: {{auth_token}}
@@ -175,7 +175,7 @@ GET {{baseUrl}}/api/dfb/comment/list?page=0&size=5
 X-Auth-Token: {{auth_token}}
 
 ### 查询评价标签统计
-GET {{baseUrl}}/api/dfb/comment/count/label
+GET {{baseUrl}}/api/dfb/comment/label/stat
 X-Auth-Token: {{auth_token}}
 
 ### 咨询律师
@@ -184,7 +184,7 @@ Content-Type: application/x-www-form-urlencoded
 X-Auth-Token: {{auth_token}}
 
 ### 查询当前用户律师信息
-GET {{baseUrl}}/dfb/lawyers
+GET {{baseUrl}}/dfb/lawyers/me
 Accept: application/json
 Content-Type: application/json
 X-Auth-Token: {{auth_token}}
