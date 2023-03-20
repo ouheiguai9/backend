@@ -4,7 +4,9 @@ Accept: application/json
 _auth_type_key_: admin
 X-Auth-Token: {{randomKey}}
 
-> {% client.global.set("auth_token", response.headers.valueOf("X-Auth-Token")); %}
+> {%
+  client.global.set("auth_token", response.headers.valueOf("X-Auth-Token"));
+%}
 
 ### 普通用户登录-standard
 POST {{baseUrl}}/api/login
@@ -15,7 +17,9 @@ userType: phone
 user: M18888888888
 pass: abc!123
 
-> {% client.global.set("auth_token", response.headers.valueOf("X-Auth-Token")); %}
+> {%
+  client.global.set("auth_token", response.headers.valueOf("X-Auth-Token"));
+%}
 
 ### 普通用户登录-captcha
 POST {{baseUrl}}/api/login
@@ -26,7 +30,9 @@ targetType: phone
 target: C18888888881
 captcha: 425162
 
-> {% client.global.set("auth_token", response.headers.valueOf("X-Auth-Token")); %}
+> {%
+  client.global.set("auth_token", response.headers.valueOf("X-Auth-Token"));
+%}
 
 ### 退出
 GET {{baseUrl}}/logout
@@ -183,10 +189,14 @@ POST {{baseUrl}}/dfb/customers/call
 Content-Type: application/x-www-form-urlencoded
 X-Auth-Token: {{auth_token}}
 
-### 查询当前用户律师信息
+### 查询当前律师信息
 GET {{baseUrl}}/dfb/lawyers/me
 Accept: application/json
 Content-Type: application/json
+X-Auth-Token: {{auth_token}}
+
+### 查询律师统计信息
+GET {{baseUrl}}/dfb/lawyers/stat
 X-Auth-Token: {{auth_token}}
 
 ### 审核律师信息

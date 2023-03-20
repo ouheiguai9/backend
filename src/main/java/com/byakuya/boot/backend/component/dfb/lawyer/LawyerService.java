@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -35,6 +36,10 @@ public class LawyerService implements InitializingBean {
         this.lawyerRepository = lawyerRepository;
         this.stringRedisTemplate = stringRedisTemplate;
         this.userService = userService;
+    }
+
+    public List<Lawyer> queryAllStat(LocalDateTime start, LocalDateTime end) {
+        return lawyerRepository.findAllWithOrder(start, end);
     }
 
     @Transactional
