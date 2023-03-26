@@ -4,11 +4,18 @@ import com.byakuya.boot.backend.config.AclApiMethod;
 import com.byakuya.boot.backend.config.AclApiModule;
 import com.byakuya.boot.backend.exception.AuthException;
 import com.byakuya.boot.backend.security.AccountAuthentication;
+import com.byakuya.boot.backend.vo.KeyValueVO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by 田伯光 at 2023/2/8 22:54
@@ -26,6 +33,21 @@ class LawyerController {
     @GetMapping(path = {"/me", "/{id}"})
     public Lawyer read(@PathVariable(required = false) Long id, AccountAuthentication authentication) {
         return lawyerService.query(id != null ? id : authentication.getAccountId(), true).orElseThrow(() -> AuthException.forbidden(null));
+    }
+
+    @GetMapping("/states")
+    public List<KeyValueVO<String, String>> read() {
+        return Arrays.stream(LawyerState.values()).map(state -> KeyValueVO.of(state.toString(), state.text)).collect(Collectors.toList());
+    }
+
+    @AclApiMethod(value = "lawyer_list", desc = "律师列表", method = RequestMethod.GET)
+    public Page<Lawyer> getCommentList(@PageableDefault(sort = {"user.account.createTime"}, direction = Sort.Direction.DESC) Pageable pageable,
+                                       @RequestParam(value = "name", required = false) String nameLike,
+                                       @RequestParam(value = "phone", required = false) String phoneLike,
+                                       @RequestParam(value = "state", required = false) LawyerState[] stateIn,
+                                       @RequestParam(value = "key", required = false) String[] keyIn,
+                                       @RequestParam(value = "createTime", required = false) LocalDateTime[] createTimeIn) {
+        return lawyerService.query(pageable, nameLike, phoneLike, stateIn, keyIn, createTimeIn);
     }
 
     @AclApiMethod(value = "lawyer_stat", desc = "律师统计", path = "/stat", method = RequestMethod.GET)

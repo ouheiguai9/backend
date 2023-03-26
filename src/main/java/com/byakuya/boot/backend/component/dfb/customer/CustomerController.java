@@ -3,6 +3,7 @@ package com.byakuya.boot.backend.component.dfb.customer;
 import com.byakuya.boot.backend.component.dfb.lawyer.Lawyer;
 import com.byakuya.boot.backend.component.dfb.order.Order;
 import com.byakuya.boot.backend.component.dfb.order.OrderService;
+import com.byakuya.boot.backend.config.AclApiMethod;
 import com.byakuya.boot.backend.config.ApiModule;
 import com.byakuya.boot.backend.exception.AuthException;
 import com.byakuya.boot.backend.jackson.DynamicJsonView;
@@ -14,10 +15,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -49,7 +47,7 @@ class CustomerController {
         return customerService.query(id != null ? id : authentication.getAccountId(), true).orElseThrow(() -> AuthException.forbidden(null));
     }
 
-    @GetMapping
+    @AclApiMethod(value = "customer_list", desc = "顾客列表", method = RequestMethod.GET)
     public Page<CustomerWithOrderVO> read(@PageableDefault(sort = {"user.account.createTime"}, direction = Sort.Direction.DESC) Pageable pageable, @RequestParam(value = "phone", required = false) String phoneLike) {
         Page<Customer> customers = customerService.query(pageable, phoneLike);
         Map<Long, Order> lastOrderMap = orderService.getCustomerLastOrder(customers.stream().map(Customer::getId).collect(Collectors.toList()));

@@ -56,7 +56,7 @@ public class OrderService {
             if (valueIn != null && valueIn.length > 0) {
                 conditions.add(root.get("value").in(valueIn));
             }
-            if (labelIn != null && labelIn.length > 0) {
+            if (labelIn != null) {
                 for (String label : labelIn) {
                     conditions.add(builder.equal(root.get(label), true));
                 }

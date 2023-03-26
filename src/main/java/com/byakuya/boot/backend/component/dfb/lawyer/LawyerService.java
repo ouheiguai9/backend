@@ -6,6 +6,9 @@ import com.byakuya.boot.backend.exception.RecordNotFoundException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -14,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.criteria.Predicate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -172,5 +177,29 @@ public class LawyerService implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         loadCandidates();
+    }
+
+    public Page<Lawyer> query(Pageable pageable, String nameLike, String phoneLike, LawyerState[] stateIn, String[] keyIn, LocalDateTime[] createTimeIn) {
+        return lawyerRepository.findAll((Specification<Lawyer>) (root, query, builder) -> {
+            List<Predicate> conditions = new ArrayList<>();
+            if (StringUtils.hasText(nameLike)) {
+                conditions.add(builder.like(root.get("name"), "%" + nameLike + "%"));
+            }
+            if (StringUtils.hasText(phoneLike)) {
+                conditions.add(builder.like(root.get("phone"), "%" + phoneLike + "%"));
+            }
+            if (stateIn != null && stateIn.length > 0) {
+                conditions.add(root.get("state").in(stateIn));
+            }
+            if (keyIn != null) {
+                for (String key : keyIn) {
+                    conditions.add(builder.equal(root.get(key), true));
+                }
+            }
+            if (createTimeIn != null && createTimeIn.length == 2) {
+                conditions.add(builder.between(root.get("user.createTime"), createTimeIn[0], createTimeIn[1]));
+            }
+            return query.where(conditions.toArray(conditions.toArray(new Predicate[0]))).getRestriction();
+        }, pageable);
     }
 }
