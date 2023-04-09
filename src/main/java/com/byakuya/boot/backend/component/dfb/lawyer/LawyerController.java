@@ -3,6 +3,8 @@ package com.byakuya.boot.backend.component.dfb.lawyer;
 import com.byakuya.boot.backend.config.AclApiMethod;
 import com.byakuya.boot.backend.config.AclApiModule;
 import com.byakuya.boot.backend.exception.AuthException;
+import com.byakuya.boot.backend.exception.RecordNotFoundException;
+import com.byakuya.boot.backend.jackson.DynamicJsonView;
 import com.byakuya.boot.backend.security.AccountAuthentication;
 import com.byakuya.boot.backend.vo.KeyValueVO;
 import org.springframework.data.domain.Page;
@@ -40,17 +42,17 @@ class LawyerController {
         return Arrays.stream(LawyerState.values()).map(state -> KeyValueVO.of(state.toString(), state.text)).collect(Collectors.toList());
     }
 
-    @AclApiMethod(value = "lawyer_list", desc = "律师列表", method = RequestMethod.GET)
-    public Page<Lawyer> getCommentList(@PageableDefault(sort = {"user.account.createTime"}, direction = Sort.Direction.DESC) Pageable pageable,
-                                       @RequestParam(value = "name", required = false) String nameLike,
-                                       @RequestParam(value = "phone", required = false) String phoneLike,
-                                       @RequestParam(value = "state", required = false) LawyerState[] stateIn,
-                                       @RequestParam(value = "key", required = false) String[] keyIn,
-                                       @RequestParam(value = "createTime", required = false) LocalDateTime[] createTimeIn) {
+    @AclApiMethod(value = "list", desc = "列表", method = RequestMethod.GET)
+    public Page<LawyerFullVO> read(@PageableDefault(sort = {"user.account.createTime"}, direction = Sort.Direction.DESC) Pageable pageable,
+                                   @RequestParam(value = "name", required = false) String nameLike,
+                                   @RequestParam(value = "phone", required = false) String phoneLike,
+                                   @RequestParam(value = "state", required = false) LawyerState[] stateIn,
+                                   @RequestParam(value = "key", required = false) String[] keyIn,
+                                   @RequestParam(value = "createTime", required = false) LocalDateTime[] createTimeIn) {
         return lawyerService.query(pageable, nameLike, phoneLike, stateIn, keyIn, createTimeIn);
     }
 
-    @AclApiMethod(value = "lawyer_stat", desc = "律师统计", path = "/stat", method = RequestMethod.GET)
+    @AclApiMethod(value = "stat", desc = "统计", path = "/stat", method = RequestMethod.GET)
     public List<Lawyer> stat(@RequestParam(value = "createTime", required = false) LocalDateTime[] createTimeIn) {
         if (createTimeIn == null || createTimeIn.length < 2) {
             LocalDateTime now = LocalDateTime.now();
@@ -77,8 +79,19 @@ class LawyerController {
         lawyerService.dutyOff(authentication.getAccountId());
     }
 
-    @AclApiMethod(value = "approve", desc = "审核", path = "/approve/{id}", method = RequestMethod.POST)
-    public void approve(@PathVariable Long id) {
-        lawyerService.approve(id);
+    @AclApiMethod(value = "approve", desc = "审核", path = "/approve/{id}/{action}", method = RequestMethod.POST)
+    @DynamicJsonView(type = Lawyer.class, include = {"state", "stateText"})
+    public Lawyer approve(@PathVariable Long id, @PathVariable LawyerAction action) {
+        return lawyerService.approve(id, action).orElseThrow(RecordNotFoundException::new);
+    }
+
+    @AclApiMethod(value = "locked", desc = "是否锁定", path = "/locked/{id}/{locked}", method = RequestMethod.POST)
+    public void setLocked(@PathVariable Long id, @PathVariable Boolean locked) {
+        lawyerService.setLocked(id, locked);
+    }
+
+    @AclApiMethod(value = "backup", desc = "是否兜底", path = "/backup/{id}/{backup}", method = RequestMethod.POST)
+    public void setBackup(@PathVariable Long id, @PathVariable Boolean backup) {
+        lawyerService.setBackup(id, backup);
     }
 }

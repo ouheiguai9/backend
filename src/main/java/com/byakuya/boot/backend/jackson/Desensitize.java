@@ -47,6 +47,11 @@ public @interface Desensitize {
         ADDRESS(s -> s.replaceAll("(\\S{3})\\S{2}(\\S*)\\S{2}", "$1****$2****")),
 
         /**
+         * 对长编码串号进行脱敏
+         */
+        LONG_CODE(s -> s.replaceAll("(\\S{4})\\S*(\\S{4})", "$1****$2")),
+
+        /**
          * 对密码进行脱敏，全部加密即可
          */
         PASSWORD(s -> "********");

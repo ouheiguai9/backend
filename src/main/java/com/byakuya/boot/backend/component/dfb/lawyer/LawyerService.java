@@ -1,7 +1,9 @@
 package com.byakuya.boot.backend.component.dfb.lawyer;
 
+import com.byakuya.boot.backend.component.account.AccountService;
 import com.byakuya.boot.backend.component.user.User;
 import com.byakuya.boot.backend.component.user.UserService;
+import com.byakuya.boot.backend.exception.AuthException;
 import com.byakuya.boot.backend.exception.RecordNotFoundException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.InitializingBean;
@@ -36,11 +38,13 @@ public class LawyerService implements InitializingBean {
     private final LawyerRepository lawyerRepository;
     private final StringRedisTemplate stringRedisTemplate;
     private final UserService userService;
+    private final AccountService accountService;
 
-    public LawyerService(LawyerRepository lawyerRepository, StringRedisTemplate stringRedisTemplate, UserService userService) {
+    public LawyerService(LawyerRepository lawyerRepository, StringRedisTemplate stringRedisTemplate, UserService userService, AccountService accountService) {
         this.lawyerRepository = lawyerRepository;
         this.stringRedisTemplate = stringRedisTemplate;
         this.userService = userService;
+        this.accountService = accountService;
     }
 
     public List<Lawyer> queryAllStat(LocalDateTime start, LocalDateTime end) {
@@ -89,10 +93,39 @@ public class LawyerService implements InitializingBean {
     }
 
     @Transactional
-    public void approve(Long accountId) {
-        lawyerRepository.findById(accountId).ifPresent(lawyer -> {
-            lawyer.setState(lawyer.getState().transition(LawyerAction.APPROVED));
-            lawyerRepository.save(lawyer);
+    public Optional<Lawyer> approve(Long lawyerId, LawyerAction action) {
+        return lawyerRepository.findById(lawyerId).map(lawyer -> {
+            lawyer.setState(lawyer.getState().transition(action));
+            return lawyerRepository.save(lawyer);
+        });
+    }
+
+    @Transactional
+    public void setLocked(Long lawyerId, Boolean locked) {
+        lawyerRepository.findWithUser(lawyerId).ifPresent(lawyer -> {
+            if (lawyer.getUser().getAccount().isLocked() != locked) {
+                if (locked && (lawyer.getBackup() || lawyer.getState() == LawyerState.NOT_APPROVED || lawyer.getState() == LawyerState.CREATED)) {
+                    throw AuthException.forbidden(null);
+                }
+                if (locked) {
+                    stringRedisTemplate.opsForValue().setIfAbsent(LOCKED_LAWYER_PREFIX_KEY + lawyerId, "1");
+                } else {
+                    stringRedisTemplate.delete(LOCKED_LAWYER_PREFIX_KEY + lawyerId);
+                }
+                accountService.setLocked(lawyerId, locked);
+            }
+        });
+    }
+
+    @Transactional
+    public void setBackup(Long lawyerId, Boolean backup) {
+        lawyerRepository.findWithUser(lawyerId).ifPresent(lawyer -> {
+            if (!lawyer.getBackup().equals(backup)) {
+                if (backup && (Boolean.TRUE.equals(lawyer.getUser().getAccount().isLocked()) || lawyer.getState() == LawyerState.NOT_APPROVED || lawyer.getState() == LawyerState.CREATED)) {
+                    throw AuthException.forbidden(null);
+                }
+                lawyerRepository.save(lawyer.setBackup(backup));
+            }
         });
     }
 
@@ -141,7 +174,9 @@ public class LawyerService implements InitializingBean {
         Optional<ZSetOperations.TypedTuple<String>> curr = Optional.empty(), prev;
         do {
             prev = curr;
-            curr = Optional.ofNullable(stringRedisTemplate.opsForZSet().popMin(CANDIDATES_KEY));
+            do {
+                curr = Optional.ofNullable(stringRedisTemplate.opsForZSet().popMin(CANDIDATES_KEY));
+            } while (curr.filter(tuple -> StringUtils.hasText(stringRedisTemplate.opsForValue().getAndDelete(LOCKED_LAWYER_PREFIX_KEY + tuple.getValue()))).isPresent());
             prev.ifPresent(tuple -> stringRedisTemplate.opsForZSet().add(CANDIDATES_KEY, tuple.getValue(), tuple.getScore()));
         } while (curr.isPresent() && excludeLawyer.contains(curr.get().getValue()));
         if (!curr.isPresent()) {
@@ -160,7 +195,7 @@ public class LawyerService implements InitializingBean {
             @SuppressWarnings("unchecked")
             @Override
             public <K, V> Object execute(@NotNull RedisOperations<K, V> operations) throws DataAccessException {
-                List<Lawyer> lawyerList = lawyerRepository.findAll();
+                List<Lawyer> lawyerList = lawyerRepository.findAllUnLocked();
                 if (!lawyerList.isEmpty()) {
                     AtomicLong min = new AtomicLong(System.currentTimeMillis());
                     lawyerList.forEach(lawyer -> {
@@ -179,7 +214,7 @@ public class LawyerService implements InitializingBean {
         loadCandidates();
     }
 
-    public Page<Lawyer> query(Pageable pageable, String nameLike, String phoneLike, LawyerState[] stateIn, String[] keyIn, LocalDateTime[] createTimeIn) {
+    public Page<LawyerFullVO> query(Pageable pageable, String nameLike, String phoneLike, LawyerState[] stateIn, String[] keyIn, LocalDateTime[] createTimeIn) {
         return lawyerRepository.findAll((Specification<Lawyer>) (root, query, builder) -> {
             List<Predicate> conditions = new ArrayList<>();
             if (StringUtils.hasText(nameLike)) {
@@ -200,6 +235,6 @@ public class LawyerService implements InitializingBean {
                 conditions.add(builder.between(root.get("user.createTime"), createTimeIn[0], createTimeIn[1]));
             }
             return query.where(conditions.toArray(conditions.toArray(new Predicate[0]))).getRestriction();
-        }, pageable);
+        }, pageable).map(LawyerFullVO::new);
     }
 }

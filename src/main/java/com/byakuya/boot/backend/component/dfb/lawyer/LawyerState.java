@@ -13,7 +13,14 @@ public enum LawyerState {
     NOT_APPROVED("未审核") {
         @Override
         public LawyerState transition(LawyerAction action) {
-            return action == LawyerAction.APPROVED ? OFF_DUTY : this;
+            switch (action) {
+                case APPROVED:
+                    return OFF_DUTY;
+                case REJECTED:
+                    return CREATED;
+                default:
+                    return this;
+            }
         }
     },
     OFF_DUTY("下班") {

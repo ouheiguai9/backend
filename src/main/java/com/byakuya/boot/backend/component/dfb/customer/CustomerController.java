@@ -4,7 +4,7 @@ import com.byakuya.boot.backend.component.dfb.lawyer.Lawyer;
 import com.byakuya.boot.backend.component.dfb.order.Order;
 import com.byakuya.boot.backend.component.dfb.order.OrderService;
 import com.byakuya.boot.backend.config.AclApiMethod;
-import com.byakuya.boot.backend.config.ApiModule;
+import com.byakuya.boot.backend.config.AclApiModule;
 import com.byakuya.boot.backend.exception.AuthException;
 import com.byakuya.boot.backend.jackson.DynamicJsonView;
 import com.byakuya.boot.backend.security.AccountAuthentication;
@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -28,7 +29,7 @@ import static com.byakuya.boot.backend.component.dfb.ConstantUtils.CUSTOMER_PREF
 /**
  * Created by 田伯光 at 2023/1/5 22:54
  */
-@ApiModule(path = "dfb/customers")
+@AclApiModule(path = "dfb/customers", value = "dfb_customers", desc = "客户管理")
 @Validated
 class CustomerController {
     private final CustomerService customerService;
@@ -47,7 +48,7 @@ class CustomerController {
         return customerService.query(id != null ? id : authentication.getAccountId(), true).orElseThrow(() -> AuthException.forbidden(null));
     }
 
-    @AclApiMethod(value = "customer_list", desc = "顾客列表", method = RequestMethod.GET)
+    @AclApiMethod(value = "list", desc = "列表", method = RequestMethod.GET)
     public Page<CustomerWithOrderVO> read(@PageableDefault(sort = {"user.account.createTime"}, direction = Sort.Direction.DESC) Pageable pageable, @RequestParam(value = "phone", required = false) String phoneLike) {
         Page<Customer> customers = customerService.query(pageable, phoneLike);
         Map<Long, Order> lastOrderMap = orderService.getCustomerLastOrder(customers.stream().map(Customer::getId).collect(Collectors.toList()));
@@ -64,7 +65,7 @@ class CustomerController {
         String hTimeKey = "timestamp";
         String hOrderKey = "order";
         if (!redisTemplate.opsForHash().putIfAbsent(customerKey, hTimeKey, LocalDateTime.now())) {
-            return ((Order) redisTemplate.opsForHash().get(customerKey, hOrderKey)).getLawyer();
+            return ((Order) Objects.requireNonNull(redisTemplate.opsForHash().get(customerKey, hOrderKey))).getLawyer();
         }
         try {
             String hExcludeKey = "exclude";

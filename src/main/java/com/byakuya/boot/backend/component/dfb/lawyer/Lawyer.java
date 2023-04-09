@@ -3,6 +3,7 @@ package com.byakuya.boot.backend.component.dfb.lawyer;
 import com.byakuya.boot.backend.SystemVersion;
 import com.byakuya.boot.backend.component.dfb.order.Order;
 import com.byakuya.boot.backend.component.user.User;
+import com.byakuya.boot.backend.jackson.Desensitize;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
@@ -19,7 +20,12 @@ import java.util.List;
 @Entity
 @Table(name = "T_DFB_LAWYER")
 @Accessors(chain = true)
-@NamedEntityGraph(name = "Lawyer.Order", attributeNodes = @NamedAttributeNode("orderList"))
+@NamedEntityGraphs({
+        @NamedEntityGraph(name = "Lawyer.Order", attributeNodes = @NamedAttributeNode("orderList")),
+        @NamedEntityGraph(name = "Lawyer.User",
+                attributeNodes = @NamedAttributeNode(value = "user", subgraph = "account"),
+                subgraphs = @NamedSubgraph(name = "account", attributeNodes = @NamedAttributeNode("account")))
+})
 public class Lawyer implements Serializable {
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     @Id
@@ -36,6 +42,8 @@ public class Lawyer implements Serializable {
     private String certificate;
     private String lawId;
     private String lawFirm;
+    private String bank;
+    private String bankId;
     private Boolean key1;
     private Boolean key2;
     private Boolean key3;
@@ -52,6 +60,26 @@ public class Lawyer implements Serializable {
     @JsonIgnore
     @OneToMany(mappedBy = "lawyer")
     private List<Order> orderList;
+
+    @Desensitize(strategy = Desensitize.DesensitizeStrategy.PHONE)
+    public String getPhone() {
+        return phone;
+    }
+
+    @Desensitize(strategy = Desensitize.DesensitizeStrategy.ID_CARD)
+    public String getCertificate() {
+        return certificate;
+    }
+
+    @Desensitize(strategy = Desensitize.DesensitizeStrategy.LONG_CODE)
+    public String getLawId() {
+        return lawId;
+    }
+
+    @Desensitize(strategy = Desensitize.DesensitizeStrategy.LONG_CODE)
+    public String getBankId() {
+        return bankId;
+    }
 
     public String getStateText() {
         return state == null ? null : state.text;

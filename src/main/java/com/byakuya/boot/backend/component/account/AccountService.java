@@ -52,4 +52,11 @@ public class AccountService {
     public boolean isErrorLimitAccount(Account account) {
         return account.getLoginErrorCount() > ConstantUtils.LOGIN_ERROR_LIMIT_COUNT && LocalDateTime.now().isBefore(account.getLoginErrorTime().plusMinutes(ConstantUtils.LOGIN_ERROR_WAIT_MINUTES));
     }
+
+    public void setLocked(Long id, Boolean locked) {
+        accountRepository.findById(id).ifPresent(account -> {
+            account.setLocked(locked);
+            accountRepository.save(account);
+        });
+    }
 }
