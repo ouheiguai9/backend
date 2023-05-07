@@ -74,10 +74,19 @@ public class LawyerService implements InitializingBean {
         Lawyer old = lawyerRepository.findById(lawyer.getId()).orElseThrow(RecordNotFoundException::new);
         LawyerState state = old.getState();
         if (state != LawyerState.CREATED) return old;
+        setNewValue(lawyer, old);
+        old.setBackup(Boolean.FALSE);
+        old.setState(state.transition(LawyerAction.SUBMIT));
+        return lawyerRepository.save(old);
+    }
+
+    private void setNewValue(Lawyer lawyer, Lawyer old) {
         old.setName(lawyer.getName());
         old.setCertificate(lawyer.getCertificate());
         old.setLawId(lawyer.getLawId());
         old.setLawFirm(lawyer.getLawFirm());
+        old.setBank(lawyer.getBank());
+        old.setBankId(lawyer.getBankId());
         old.setKey1(lawyer.getKey1());
         old.setKey2(lawyer.getKey2());
         old.setKey3(lawyer.getKey3());
@@ -87,9 +96,16 @@ public class LawyerService implements InitializingBean {
         old.setKey7(lawyer.getKey7());
         old.setKey8(lawyer.getKey8());
         old.setKey9(lawyer.getKey9());
-        old.setBackup(Boolean.FALSE);
-        old.setState(state.transition(LawyerAction.SUBMIT));
-        return lawyerRepository.save(old);
+    }
+
+    @Transactional
+    public Lawyer update(Lawyer lawyer) {
+        Lawyer old = lawyerRepository.findById(lawyer.getId()).orElseThrow(RecordNotFoundException::new);
+        setNewValue(lawyer, old);
+        old = lawyerRepository.save(old);
+        //noinspection ResultOfMethodCallIgnored
+        old.getUser().getAccount().getCreateTime();
+        return old;
     }
 
     @Transactional

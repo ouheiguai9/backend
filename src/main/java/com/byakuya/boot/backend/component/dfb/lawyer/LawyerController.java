@@ -52,6 +52,11 @@ class LawyerController {
         return lawyerService.query(pageable, nameLike, phoneLike, stateIn, keyIn, createTimeIn);
     }
 
+    @AclApiMethod(value = "update", desc = "修改", method = RequestMethod.PATCH)
+    public LawyerFullVO update(@RequestBody Lawyer lawyer) {
+        return new LawyerFullVO(lawyerService.update(lawyer));
+    }
+
     @AclApiMethod(value = "stat", desc = "统计", path = "/stat", method = RequestMethod.GET)
     public List<Lawyer> stat(@RequestParam(value = "createTime", required = false) LocalDateTime[] createTimeIn) {
         if (createTimeIn == null || createTimeIn.length < 2) {
