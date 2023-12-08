@@ -136,19 +136,4 @@ public class WebSecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();// 使用 BCrypt 加密
     }
-
-    @Bean
-    public RedisSerializer<Object> springSessionDefaultRedisSerializer() {
-        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer();
-        try {
-            Field field = serializer.getClass().getDeclaredField("mapper");
-            field.setAccessible(true);
-            ObjectMapper mapper = (ObjectMapper) field.get(serializer);
-            mapper.registerModule(new JavaTimeModule());
-            field.setAccessible(false);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return serializer;
-    }
 }
