@@ -6,13 +6,14 @@ import com.byakuya.boot.backend.utils.ConstantUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.domain.Auditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.data.util.ProxyUtils;
 
-import javax.persistence.*;
+import java.io.Serial;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -22,6 +23,7 @@ import java.util.Optional;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class AbstractAuditableEntity extends AbstractBaseEntity implements Auditable<Account, Long, LocalDateTime> {
+    @Serial
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
 
     @Id

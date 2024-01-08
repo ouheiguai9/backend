@@ -6,11 +6,12 @@ import com.byakuya.boot.backend.component.role.Role;
 import com.byakuya.boot.backend.utils.ConstantUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import javax.persistence.*;
+import java.io.Serial;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -23,12 +24,13 @@ import java.util.Set;
 @Table(name = "T_SYS_ACCOUNT")
 @Accessors(chain = true)
 public class Account extends AbstractBaseEntity {
+    @Serial
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     @Id
     @GeneratedValue(generator = ConstantUtils.ID_GENERATOR_SNOW_NAME)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long id;
-    private int loginErrorCount;
+    private Integer loginErrorCount = 0;
     private LocalDateTime loginErrorTime;
     @Column(nullable = false, updatable = false)
     private LocalDateTime createTime = LocalDateTime.now();
