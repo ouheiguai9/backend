@@ -7,10 +7,11 @@ import com.byakuya.boot.backend.component.dfb.lawyer.Lawyer;
 import com.byakuya.boot.backend.utils.ConstantUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "T_DFB_ORDER")
 public class Order implements Serializable {
+    @Serial
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
 
     @Id

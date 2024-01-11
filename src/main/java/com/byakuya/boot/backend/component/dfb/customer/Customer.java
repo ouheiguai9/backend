@@ -4,10 +4,11 @@ import com.byakuya.boot.backend.SystemVersion;
 import com.byakuya.boot.backend.component.user.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import javax.persistence.*;
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -21,6 +22,7 @@ import java.io.Serializable;
         attributeNodes = @NamedAttributeNode(value = "user", subgraph = "account"),
         subgraphs = @NamedSubgraph(name = "account", attributeNodes = @NamedAttributeNode("account")))
 public class Customer implements Serializable {
+    @Serial
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     @Id
     @JsonFormat(shape = JsonFormat.Shape.STRING)

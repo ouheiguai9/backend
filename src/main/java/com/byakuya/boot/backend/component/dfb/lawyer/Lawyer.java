@@ -6,10 +6,11 @@ import com.byakuya.boot.backend.component.user.User;
 import com.byakuya.boot.backend.jackson.Desensitize;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import javax.persistence.*;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
@@ -27,6 +28,7 @@ import java.util.List;
                 subgraphs = @NamedSubgraph(name = "account", attributeNodes = @NamedAttributeNode("account")))
 })
 public class Lawyer implements Serializable {
+    @Serial
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     @Id
     @JsonFormat(shape = JsonFormat.Shape.STRING)

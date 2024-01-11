@@ -5,12 +5,13 @@ import com.byakuya.boot.backend.component.AbstractAuditableEntity;
 import com.byakuya.boot.backend.component.account.Account;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import java.io.Serial;
 import java.time.LocalDateTime;
 
 /**
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 @Table(name = "T_SYS_USER", indexes = {@Index(columnList = "username"), @Index(columnList = "email"), @Index(columnList = "phone")})
 @Accessors(chain = true)
 public class User extends AbstractAuditableEntity {
+    @Serial
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
 
     @NotBlank(message = "error.validation.user.username.required")

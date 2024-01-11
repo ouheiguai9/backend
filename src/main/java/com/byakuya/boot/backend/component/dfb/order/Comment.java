@@ -6,10 +6,11 @@ import com.byakuya.boot.backend.utils.ConstantUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import javax.persistence.*;
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -21,6 +22,7 @@ import java.time.LocalDateTime;
 @Table(name = "T_DFB_COMMENT")
 @Accessors(chain = true)
 public class Comment implements Serializable {
+    @Serial
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     @Id
     @GeneratedValue(generator = ConstantUtils.ID_GENERATOR_SNOW_NAME)
