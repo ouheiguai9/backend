@@ -8,6 +8,7 @@ import com.byakuya.boot.backend.exception.BackendException;
 import com.byakuya.boot.backend.exception.ErrorStatus;
 import com.byakuya.boot.backend.exception.RecordNotFoundException;
 import com.byakuya.boot.backend.utils.SnowFlakeUtils;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.criteria.Predicate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -85,14 +85,13 @@ public class OrderService {
         Order old = orderRepository.findFirstByCustomer_idOrderByCreateTimeDesc(customerId).orElse(null);
         if (old != null) {
             switch (old.getState()) {
-                case CREATED:
-                case LAWYER_RESPONSE:
-                case CALLING:
+                case CREATED, LAWYER_RESPONSE, CALLING -> {
                     //存在进行中的订单
                     return Optional.of(old);
-                case UN_PAY:
+                }
+                case UN_PAY ->
                     //存在进行中或未支付订单
-                    throw AuthException.forbidden(null);
+                        throw AuthException.forbidden(null);
             }
         }
         return lawyerService.election(excludeLawyer).map(lawyer -> {

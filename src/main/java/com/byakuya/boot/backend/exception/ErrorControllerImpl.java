@@ -1,14 +1,14 @@
 package com.byakuya.boot.backend.exception;
 
 import com.byakuya.boot.backend.utils.ConstantUtils;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created by 田伯光 at 2022/8/27 12:21
