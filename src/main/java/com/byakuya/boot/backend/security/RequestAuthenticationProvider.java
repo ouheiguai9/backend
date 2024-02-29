@@ -1,9 +1,8 @@
 package com.byakuya.boot.backend.security;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.util.StringUtils;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created by 田伯光 at 2022/4/28 11:59

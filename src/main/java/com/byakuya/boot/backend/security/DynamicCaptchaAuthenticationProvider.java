@@ -6,12 +6,12 @@ import com.byakuya.boot.backend.component.captcha.Type;
 import com.byakuya.boot.backend.component.user.User;
 import com.byakuya.boot.backend.component.user.UserService;
 import com.byakuya.boot.backend.exception.ValidationFailedException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 /**

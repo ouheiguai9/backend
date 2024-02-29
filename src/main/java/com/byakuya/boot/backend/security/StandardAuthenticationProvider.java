@@ -3,13 +3,13 @@ package com.byakuya.boot.backend.security;
 import com.byakuya.boot.backend.component.account.AccountService;
 import com.byakuya.boot.backend.component.user.User;
 import com.byakuya.boot.backend.component.user.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 /**
@@ -33,18 +33,12 @@ public class StandardAuthenticationProvider extends AbstractAccountAuthenticatio
         String userParam = getHeaderKey(request, "userParam", "user");
         Long tenantId = Long.valueOf(getHeaderKey(request, "tenantId", "0"));
         String userStr = getHeaderKey(request, userParam, "");
-        Optional<User> opt = Optional.empty();
-        switch (userType) {
-            case "username":
-                opt = userService.loadByUsername(userStr, tenantId);
-                break;
-            case "phone":
-                opt = userService.loadByPhone(userStr, tenantId);
-                break;
-            case "email":
-                opt = userService.loadByEmail(userStr, tenantId);
-                break;
-        }
+        Optional<User> opt = switch (userType) {
+            case "username" -> userService.loadByUsername(userStr, tenantId);
+            case "phone" -> userService.loadByPhone(userStr, tenantId);
+            case "email" -> userService.loadByEmail(userStr, tenantId);
+            default -> Optional.empty();
+        };
         User user = opt.orElseThrow(() -> new UsernameNotFoundException(userStr));
         return new AccountAuthentication(user.getTenantId(), user.getAccountId(), user.getNickname(), user.getPassword());
     }

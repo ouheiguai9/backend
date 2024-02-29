@@ -1,11 +1,11 @@
 package com.byakuya.boot.backend.security;
 
 import com.byakuya.boot.backend.SystemVersion;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.util.Assert;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 
 /**
