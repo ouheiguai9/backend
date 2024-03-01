@@ -3,11 +3,11 @@ package com.byakuya.boot.backend.component.unique;
 import com.byakuya.boot.backend.SystemVersion;
 import com.byakuya.boot.backend.component.TenantOwner;
 import com.byakuya.boot.backend.component.tenant.Tenant;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 

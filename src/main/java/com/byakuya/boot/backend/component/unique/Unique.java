@@ -1,10 +1,10 @@
 package com.byakuya.boot.backend.component.unique;
 
 import com.byakuya.boot.backend.SystemVersion;
+import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.data.domain.Persistable;
 
-import javax.persistence.*;
 import java.io.Serializable;
 
 /**
