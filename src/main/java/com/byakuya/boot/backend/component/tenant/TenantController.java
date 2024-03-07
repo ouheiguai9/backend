@@ -3,13 +3,12 @@ package com.byakuya.boot.backend.component.tenant;
 import com.byakuya.boot.backend.config.AclApiMethod;
 import com.byakuya.boot.backend.config.AclApiModule;
 import com.byakuya.boot.backend.security.TenantPrefixMatcher;
+import jakarta.validation.Valid;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import javax.validation.Valid;
 
 /**
  * Created by 田伯光 at 2022/10/9 21:38
