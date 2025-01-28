@@ -3,12 +3,14 @@ package com.byakuya.boot.backend.exception;
 import com.byakuya.boot.backend.SystemVersion;
 import org.springframework.dao.DataIntegrityViolationException;
 
+import java.io.Serial;
 import java.sql.SQLIntegrityConstraintViolationException;
 
 /**
  * Created by 田伯光 at 2022/10/23 15:53
  */
 public class IntegrityViolationException extends BackendException {
+    @Serial
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
 
     public IntegrityViolationException(DataIntegrityViolationException cause) {

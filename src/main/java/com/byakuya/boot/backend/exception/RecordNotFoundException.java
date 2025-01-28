@@ -3,10 +3,13 @@ package com.byakuya.boot.backend.exception;
 import com.byakuya.boot.backend.SystemVersion;
 import org.springframework.context.MessageSourceResolvable;
 
+import java.io.Serial;
+
 /**
  * Created by 田伯光 at 2022/10/22 23:15
  */
 public class RecordNotFoundException extends BackendException implements MessageSourceResolvable {
+    @Serial
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     private final String code;
     private final Object[] args;

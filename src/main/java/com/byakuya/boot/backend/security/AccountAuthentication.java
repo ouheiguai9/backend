@@ -13,6 +13,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.util.StringUtils;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
  */
 @JsonDeserialize()
 public class AccountAuthentication implements Authentication, CredentialsContainer {
+    @Serial
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     @Getter
@@ -62,10 +64,6 @@ public class AccountAuthentication implements Authentication, CredentialsContain
         this.setDetails(null);
     }
 
-    public static boolean isAdmin(Authentication authentication) {
-        return authentication instanceof Admin;
-    }
-
     public AccountAuthentication setApis(Set<String> apis) {
         if (apis == null || apis.isEmpty()) {
             this.apis = Collections.emptySet();
@@ -73,6 +71,10 @@ public class AccountAuthentication implements Authentication, CredentialsContain
             this.apis = Collections.unmodifiableSet(apis);
         }
         return this;
+    }
+
+    public static boolean isAdmin(Authentication authentication) {
+        return authentication instanceof Admin;
     }
 
     public AccountAuthentication copyAndModifyName(String name) {
@@ -154,6 +156,7 @@ public class AccountAuthentication implements Authentication, CredentialsContain
 
     static final class Admin extends AccountAuthentication {
         static final Admin instance = new Admin();
+        @Serial
         private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
 
         private Admin() {

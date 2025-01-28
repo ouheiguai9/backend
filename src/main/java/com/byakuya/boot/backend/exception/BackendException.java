@@ -3,12 +3,14 @@ package com.byakuya.boot.backend.exception;
 import com.byakuya.boot.backend.SystemVersion;
 import lombok.Getter;
 
+import java.io.Serial;
 import java.util.Objects;
 
 /**
  * Created by 田伯光 at 2022/8/22 23:32
  */
 public class BackendException extends RuntimeException {
+    @Serial
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
 
     @Getter

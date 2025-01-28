@@ -5,10 +5,13 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 
+import java.io.Serial;
+
 /**
  * Created by 田伯光 at 2022/10/22 23:48
  */
 public class ValidationFailedException extends BackendException {
+    @Serial
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     private final BindException bindException;
     private final String errorCode;

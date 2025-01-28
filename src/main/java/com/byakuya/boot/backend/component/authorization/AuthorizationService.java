@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -42,7 +43,7 @@ public class AuthorizationService {
     }
 
     @Transactional(readOnly = true)
-    public Set<String> queryApiAuth(Iterable<Long> subjects) {
+    public Set<String> queryApiAuth(Collection<Long> subjects) {
         return authorizationRepository.findAllBySubjectIdInAndAuthType(subjects, Authorization.AuthType.API).map(Authorization::getContent).collect(Collectors.toSet());
     }
 }

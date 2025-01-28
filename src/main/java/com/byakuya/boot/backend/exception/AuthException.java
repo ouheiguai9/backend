@@ -2,10 +2,13 @@ package com.byakuya.boot.backend.exception;
 
 import com.byakuya.boot.backend.SystemVersion;
 
+import java.io.Serial;
+
 /**
  * Created by 田伯光 at 2022/10/21 10:19
  */
 public final class AuthException extends BackendException {
+    @Serial
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
 
     private AuthException(ErrorStatus errorStatus, Throwable cause) {
