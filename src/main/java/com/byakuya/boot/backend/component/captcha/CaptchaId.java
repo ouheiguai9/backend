@@ -3,11 +3,12 @@ package com.byakuya.boot.backend.component.captcha;
 import com.byakuya.boot.backend.SystemVersion;
 import com.byakuya.boot.backend.component.TenantOwner;
 import com.byakuya.boot.backend.component.tenant.Tenant;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import javax.persistence.*;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -18,6 +19,7 @@ import java.util.Objects;
 @Setter
 @Embeddable
 public class CaptchaId implements TenantOwner, Serializable {
+    @Serial
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(nullable = false, updatable = false)
@@ -40,6 +42,13 @@ public class CaptchaId implements TenantOwner, Serializable {
         this.setTenantId(tenantId);
     }
 
+    @Override
+    public int hashCode() {
+        int result = getTenantId().hashCode();
+        result = 31 * result + target.hashCode();
+        result = 31 * result + captchaType.hashCode();
+        return result;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -49,13 +58,5 @@ public class CaptchaId implements TenantOwner, Serializable {
         if (!Objects.equals(getTenantId(), captchaId.getTenantId())) return false;
         if (!target.equals(captchaId.target)) return false;
         return captchaType == captchaId.captchaType;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = getTenantId().hashCode();
-        result = 31 * result + target.hashCode();
-        result = 31 * result + captchaType.hashCode();
-        return result;
     }
 }

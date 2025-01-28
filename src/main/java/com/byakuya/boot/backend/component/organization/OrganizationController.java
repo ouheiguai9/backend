@@ -5,13 +5,13 @@ import com.byakuya.boot.backend.config.AclApiModule;
 import com.byakuya.boot.backend.exception.RecordNotFoundException;
 import com.byakuya.boot.backend.exception.ValidationFailedException;
 import com.byakuya.boot.backend.security.AccountAuthentication;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.validation.Valid;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;

@@ -1,11 +1,12 @@
 package com.byakuya.boot.backend.component.captcha;
 
 import com.byakuya.boot.backend.SystemVersion;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.springframework.data.domain.Persistable;
 
-import javax.persistence.*;
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 @Table(name = "T_SYS_CAPTCHA")
 @Accessors(chain = true)
 class Captcha implements Persistable<CaptchaId>, Serializable {
+    @Serial
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     @Transient
     private boolean isNew;

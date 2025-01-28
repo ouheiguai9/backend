@@ -4,12 +4,13 @@ import com.byakuya.boot.backend.SystemVersion;
 import com.byakuya.boot.backend.component.AbstractAuditableEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import java.io.Serial;
 import java.util.Set;
 
 /**
@@ -21,6 +22,7 @@ import java.util.Set;
 @Table(name = "T_SYS_ORGANIZATION", indexes = {@Index(columnList = "parent_id,name", unique = true)})
 @Accessors(chain = true)
 public class Organization extends AbstractAuditableEntity {
+    @Serial
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)

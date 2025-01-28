@@ -3,11 +3,12 @@ package com.byakuya.boot.backend.component.unique;
 import com.byakuya.boot.backend.SystemVersion;
 import com.byakuya.boot.backend.component.TenantOwner;
 import com.byakuya.boot.backend.component.tenant.Tenant;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import javax.persistence.*;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -18,6 +19,7 @@ import java.util.Objects;
 @Setter
 @Embeddable
 public class UniqueId implements TenantOwner, Serializable {
+    @Serial
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(nullable = false, updatable = false)
@@ -41,6 +43,14 @@ public class UniqueId implements TenantOwner, Serializable {
     }
 
     @Override
+    public int hashCode() {
+        int result = getTenantId().hashCode();
+        result = 31 * result + uniqueValue.hashCode();
+        result = 31 * result + uniqueType.hashCode();
+        return result;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -48,13 +58,5 @@ public class UniqueId implements TenantOwner, Serializable {
         if (!Objects.equals(getTenantId(), uniqueId.getTenantId())) return false;
         if (!uniqueValue.equals(uniqueId.uniqueValue)) return false;
         return uniqueType == uniqueId.uniqueType;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = getTenantId().hashCode();
-        result = 31 * result + uniqueValue.hashCode();
-        result = 31 * result + uniqueType.hashCode();
-        return result;
     }
 }

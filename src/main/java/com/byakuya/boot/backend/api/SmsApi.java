@@ -8,14 +8,14 @@ import com.byakuya.boot.backend.config.ApiModule;
 import com.byakuya.boot.backend.service.SpringService;
 import com.byakuya.boot.backend.service.sms.ISmsService;
 import com.byakuya.boot.backend.service.sms.SmsSender;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 /**
@@ -49,7 +49,7 @@ class SmsApi {
         String captcha = captchaService.createNumberCaptcha(length);
         ISmsService smsService = springService.getSmsService(sender);
         smsService.sendLoginCaptcha(tenantId, to, template, captcha);
-        if (addUser && !userService.loadByPhone(target, tenantId).isPresent()) {
+        if (addUser && userService.loadByPhone(target, tenantId).isEmpty()) {
             User user = new User();
             user.setTenantId(tenantId);
             user.setUsername(target);

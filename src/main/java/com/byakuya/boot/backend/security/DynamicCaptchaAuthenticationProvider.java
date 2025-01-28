@@ -6,12 +6,12 @@ import com.byakuya.boot.backend.component.captcha.Type;
 import com.byakuya.boot.backend.component.user.User;
 import com.byakuya.boot.backend.component.user.UserService;
 import com.byakuya.boot.backend.exception.ValidationFailedException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 /**
@@ -33,19 +33,12 @@ public class DynamicCaptchaAuthenticationProvider extends AbstractAccountAuthent
         String targetType = getHeaderKey(request, "targetType", "phone");
         Long tenantId = Long.valueOf(getHeaderKey(request, "tenantId", "0"));
         String target = getTarget(request);
-        Optional<User> opt = Optional.empty();
-        switch (targetType) {
-            case "phone":
-                opt = userService.loadByPhone(target, tenantId);
-                break;
-            case "email":
-                opt = userService.loadByEmail(target, tenantId);
-                break;
-            case "username":
-                opt = userService.loadByUsername(target, tenantId);
-                break;
-
-        }
+        Optional<User> opt = switch (targetType) {
+            case "phone" -> userService.loadByPhone(target, tenantId);
+            case "email" -> userService.loadByEmail(target, tenantId);
+            case "username" -> userService.loadByUsername(target, tenantId);
+            default -> Optional.empty();
+        };
         User user = opt.orElseThrow(() -> new UsernameNotFoundException(target));
         return new AccountAuthentication(user.getTenantId(), user.getAccountId(), user.getNickname(), null);
     }

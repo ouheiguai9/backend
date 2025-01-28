@@ -1,10 +1,11 @@
 package com.byakuya.boot.backend.component.unique;
 
 import com.byakuya.boot.backend.SystemVersion;
+import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.data.domain.Persistable;
 
-import javax.persistence.*;
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -14,6 +15,7 @@ import java.io.Serializable;
 @Entity
 @Table(name = "T_SYS_TABLE_UNIQUE")
 class Unique implements Persistable<UniqueId>, Serializable {
+    @Serial
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     @Transient
     private boolean isNew;

@@ -5,6 +5,7 @@ import com.byakuya.boot.backend.component.user.User;
 import com.byakuya.boot.backend.component.user.UserService;
 import com.byakuya.boot.backend.exception.AuthException;
 import com.byakuya.boot.backend.exception.RecordNotFoundException;
+import jakarta.persistence.criteria.Predicate;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
@@ -19,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.criteria.Predicate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -195,10 +195,10 @@ public class LawyerService implements InitializingBean {
             } while (curr.filter(tuple -> StringUtils.hasText(stringRedisTemplate.opsForValue().getAndDelete(LOCKED_LAWYER_PREFIX_KEY + tuple.getValue()))).isPresent());
             prev.ifPresent(tuple -> stringRedisTemplate.opsForZSet().add(CANDIDATES_KEY, tuple.getValue(), tuple.getScore()));
         } while (curr.isPresent() && excludeLawyer.contains(curr.get().getValue()));
-        if (!curr.isPresent()) {
+        if (curr.isEmpty()) {
             curr = Optional.ofNullable(stringRedisTemplate.opsForZSet().popMin(BACKUP_KEY));
         }
-        if (!curr.isPresent()) {
+        if (curr.isEmpty()) {
             loadCandidates();
         }
         return curr.flatMap(tuple -> lawyerRepository.findById(Long.valueOf(tuple.getValue())).filter(x -> x.getState() == LawyerState.ON_DUTY));

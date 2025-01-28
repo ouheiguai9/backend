@@ -1,27 +1,25 @@
 package com.byakuya.boot.backend.security;
 
 import com.byakuya.boot.backend.SystemVersion;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.util.Assert;
 
-import javax.servlet.http.HttpServletRequest;
+import java.io.Serial;
 import java.util.Collection;
 
 /**
  * Created by 田伯光 at 2022/4/24 20:49
  */
 public class RequestAuthenticationToken implements Authentication {
+    @Serial
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
-    private HttpServletRequest request;
+    private final HttpServletRequest request;
 
     public RequestAuthenticationToken(HttpServletRequest request) {
         Assert.notNull(request, "Request is null!");
         this.request = request;
-    }
-
-    public HttpServletRequest getRequest() {
-        return request;
     }
 
     @Override
@@ -55,19 +53,23 @@ public class RequestAuthenticationToken implements Authentication {
     }
 
     @Override
+    public int hashCode() {
+        return request.hashCode();
+    }
+
+    @Override
     public boolean equals(Object another) {
         if (!(another instanceof RequestAuthenticationToken)) return false;
         return this.request.equals(((RequestAuthenticationToken) another).getRequest());
     }
 
-    @Override
-    public String toString() {
-        return request.toString();
+    public HttpServletRequest getRequest() {
+        return request;
     }
 
     @Override
-    public int hashCode() {
-        return request.hashCode();
+    public String toString() {
+        return request.toString();
     }
 
     @Override

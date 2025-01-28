@@ -2,12 +2,13 @@ package com.byakuya.boot.backend.component.parameter;
 
 import com.byakuya.boot.backend.SystemVersion;
 import com.byakuya.boot.backend.component.AbstractAuditableEntity;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import java.io.Serial;
 
 /**
  * Created by 田伯光 at 2022/10/10 1:43
@@ -19,6 +20,7 @@ import javax.validation.constraints.NotBlank;
 @Accessors(chain = true)
 @AssociationOverride(name = "tenant", joinColumns = @JoinColumn(updatable = false))
 public class Parameter extends AbstractAuditableEntity {
+    @Serial
     private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
 
     @NotBlank
