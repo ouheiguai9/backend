@@ -1,5 +1,6 @@
 package com.byakuya.boot.backend.component.authorization;
 
+import com.byakuya.boot.backend.SystemVersion;
 import com.byakuya.boot.backend.utils.ConstantUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
@@ -7,6 +8,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -17,6 +19,8 @@ import java.io.Serializable;
 @Table(name = "T_SYS_AUTHORIZATION", indexes = {@Index(columnList = "subjectId,authType,content,subjectType", unique = true)})
 @Accessors(chain = true)
 public class Authorization implements Serializable {
+    @Serial
+    private static final long serialVersionUID = SystemVersion.SERIAL_VERSION_UID;
     @Id
     @GeneratedValue(generator = ConstantUtils.ID_GENERATOR_SEQUENCE_NAME)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
