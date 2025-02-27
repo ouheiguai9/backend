@@ -8,8 +8,6 @@ server:
 spring:
   profiles:
     active: pro
-  session:
-    store-type: redis
   jackson:
     time-zone: GMT+8
     date-format: 'yyyy-MM-dd HH:mm:ss'
@@ -17,17 +15,6 @@ spring:
     url: jdbc:mysql://localhost/backend?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2b8
     username: backend
     password: backend
-    #MySQL优化
-    cachePrepStmts: true
-    prepStmtCacheSize: 250
-    prepStmtCacheSqlLimit: 2048
-    useServerPrepStmts: true
-    useLocalSessionState: true
-    rewriteBatchedStatements: true
-    cacheResultSetMetadata: true
-    cacheServerConfiguration: true
-    elideSetAutoCommits: true
-    maintainTimeStats: false
   jpa:
     open-in-view: false
     show-sql: true
