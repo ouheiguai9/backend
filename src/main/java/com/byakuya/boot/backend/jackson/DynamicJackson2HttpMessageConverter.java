@@ -2,11 +2,11 @@ package com.byakuya.boot.backend.jackson;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.PropertyFilter;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonValue;
+import org.springframework.lang.Nullable;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -19,16 +19,16 @@ public class DynamicJackson2HttpMessageConverter extends MappingJackson2HttpMess
         super(objectMapper);
     }
 
+
     @Override
-    protected void writeInternal(@NotNull Object object, Type type, @NotNull HttpOutputMessage outputMessage)
+    protected void writeInternal(Object object, @Nullable Type type, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
         if (object instanceof MappingJacksonValue) {
             PropertyFilter filter =
                     ((MappingJacksonValue) object)
                             .getFilters()
                             .findPropertyFilter(DynamicBeanPropertyFilter.DYNAMIC_FILTER_NAME, null);
-            if (filter instanceof DynamicBeanPropertyFilter) {
-                DynamicBeanPropertyFilter dynamicBeanPropertyFilter = (DynamicBeanPropertyFilter) filter;
+            if (filter instanceof DynamicBeanPropertyFilter dynamicBeanPropertyFilter) {
                 ObjectMapper copObjectMapper = defaultObjectMapper.copy();
                 dynamicBeanPropertyFilter
                         .getTargetClassSet()

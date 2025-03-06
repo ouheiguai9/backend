@@ -14,8 +14,8 @@ import java.util.*;
 @JsonFilter(DynamicBeanPropertyFilter.DYNAMIC_FILTER_NAME)
 public class DynamicBeanPropertyFilter extends SimpleBeanPropertyFilter {
     static final String DYNAMIC_FILTER_NAME = "JsonDynamicViewFilter";
-    private Map<Class<?>, Set<String>> excludeMap = new HashMap<>();
-    private Map<Class<?>, Set<String>> includeMap = new HashMap<>();
+    private final Map<Class<?>, Set<String>> excludeMap = new HashMap<>();
+    private final Map<Class<?>, Set<String>> includeMap = new HashMap<>();
 
     void addAnnotation(DynamicJsonView annotation) {
         if (annotation.include().length > 0) {
