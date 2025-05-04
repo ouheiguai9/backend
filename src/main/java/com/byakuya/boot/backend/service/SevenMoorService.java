@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Base64Utils;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -16,6 +15,7 @@ import java.lang.ref.SoftReference;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 
 @Slf4j
 @Service
@@ -82,7 +82,7 @@ public class SevenMoorService implements ApplicationListener<ParameterRefreshEve
             this.timestamp = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
             this.end = now.plusMinutes(3);
             this.sig = DigestUtils.md5DigestAsHex((config.account + config.secret + timestamp).getBytes(StandardCharsets.UTF_8)).toUpperCase();
-            this.auth = Base64Utils.encodeToString((config.account + ":" + timestamp).getBytes(StandardCharsets.UTF_8));
+            this.auth = Base64.getEncoder().encodeToString((config.account + ":" + timestamp).getBytes(StandardCharsets.UTF_8));
         }
 
         boolean isValid() {

@@ -1,6 +1,6 @@
 package com.byakuya.boot.backend.component.dfb.customer;
 
-import org.jetbrains.annotations.NotNull;
+import jakarta.annotation.Nonnull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -13,7 +13,7 @@ interface CustomerRepository extends JpaRepository<Customer, Long> {
     @EntityGraph("Customer.User")
     Page<Customer> findAllByPhoneContains(Pageable pageable, String phone);
 
-    @NotNull
+    @Nonnull
     @EntityGraph("Customer.User")
-    Page<Customer> findAll(@NotNull Pageable pageable);
+    Page<Customer> findAll(@Nonnull Pageable pageable);
 }

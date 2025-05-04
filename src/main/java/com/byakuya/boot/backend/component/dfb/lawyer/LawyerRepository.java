@@ -1,6 +1,6 @@
 package com.byakuya.boot.backend.component.dfb.lawyer;
 
-import org.jetbrains.annotations.NotNull;
+import jakarta.annotation.Nonnull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -17,7 +17,6 @@ import java.util.Optional;
  * Created by 田伯光 at 2023/2/8 16:31
  */
 interface LawyerRepository extends JpaRepository<Lawyer, Long>, JpaSpecificationExecutor<Lawyer> {
-    @NotNull
     @Query("select l from Lawyer l where l.user.account.locked=false")
     List<Lawyer> findAllUnLocked();
 
@@ -25,9 +24,9 @@ interface LawyerRepository extends JpaRepository<Lawyer, Long>, JpaSpecification
     @Query("select l from Lawyer l where l.id=?1")
     Optional<Lawyer> findWithUser(Long id);
 
-    @NotNull
+    @Nonnull
     @EntityGraph("Lawyer.User")
-    Page<Lawyer> findAll(Specification<Lawyer> spec, @NotNull Pageable pageable);
+    Page<Lawyer> findAll(Specification<Lawyer> spec, @Nonnull Pageable pageable);
 
     @EntityGraph("Lawyer.Order")
     @Query("select l from Lawyer l left join l.orderList as o with o.createTime between ?1 and ?2")

@@ -5,8 +5,8 @@ import com.byakuya.boot.backend.component.user.User;
 import com.byakuya.boot.backend.component.user.UserService;
 import com.byakuya.boot.backend.exception.AuthException;
 import com.byakuya.boot.backend.exception.RecordNotFoundException;
+import jakarta.annotation.Nonnull;
 import jakarta.persistence.criteria.Predicate;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
@@ -207,10 +207,10 @@ public class LawyerService implements InitializingBean {
     private void loadCandidates() {
         boolean initLock = Boolean.TRUE.equals(stringRedisTemplate.opsForValue().setIfAbsent(LAWYER_PREFIX + "init", "lock", 5, TimeUnit.SECONDS));
         if (!initLock) return;
-        stringRedisTemplate.executePipelined(new SessionCallback<Object>() {
+        stringRedisTemplate.executePipelined(new SessionCallback<>() {
             @SuppressWarnings("unchecked")
             @Override
-            public <K, V> Object execute(@NotNull RedisOperations<K, V> operations) throws DataAccessException {
+            public <K, V> Object execute(@Nonnull RedisOperations<K, V> operations) throws DataAccessException {
                 List<Lawyer> lawyerList = lawyerRepository.findAllUnLocked();
                 if (!lawyerList.isEmpty()) {
                     AtomicLong min = new AtomicLong(System.currentTimeMillis());
@@ -226,7 +226,7 @@ public class LawyerService implements InitializingBean {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         loadCandidates();
     }
 
